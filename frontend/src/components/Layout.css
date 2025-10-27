@@ -1,0 +1,136 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .layout {
+    background: #111827;
+  }
+}
+
+.sidebar {
+  width: 250px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar {
+    background: #1f2937;
+    border-right-color: #374151;
+  }
+}
+
+.sidebar-header {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-header {
+    border-bottom-color: #374151;
+  }
+}
+
+.sidebar-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-header p {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #374151;
+  text-decoration: none;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-item {
+    color: #d1d5db;
+  }
+}
+
+.nav-item:hover {
+  background: #f3f4f6;
+  color: #3b82f6;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-item:hover {
+    background: #374151;
+  }
+}
+
+.nav-item.active {
+  background: #eff6ff;
+  color: #3b82f6;
+  border-left-color: #3b82f6;
+  font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-item.active {
+    background: #1e3a8a;
+  }
+}
+
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-footer {
+    border-top-color: #374151;
+  }
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+  
+  .main-content {
+    margin-left: 200px;
+    padding: 1rem;
+  }
+}
+
+
+
+
+
+
