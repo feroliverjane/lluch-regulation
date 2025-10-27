@@ -121,3 +121,5 @@ railway connect
 # Ejecutar comandos en el servidor
 railway run python -m app.scripts.generate_dummy_data
 ```
+
+

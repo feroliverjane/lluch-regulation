@@ -46,3 +46,5 @@ if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("PRODUCTION"):
     settings = ProductionSettings()
 else:
     from .config import settings
+
+

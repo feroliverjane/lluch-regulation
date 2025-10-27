@@ -39,3 +39,5 @@ echo "5. Añade la variable de entorno VITE_API_URL con tu URL del backend"
 echo ""
 echo "📁 Los archivos de build están en: frontend/dist"
 echo "📄 Revisa DEPLOY_NETLIFY.md para más detalles"
+
+

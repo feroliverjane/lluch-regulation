@@ -102,3 +102,5 @@ Para mejorar el rendimiento:
 ### Error: "Page not found on refresh"
 - Verifica que el archivo `_redirects` esté en `frontend/public/`
 - Asegúrate de que la regla `/* /index.html 200` esté presente
+
+
