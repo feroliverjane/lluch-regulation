@@ -5,7 +5,8 @@ import {
   FlaskConical, 
   FileCheck2, 
   ListTodo,
-  Layers 
+  Layers,
+  ClipboardList 
 } from 'lucide-react'
 import './Layout.css'
 
@@ -19,6 +20,7 @@ const Layout = () => {
     { name: 'Composites', path: '/composites', icon: FileCheck2 },
     { name: 'Aprobaciones', path: '/workflows', icon: ListTodo },
     { name: 'Línea Azul', path: '/blue-line', icon: Layers },
+    { name: 'Cuestionarios', path: '/questionnaires', icon: ClipboardList },
   ]
 
   const isActive = (path: string) => location.pathname.startsWith(path)

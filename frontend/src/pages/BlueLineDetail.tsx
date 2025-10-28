@@ -12,7 +12,7 @@ interface BlueLine {
   last_synced_at?: string;
   sync_error_message?: string;
   blue_line_data: Record<string, any>;
-  metadata?: Record<string, any>;
+  calculation_metadata?: Record<string, any>;
 }
 
 interface Material {
@@ -278,7 +278,7 @@ export default function BlueLineDetail() {
                     <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px', fontFamily: 'monospace' }}>
                       {key}
                     </div>
-                    <div style={{ fontWeight: '500', wordBreak: 'break-word' }}>
+                    <div style={{ fontWeight: '500', wordBreak: 'break-word', color: '#111827' }}>
                       {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
                     </div>
                   </div>
@@ -290,7 +290,7 @@ export default function BlueLineDetail() {
       </div>
 
       {/* Metadata */}
-      {blueLine.metadata && Object.keys(blueLine.metadata).length > 0 && (
+      {blueLine.calculation_metadata && Object.keys(blueLine.calculation_metadata).length > 0 && (
         <div className="card" style={{ marginTop: '24px' }}>
           <h2 style={{ marginTop: 0 }}>Calculation Metadata</h2>
           <pre
@@ -300,9 +300,10 @@ export default function BlueLineDetail() {
               borderRadius: '6px',
               overflow: 'auto',
               fontSize: '12px',
+              color: '#111827',
             }}
           >
-            {JSON.stringify(blueLine.metadata, null, 2)}
+            {JSON.stringify(blueLine.calculation_metadata, null, 2)}
           </pre>
         </div>
       )}

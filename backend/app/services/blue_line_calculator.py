@@ -89,7 +89,7 @@ class BlueLineCalculator:
             existing_blue_line.blue_line_data = blue_line_data
             existing_blue_line.material_type = material_type
             existing_blue_line.calculated_at = datetime.now()
-            existing_blue_line.bl_metadata = {
+            existing_blue_line.calculation_metadata = {
                 "last_calculation": datetime.now().isoformat(),
                 "eligibility_details": eligibility_details,
                 "composites_used": [c.id for c in approved_composites],
@@ -102,7 +102,7 @@ class BlueLineCalculator:
                 supplier_code=supplier_code,
                 blue_line_data=blue_line_data,
                 material_type=material_type,
-                bl_metadata={
+                calculation_metadata={
                     "created": datetime.now().isoformat(),
                     "eligibility_details": eligibility_details,
                     "composites_used": [c.id for c in approved_composites],

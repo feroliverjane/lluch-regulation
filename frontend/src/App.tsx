@@ -10,6 +10,7 @@ import Workflows from './pages/Workflows'
 import BlueLine from './pages/BlueLine'
 import BlueLineDetail from './pages/BlueLineDetail'
 import BlueLineFieldLogic from './pages/BlueLineFieldLogic'
+import Questionnaires from './pages/Questionnaires'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="blue-line" element={<BlueLine />} />
           <Route path="blue-line/:id" element={<BlueLineDetail />} />
           <Route path="blue-line/field-logic" element={<BlueLineFieldLogic />} />
+          <Route path="questionnaires" element={<Questionnaires />} />
         </Route>
       </Routes>
     </BrowserRouter>

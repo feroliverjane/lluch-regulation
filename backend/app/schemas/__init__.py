@@ -22,6 +22,21 @@ from .blue_line import (
     BlueLineFieldLogicResponse,
     BlueLineFieldLogicBulkImport,
 )
+from .questionnaire import (
+    QuestionnaireCreate,
+    QuestionnaireUpdate,
+    QuestionnaireResponse,
+    QuestionnaireValidationResponse,
+    QuestionnaireIncidentCreate,
+    QuestionnaireIncidentUpdate,
+    QuestionnaireIncidentResponse,
+    AIAnalysisResponse,
+    QuestionnaireComparisonResponse,
+    QuestionnaireSubmitRequest,
+    IncidentEscalateRequest,
+    IncidentOverrideRequest,
+    IncidentResolveRequest,
+)
 
 __all__ = [
     "MaterialCreate",
@@ -51,6 +66,19 @@ __all__ = [
     "BlueLineFieldLogicUpdate",
     "BlueLineFieldLogicResponse",
     "BlueLineFieldLogicBulkImport",
+    "QuestionnaireCreate",
+    "QuestionnaireUpdate",
+    "QuestionnaireResponse",
+    "QuestionnaireValidationResponse",
+    "QuestionnaireIncidentCreate",
+    "QuestionnaireIncidentUpdate",
+    "QuestionnaireIncidentResponse",
+    "AIAnalysisResponse",
+    "QuestionnaireComparisonResponse",
+    "QuestionnaireSubmitRequest",
+    "IncidentEscalateRequest",
+    "IncidentOverrideRequest",
+    "IncidentResolveRequest",
 ]
 
 

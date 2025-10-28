@@ -161,8 +161,8 @@ class BlueLineSyncService:
                 blue_line.sync_status = BlueLineSyncStatus.SYNCED
                 blue_line.last_synced_at = datetime.now()
                 blue_line.sync_error_message = None
-                blue_line.bl_metadata = blue_line.bl_metadata or {}
-                blue_line.bl_metadata["last_sap_import"] = datetime.now().isoformat()
+                blue_line.calculation_metadata = blue_line.calculation_metadata or {}
+                blue_line.calculation_metadata["last_sap_import"] = datetime.now().isoformat()
             else:
                 # Create new Blue Line from SAP data
                 from app.models.blue_line import BlueLineMaterialType
@@ -173,7 +173,7 @@ class BlueLineSyncService:
                     material_type=BlueLineMaterialType.Z001,  # Default for Z2 imports
                     sync_status=BlueLineSyncStatus.SYNCED,
                     last_synced_at=datetime.now(),
-                    bl_metadata={"sap_import": datetime.now().isoformat()}
+                    calculation_metadata={"sap_import": datetime.now().isoformat()}
                 )
                 self.db.add(blue_line)
             

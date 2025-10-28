@@ -31,15 +31,8 @@ def upgrade() -> None:
     #            type_=sa.String(length=20),
     #            existing_nullable=True)
     
-    # Rename calculation_metadata to metadata in blue_lines
-    with op.batch_alter_table('blue_lines', recreate='always') as batch_op:
-        batch_op.add_column(sa.Column('metadata', sa.JSON(), nullable=True))
-    
-    # Copy data from old column to new (outside batch to ensure column exists)
-    op.execute('UPDATE blue_lines SET metadata = calculation_metadata WHERE calculation_metadata IS NOT NULL')
-    
-    with op.batch_alter_table('blue_lines', recreate='always') as batch_op:
-        batch_op.drop_column('calculation_metadata')
+    # Note: blue_lines table should already have calculation_metadata column
+    # No changes needed for this table in this migration
     
     # Clean up old composite columns that are no longer needed
     with op.batch_alter_table('composites') as batch_op:
@@ -67,11 +60,7 @@ def downgrade() -> None:
     #            type_=sa.VARCHAR(length=50),
     #            existing_nullable=True)
     
-    # Restore old column names and structure
-    with op.batch_alter_table('blue_lines') as batch_op:
-        batch_op.add_column(sa.Column('calculation_metadata', sqlite.JSON(), nullable=True))
-        op.execute('UPDATE blue_lines SET calculation_metadata = metadata')
-        batch_op.drop_column('metadata')
+    # Note: No changes to revert for blue_lines table
     
     with op.batch_alter_table('composites') as batch_op:
         batch_op.add_column(sa.Column('is_blue_line', sa.BOOLEAN(), server_default=sa.text("'false'"), nullable=False))

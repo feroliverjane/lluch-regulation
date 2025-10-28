@@ -24,7 +24,7 @@ class BlueLineBase(BaseModel):
     supplier_code: str
     blue_line_data: Dict[str, Any] = Field(default_factory=dict)
     material_type: BlueLineMaterialTypeSchema
-    bl_metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, alias="metadata")
+    calculation_metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 
 class BlueLineCreate(BlueLineBase):
@@ -36,7 +36,7 @@ class BlueLineUpdate(BaseModel):
     """Schema for updating a Blue Line"""
     blue_line_data: Optional[Dict[str, Any]] = None
     material_type: Optional[BlueLineMaterialTypeSchema] = None
-    bl_metadata: Optional[Dict[str, Any]] = Field(None, alias="metadata")
+    calculation_metadata: Optional[Dict[str, Any]] = None
     sync_status: Optional[BlueLineSyncStatusSchema] = None
 
 
@@ -52,7 +52,6 @@ class BlueLineResponse(BlueLineBase):
 
     class Config:
         from_attributes = True
-        populate_by_name = True  # Allow using both bl_metadata and metadata
 
 
 class BlueLineCalculateRequest(BaseModel):

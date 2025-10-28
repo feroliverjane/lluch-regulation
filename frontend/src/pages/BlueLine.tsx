@@ -64,49 +64,27 @@ export default function BlueLine() {
   });
 
   const getSyncStatusBadge = (status: string) => {
-    const colors: Record<string, string> = {
-      SYNCED: '#10b981',
-      PENDING: '#f59e0b',
-      FAILED: '#ef4444',
-      NOT_REQUIRED: '#6b7280',
+    const badges: Record<string, { class: string; label: string }> = {
+      SYNCED: { class: 'badge-success', label: 'Sincronizado' },
+      PENDING: { class: 'badge-warning', label: 'Pendiente' },
+      FAILED: { class: 'badge-danger', label: 'Fallido' },
+      NOT_REQUIRED: { class: 'badge-secondary', label: 'No Requerido' },
     };
 
-    return (
-      <span
-        style={{
-          padding: '4px 12px',
-          borderRadius: '12px',
-          fontSize: '12px',
-          fontWeight: '500',
-          backgroundColor: `${colors[status]}20`,
-          color: colors[status],
-        }}
-      >
-        {status}
-      </span>
-    );
+    const badge = badges[status] || { class: 'badge-secondary', label: status };
+
+    return <span className={`badge ${badge.class}`}>{badge.label}</span>;
   };
 
   const getMaterialTypeBadge = (type: string) => {
-    const colors: Record<string, string> = {
-      Z001: '#8b5cf6',
-      Z002: '#3b82f6',
+    const badges: Record<string, { class: string; label: string }> = {
+      Z001: { class: 'badge-warning', label: 'Z001 (Provisional)' },
+      Z002: { class: 'badge-info', label: 'Z002 (Homologado)' },
     };
 
-    return (
-      <span
-        style={{
-          padding: '4px 12px',
-          borderRadius: '12px',
-          fontSize: '12px',
-          fontWeight: '500',
-          backgroundColor: `${colors[type]}20`,
-          color: colors[type],
-        }}
-      >
-        {type}
-      </span>
-    );
+    const badge = badges[type] || { class: 'badge-secondary', label: type };
+
+    return <span className={`badge ${badge.class}`}>{badge.label}</span>;
   };
 
   if (loading) {
@@ -120,69 +98,100 @@ export default function BlueLine() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h1 style={{ margin: 0 }}>Blue Line Management</h1>
-        <Link to="/blue-line/field-logic" className="button">
-          Configure Field Logic
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div>
+          <h1>Línea Azul</h1>
+          <p>Homologación LLUCH 103721 - Material-Proveedor</p>
+        </div>
+        <Link 
+          to="/blue-line/field-logic" 
+          className="btn btn-primary"
+          style={{ textDecoration: 'none' }}
+        >
+          ⚙️ Configurar Lógica de Campos
         </Link>
       </div>
 
       {/* Filters */}
-      <div style={{ marginBottom: '24px', display: 'flex', gap: '16px' }}>
-        <div>
-          <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: '500' }}>
-            Material Type
-          </label>
-          <select
-            value={filter.materialType}
-            onChange={(e) => setFilter({ ...filter, materialType: e.target.value })}
-            style={{ padding: '8px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
-          >
-            <option value="">All Types</option>
-            <option value="Z001">Z001 (Provisional)</option>
-            <option value="Z002">Z002 (Homologated)</option>
-          </select>
-        </div>
+      <div className="card" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontSize: '0.875rem', 
+              fontWeight: '500'
+            }}>
+              Tipo de Material
+            </label>
+            <select
+              value={filter.materialType}
+              onChange={(e) => setFilter({ ...filter, materialType: e.target.value })}
+              style={{ 
+                width: '100%',
+                padding: '0.5rem', 
+                borderRadius: '0.375rem', 
+                border: '1px solid #d1d5db',
+                fontSize: '0.875rem'
+              }}
+            >
+              <option value="">Todos los Tipos</option>
+              <option value="Z001">Z001 (Provisional - Estimado)</option>
+              <option value="Z002">Z002 (Homologado - Analizado)</option>
+            </select>
+          </div>
 
-        <div>
-          <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: '500' }}>
-            Sync Status
-          </label>
-          <select
-            value={filter.syncStatus}
-            onChange={(e) => setFilter({ ...filter, syncStatus: e.target.value })}
-            style={{ padding: '8px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
-          >
-            <option value="">All Statuses</option>
-            <option value="SYNCED">Synced</option>
-            <option value="PENDING">Pending</option>
-            <option value="FAILED">Failed</option>
-            <option value="NOT_REQUIRED">Not Required</option>
-          </select>
+          <div style={{ flex: 1 }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontSize: '0.875rem', 
+              fontWeight: '500'
+            }}>
+              Estado de Sincronización
+            </label>
+            <select
+              value={filter.syncStatus}
+              onChange={(e) => setFilter({ ...filter, syncStatus: e.target.value })}
+              style={{ 
+                width: '100%',
+                padding: '0.5rem', 
+                borderRadius: '0.375rem', 
+                border: '1px solid #d1d5db',
+                fontSize: '0.875rem'
+              }}
+            >
+              <option value="">Todos los Estados</option>
+              <option value="SYNCED">✅ Sincronizado</option>
+              <option value="PENDING">⏳ Pendiente</option>
+              <option value="FAILED">❌ Fallido</option>
+              <option value="NOT_REQUIRED">➖ No Requerido</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Blue Lines Table */}
       <div className="card">
-        <table>
+        <table className="table">
           <thead>
             <tr>
               <th>ID</th>
               <th>Material</th>
-              <th>Supplier Code</th>
-              <th>Type</th>
-              <th>Sync Status</th>
-              <th>SAP Status</th>
-              <th>Calculated At</th>
-              <th>Last Synced</th>
-              <th>Actions</th>
+              <th>Código Proveedor</th>
+              <th>Tipo</th>
+              <th>Estado Sync</th>
+              <th>Estado SAP</th>
+              <th>Calculado</th>
+              <th>Último Sync</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {filteredBlueLines.length === 0 ? (
               <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: '#6b7280' }}>
-                  No Blue Lines found
+                <td colSpan={9} style={{ textAlign: 'center', padding: '2rem' }}>
+                  No se encontraron registros de Línea Azul
                 </td>
               </tr>
             ) : (
@@ -190,39 +199,56 @@ export default function BlueLine() {
                 const material = materials.get(blueLine.material_id);
                 return (
                   <tr key={blueLine.id}>
-                    <td>{blueLine.id}</td>
+                    <td>#{blueLine.id}</td>
                     <td>
                       {material ? (
                         <div>
-                          <div style={{ fontWeight: '500' }}>{material.reference_code}</div>
-                          <div style={{ fontSize: '12px', color: '#6b7280' }}>{material.name}</div>
+                          <div style={{ fontWeight: '500' }}>
+                            <Link to={`/materials/${material.id}`} className="link">
+                              {material.reference_code}
+                            </Link>
+                          </div>
+                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                            {material.name}
+                          </div>
                         </div>
                       ) : (
                         `Material ${blueLine.material_id}`
                       )}
                     </td>
-                    <td>{blueLine.supplier_code}</td>
+                    <td>
+                      <code style={{ fontSize: '0.875rem' }}>{blueLine.supplier_code}</code>
+                    </td>
                     <td>{getMaterialTypeBadge(blueLine.material_type)}</td>
                     <td>{getSyncStatusBadge(blueLine.sync_status)}</td>
                     <td>
                       {material?.sap_status ? (
-                        <span style={{ fontFamily: 'monospace' }}>{material.sap_status}</span>
+                        <span className="badge badge-secondary">
+                          {material.sap_status}
+                        </span>
                       ) : (
                         '-'
                       )}
                     </td>
-                    <td>{new Date(blueLine.calculated_at).toLocaleDateString()}</td>
                     <td>
-                      {blueLine.last_synced_at
-                        ? new Date(blueLine.last_synced_at).toLocaleDateString()
-                        : '-'}
+                      {new Date(blueLine.calculated_at).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
                     </td>
                     <td>
-                      <Link
-                        to={`/blue-line/${blueLine.id}`}
-                        style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }}
-                      >
-                        View Details
+                      {blueLine.last_synced_at
+                        ? new Date(blueLine.last_synced_at).toLocaleDateString('es-ES', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })
+                        : <span style={{ color: '#9ca3af' }}>Nunca</span>}
+                    </td>
+                    <td>
+                      <Link to={`/blue-line/${blueLine.id}`} className="link">
+                        Ver Detalles
                       </Link>
                     </td>
                   </tr>
@@ -234,31 +260,55 @@ export default function BlueLine() {
       </div>
 
       {/* Summary Stats */}
-      <div style={{ marginTop: '32px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-        <div className="card" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6' }}>{blueLines.length}</div>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '8px' }}>Total Blue Lines</div>
+      <div style={{ marginTop: '32px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+        <div className="card" style={{ 
+          textAlign: 'center', 
+          padding: '24px',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          border: 'none'
+        }}>
+          <div style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '8px' }}>{blueLines.length}</div>
+          <div style={{ fontSize: '14px', opacity: 0.9 }}>Total Líneas Azul</div>
         </div>
 
-        <div className="card" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+        <div className="card" style={{ 
+          textAlign: 'center', 
+          padding: '24px',
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          color: 'white',
+          border: 'none'
+        }}>
+          <div style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '8px' }}>
             {blueLines.filter((bl) => bl.sync_status === 'SYNCED').length}
           </div>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '8px' }}>Synced</div>
+          <div style={{ fontSize: '14px', opacity: 0.9 }}>Sincronizadas</div>
         </div>
 
-        <div className="card" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
+        <div className="card" style={{ 
+          textAlign: 'center', 
+          padding: '24px',
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          color: 'white',
+          border: 'none'
+        }}>
+          <div style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '8px' }}>
             {blueLines.filter((bl) => bl.sync_status === 'PENDING').length}
           </div>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '8px' }}>Pending Sync</div>
+          <div style={{ fontSize: '14px', opacity: 0.9 }}>Pendientes</div>
         </div>
 
-        <div className="card" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>
+        <div className="card" style={{ 
+          textAlign: 'center', 
+          padding: '24px',
+          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+          color: 'white',
+          border: 'none'
+        }}>
+          <div style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '8px' }}>
             {blueLines.filter((bl) => bl.sync_status === 'FAILED').length}
           </div>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '8px' }}>Failed</div>
+          <div style={{ fontSize: '14px', opacity: 0.9 }}>Fallidas</div>
         </div>
       </div>
     </div>

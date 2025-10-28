@@ -45,8 +45,8 @@ class BlueLine(Base):
     last_synced_at = Column(DateTime(timezone=True))
     sync_error_message = Column(String(500))
     
-    # Metadata about calculation (renamed to avoid SQLAlchemy reserved word)
-    bl_metadata = Column("metadata", JSON, default=dict)  # Calculation details, applied logic rules, source data
+    # Metadata about calculation (use different column name to avoid SQLAlchemy reserved word)
+    calculation_metadata = Column(JSON, default=dict)  # Calculation details, applied logic rules, source data
     
     # Timestamps
     calculated_at = Column(DateTime(timezone=True), server_default=func.now())

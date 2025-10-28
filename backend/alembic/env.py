@@ -10,7 +10,17 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.core.database import Base
 from app.core.config import settings
-from app.models import Material, Composite, CompositeComponent, ChromatographicAnalysis, ApprovalWorkflow, User
+from app.models import (
+    Material, 
+    Composite, 
+    CompositeComponent, 
+    ChromatographicAnalysis, 
+    ApprovalWorkflow, 
+    User,
+    Questionnaire,
+    QuestionnaireValidation,
+    QuestionnaireIncident
+)
 
 # this is the Alembic Config object
 config = context.config
