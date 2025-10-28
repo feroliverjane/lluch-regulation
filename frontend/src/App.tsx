@@ -12,6 +12,7 @@ import BlueLineDetail from './pages/BlueLineDetail'
 import BlueLineFieldLogic from './pages/BlueLineFieldLogic'
 import Questionnaires from './pages/Questionnaires'
 import QuestionnaireDetail from './pages/QuestionnaireDetail'
+import QuestionnaireForm from './pages/QuestionnaireForm'
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="blue-line/:id" element={<BlueLineDetail />} />
           <Route path="blue-line/field-logic" element={<BlueLineFieldLogic />} />
           <Route path="questionnaires" element={<Questionnaires />} />
+          <Route path="questionnaires/new" element={<QuestionnaireForm />} />
           <Route path="questionnaires/:id" element={<QuestionnaireDetail />} />
         </Route>
       </Routes>
