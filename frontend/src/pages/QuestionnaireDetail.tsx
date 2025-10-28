@@ -293,12 +293,12 @@ export default function QuestionnaireDetail() {
       {/* AI Analysis */}
       {questionnaire.ai_risk_score !== null && questionnaire.ai_risk_score !== undefined && (
         <div className="card" style={{ marginBottom: '24px', backgroundColor: '#f9fafb' }}>
-          <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: '#111827' }}>
             🤖 Análisis de IA
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '24px' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Puntuación de Riesgo</div>
+              <div style={{ fontSize: '14px', color: '#374151', marginBottom: '8px', fontWeight: '500' }}>Puntuación de Riesgo</div>
               <div style={{ 
                 fontSize: '48px', 
                 fontWeight: 'bold',
@@ -307,7 +307,7 @@ export default function QuestionnaireDetail() {
               }}>
                 {questionnaire.ai_risk_score}
               </div>
-              <div style={{ fontSize: '12px', color: '#6b7280' }}>de 100</div>
+              <div style={{ fontSize: '12px', color: '#374151', fontWeight: '500' }}>de 100</div>
               {questionnaire.ai_recommendation && (
                 <div style={{ marginTop: '12px' }}>
                   <span className={`badge ${
@@ -321,14 +321,15 @@ export default function QuestionnaireDetail() {
               )}
             </div>
             <div>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Resumen del Análisis</div>
+              <div style={{ fontSize: '14px', color: '#374151', marginBottom: '8px', fontWeight: '500' }}>Resumen del Análisis</div>
               <div style={{ 
                 fontSize: '14px', 
                 lineHeight: '1.6',
                 padding: '12px',
                 backgroundColor: 'white',
                 borderRadius: '6px',
-                border: '1px solid #e5e7eb'
+                border: '1px solid #e5e7eb',
+                color: '#111827'
               }}>
                 {questionnaire.ai_summary}
               </div>
