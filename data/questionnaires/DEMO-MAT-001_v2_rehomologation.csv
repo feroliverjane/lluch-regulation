@@ -1,0 +1,140 @@
+CUESTIONARIO DE REHOMOLOGACIÓN - LLUCH REGULATION
+Material,DEMO-MAT-001
+Nombre Material,Premium Lavender Essential Oil
+Código Proveedor,PROV-LAV-2024
+Fecha Envío,2025-10-25
+Versión,2
+Versión Anterior,1
+Motivo Rehomologación,Renovación anual de homologación
+
+SECCIÓN 1: INFORMACIÓN DE LA EMPRESA
+Campo,Valor,Cambio vs V1
+company_name,Provence Natural Extracts SAS,Sin cambio
+contact_person,Jean-Pierre Dubois,Sin cambio
+contact_email,jp.dubois@provence-extracts.fr,Sin cambio
+contact_phone,+33 4 90 12 34 56,Sin cambio
+legal_registration,FR 123456789,Sin cambio
+years_in_business,25,Sin cambio
+number_of_employees,145,Reducido de 150
+annual_production_capacity,500 tons,Sin cambio
+
+SECCIÓN 2: CERTIFICACIONES Y CUMPLIMIENTO
+Campo,Valor,Cambio vs V1
+quality_certificate,ISO 9001:2015,Sin cambio
+organic_certified,Yes,Sin cambio
+kosher_certified,No,Sin cambio
+halal_certified,No,Sin cambio
+fair_trade_certified,No,❌ PERDIDO (era Yes)
+gmp_certified,Yes,Sin cambio
+haccp_certified,Yes,Sin cambio
+iso_14001_certified,Yes,Sin cambio
+reach_compliant,Yes,Sin cambio
+fda_registered,Yes,Sin cambio
+
+SECCIÓN 3: SOSTENIBILIDAD
+Campo,Valor,Cambio vs V1
+sustainable_sourcing,Partial,⚠️ DEGRADADO (era Yes)
+carbon_neutral,No,⚠️ DEGRADADO (era In Progress)
+endangered_species_used,No,Sin cambio
+sustainability_score,62,🔴 CRÍTICO: Bajó de 85 a 62 (-27%)
+water_conservation_practices,Yes,Sin cambio
+renewable_energy_used,No,⚠️ DEGRADADO (era Partial)
+waste_reduction_program,Yes,Sin cambio
+local_sourcing_percentage,60,Reducido de 75%
+environmental_impact_assessment,Completed annually,Sin cambio
+sustainability_notes,Cambios temporales debido a condiciones climáticas adversas. Plan de mejora en curso.,NUEVO
+
+SECCIÓN 4: ALÉRGENOS Y SEGURIDAD
+Campo,Valor,Cambio vs V1
+allergen_declaration,May contain traces of tree nuts,⚠️ NUEVO ALÉRGENO (era None)
+gluten_free,Yes,Sin cambio
+lactose_free,Yes,Sin cambio
+nut_free_facility,No,⚠️ CAMBIÓ (era Yes)
+allergen_control_plan,Yes,Sin cambio
+allergen_testing_frequency,Every batch,Sin cambio
+allergen_explanation,Instalación compartida con procesamiento de frutos secos desde Sep 2024,NUEVO
+
+SECCIÓN 5: PARÁMETROS DE CALIDAD
+Campo,Valor,Cambio vs V1
+purity_percentage,97.2,🔴 CRÍTICO: Bajó de 99.8% a 97.2% (-2.6%)
+moisture_content,0.85,🔴 CRÍTICO: Aumentó de 0.15% a 0.85% (+467%)
+ash_content,0.12,⚠️ Aumentó de 0.05% a 0.12% (+140%)
+acid_value,1.8,⚠️ Aumentó de 1.2 a 1.8
+peroxide_value,3.2,⚠️ Aumentó de 2.5 a 3.2
+refractive_index,1.4575,Ligera variación
+specific_gravity,0.887,Ligera variación
+optical_rotation,-10.2,Ligera variación
+heavy_metals_compliant,Yes,Sin cambio
+heavy_metals_test_method,ICP-MS,Sin cambio
+microbiological_compliant,Yes,Sin cambio
+total_plate_count,<10 CFU/g,Sin cambio
+yeast_mold_count,<10 CFU/g,Sin cambio
+ecoli_test,Negative,Sin cambio
+salmonella_test,Negative,Sin cambio
+quality_notes,Variaciones en cultivo 2024 debido a sequía. Implementando controles adicionales.,NUEVO
+
+SECCIÓN 6: COMPOSICIÓN Y ANÁLISIS
+Campo,Valor,Cambio vs V1
+main_components,Linalool (38%), Linalyl acetate (33%), Terpinen-4-ol (6%),Ligeras variaciones en porcentajes
+impurities_identified,Camphor (0.3%),NUEVO: Pequeña cantidad de alcanfor detectada
+batch_consistency,>90% across batches,⚠️ Reducido de >95%
+analysis_method,GC-MS,Sin cambio
+analysis_frequency,Every production batch,Sin cambio
+coa_retention_period,10 years,Sin cambio
+
+SECCIÓN 7: CADENA DE SUMINISTRO
+Campo,Valor,Cambio vs V1
+country_of_origin,France,Sin cambio
+region_of_origin,Provence-Alpes-Côte d'Azur,Sin cambio
+manufacturing_site,Lavender Fields Production Facility, Provence,Sin cambio
+extraction_method,Steam distillation,Sin cambio
+raw_material_traceability,Full farm-to-bottle tracking,Sin cambio
+batch_tracking_available,Yes,Sin cambio
+batch_coding_system,Year-Month-Lot-Sublot,Sin cambio
+shelf_life_months,18,⚠️ REDUCIDO: De 24 a 18 meses (-25%)
+storage_conditions,Cool, dry place. Away from light.,Sin cambio
+recommended_storage_temp,15-25°C,Sin cambio
+
+SECCIÓN 8: DOCUMENTACIÓN
+Campo,Valor,Cambio vs V1
+technical_data_sheet_available,Yes,Sin cambio
+safety_data_sheet_available,Yes,Sin cambio
+coa_provided,Yes,Sin cambio
+allergen_statement_provided,Yes,Sin cambio
+specification_sheet_available,Yes,Sin cambio
+stability_study_available,Yes,Sin cambio
+method_validation_available,Yes,Sin cambio
+
+SECCIÓN 9: INFORMACIÓN ADICIONAL
+Campo,Valor,Cambio vs V1
+gmo_free,Yes,Sin cambio
+irradiation_used,No,Sin cambio
+animal_testing,No,Sin cambio
+pesticide_residues_tested,Yes,Sin cambio
+pesticide_residues_compliant,Below EU limits,Sin cambio
+packaging_material,Food-grade aluminum bottles,Sin cambio
+packaging_sustainability,100% recyclable,Sin cambio
+special_handling_requirements,Keep sealed. Avoid direct sunlight.,Sin cambio
+additional_comments,Recent crop variations due to climate conditions. Working on quality improvements. Implementing corrective actions for next harvest.,ACTUALIZADO
+
+SECCIÓN 10: EXPLICACIÓN DE CAMBIOS (REHOMOLOGACIÓN)
+Cambio,Explicación,Acción Correctiva
+Reducción de Pureza,Condiciones climáticas adversas en temporada 2024 (sequía prolongada) afectaron calidad de la cosecha,Mejora de sistemas de riego y selección más estricta de materia prima para próxima temporada
+Aumento de Humedad,Nueva cosecha con mayor contenido de humedad debido a lluvias tardías,Ajuste en proceso de secado y destilación. Inversión en equipos de control de humedad
+Reducción Sostenibilidad,Pérdida temporal de certificación Fair Trade por cambio de auditor. Uso reducido de energía renovable,Proceso de recertificación Fair Trade en curso (completar en 3 meses). Plan de inversión en paneles solares aprobado
+Nuevo Alérgeno,Compartición de instalación con procesamiento de frutos secos desde Sep 2024,Líneas de producción segregadas. Limpieza profunda entre lotes. Testing de trazas implementado
+Reducción Shelf Life,Estudios de estabilidad actualizados muestran degradación más rápida en nuevas condiciones,Reformulación de packaging con mejor barrera de oxígeno en desarrollo
+
+SECCIÓN 11: FIRMAS Y APROBACIONES
+Campo,Valor
+prepared_by,Jean-Pierre Dubois
+title_prepared_by,Quality Manager
+date_prepared,2025-10-25
+reviewed_by,Marie Laurent
+title_reviewed_by,Technical Director
+date_reviewed,2025-10-25
+approved_by_supplier,Claude Moreau
+title_approved_by_supplier,CEO
+date_approved_by_supplier,2025-10-25
+company_stamp,PROVENCE NATURAL EXTRACTS SAS
+
