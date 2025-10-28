@@ -1,0 +1,130 @@
+CUESTIONARIO DE HOMOLOGACIÓN - LLUCH REGULATION
+Material,[CÓDIGO MATERIAL]
+Nombre Material,[NOMBRE DEL MATERIAL]
+Código Proveedor,[CÓDIGO PROVEEDOR]
+Fecha Envío,[YYYY-MM-DD]
+Versión,1
+
+INSTRUCCIONES:
+- Complete todos los campos marcados con *
+- Use 'Yes' o 'No' para campos de tipo Sí/No
+- Los valores numéricos deben usar punto decimal (ej: 99.5)
+- Adjunte certificados mencionados cuando corresponda
+
+SECCIÓN 1: INFORMACIÓN DE LA EMPRESA
+Campo,Valor
+company_name,
+contact_person,
+contact_email,
+contact_phone,
+legal_registration,
+years_in_business,
+number_of_employees,
+annual_production_capacity,
+
+SECCIÓN 2: CERTIFICACIONES Y CUMPLIMIENTO
+Campo,Valor
+quality_certificate,
+organic_certified,
+kosher_certified,
+halal_certified,
+fair_trade_certified,
+gmp_certified,
+haccp_certified,
+iso_14001_certified,
+reach_compliant,
+fda_registered,
+
+SECCIÓN 3: SOSTENIBILIDAD
+Campo,Valor
+sustainable_sourcing,
+carbon_neutral,
+endangered_species_used,
+sustainability_score,
+water_conservation_practices,
+renewable_energy_used,
+waste_reduction_program,
+local_sourcing_percentage,
+environmental_impact_assessment,
+
+SECCIÓN 4: ALÉRGENOS Y SEGURIDAD
+Campo,Valor
+allergen_declaration,
+gluten_free,
+lactose_free,
+nut_free_facility,
+allergen_control_plan,
+allergen_testing_frequency,
+
+SECCIÓN 5: PARÁMETROS DE CALIDAD
+Campo,Valor
+purity_percentage,
+moisture_content,
+ash_content,
+acid_value,
+peroxide_value,
+refractive_index,
+specific_gravity,
+optical_rotation,
+heavy_metals_compliant,
+heavy_metals_test_method,
+microbiological_compliant,
+total_plate_count,
+yeast_mold_count,
+ecoli_test,
+salmonella_test,
+
+SECCIÓN 6: COMPOSICIÓN Y ANÁLISIS
+Campo,Valor
+main_components,
+impurities_identified,
+batch_consistency,
+analysis_method,
+analysis_frequency,
+coa_retention_period,
+
+SECCIÓN 7: CADENA DE SUMINISTRO
+Campo,Valor
+country_of_origin,
+region_of_origin,
+manufacturing_site,
+extraction_method,
+raw_material_traceability,
+batch_tracking_available,
+batch_coding_system,
+shelf_life_months,
+storage_conditions,
+recommended_storage_temp,
+
+SECCIÓN 8: DOCUMENTACIÓN
+Campo,Valor
+technical_data_sheet_available,
+safety_data_sheet_available,
+coa_provided,
+allergen_statement_provided,
+specification_sheet_available,
+stability_study_available,
+method_validation_available,
+
+SECCIÓN 9: INFORMACIÓN ADICIONAL
+Campo,Valor
+gmo_free,
+irradiation_used,
+animal_testing,
+pesticide_residues_tested,
+pesticide_residues_compliant,
+packaging_material,
+packaging_sustainability,
+special_handling_requirements,
+additional_comments,
+
+SECCIÓN 10: FIRMAS Y APROBACIONES
+Campo,Valor
+prepared_by,
+title_prepared_by,
+date_prepared,
+reviewed_by,
+title_reviewed_by,
+date_reviewed,
+company_stamp,
+
