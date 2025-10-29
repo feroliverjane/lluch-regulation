@@ -19,7 +19,8 @@ from app.models import (
     User,
     Questionnaire,
     QuestionnaireValidation,
-    QuestionnaireIncident
+    QuestionnaireIncident,
+    QuestionnaireTemplate
 )
 
 # this is the Alembic Config object

@@ -8,6 +8,7 @@ from .blue_line_field_logic import BlueLineFieldLogic
 from .questionnaire import Questionnaire, QuestionnaireType, QuestionnaireStatus
 from .questionnaire_validation import QuestionnaireValidation, ValidationType, ValidationSeverity
 from .questionnaire_incident import QuestionnaireIncident, IncidentStatus, ResolutionAction
+from .questionnaire_template import QuestionnaireTemplate, TemplateType
 
 __all__ = [
     "Material",
@@ -29,6 +30,8 @@ __all__ = [
     "QuestionnaireIncident",
     "IncidentStatus",
     "ResolutionAction",
+    "QuestionnaireTemplate",
+    "TemplateType",
 ]
 
 

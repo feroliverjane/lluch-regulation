@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
-from app.api import materials, chromatographic_analyses, composites, workflows, blue_line, questionnaires
+from app.api import materials, chromatographic_analyses, composites, workflows, blue_line, questionnaires, questionnaire_templates
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -33,6 +33,7 @@ app.include_router(composites.router, prefix=settings.API_V1_PREFIX)
 app.include_router(workflows.router, prefix=settings.API_V1_PREFIX)
 app.include_router(blue_line.router, prefix=settings.API_V1_PREFIX)
 app.include_router(questionnaires.router, prefix=settings.API_V1_PREFIX)
+app.include_router(questionnaire_templates.router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/")

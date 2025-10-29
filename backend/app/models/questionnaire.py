@@ -29,6 +29,9 @@ class Questionnaire(Base):
     material_id = Column(Integer, ForeignKey("materials.id"), nullable=False, index=True)
     supplier_code = Column(String(100), nullable=False, index=True)
     
+    # Template reference (optional - for structured questionnaires)
+    template_id = Column(Integer, ForeignKey("questionnaire_templates.id"), nullable=True, index=True)
+    
     # Type and versioning
     questionnaire_type = Column(Enum(QuestionnaireType), nullable=False)
     version = Column(Integer, nullable=False, default=1)
@@ -54,6 +57,7 @@ class Questionnaire(Base):
     
     # Relationships
     material = relationship("Material", backref="questionnaires")
+    template = relationship("QuestionnaireTemplate", backref="questionnaires")
     previous_version = relationship("Questionnaire", remote_side=[id], foreign_keys=[previous_version_id])
     validations = relationship("QuestionnaireValidation", back_populates="questionnaire", cascade="all, delete-orphan")
     incidents = relationship("QuestionnaireIncident", back_populates="questionnaire", cascade="all, delete-orphan")
