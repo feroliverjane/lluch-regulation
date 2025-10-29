@@ -56,6 +56,7 @@ class QuestionnaireBase(BaseModel):
 class QuestionnaireCreate(QuestionnaireBase):
     version: Optional[int] = 1
     previous_version_id: Optional[int] = None
+    template_id: Optional[int] = None
 
 
 class QuestionnaireUpdate(BaseModel):
@@ -67,6 +68,7 @@ class QuestionnaireResponse(QuestionnaireBase):
     id: int
     version: int
     previous_version_id: Optional[int] = None
+    template_id: Optional[int] = None
     status: QuestionnaireStatusSchema
     ai_risk_score: Optional[int] = None
     ai_summary: Optional[str] = None
