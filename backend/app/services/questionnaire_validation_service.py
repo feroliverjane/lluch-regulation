@@ -16,6 +16,7 @@ from app.models.questionnaire_validation import QuestionnaireValidation, Validat
 from app.models.questionnaire_incident import QuestionnaireIncident, IncidentStatus, ResolutionAction
 from app.models.blue_line import BlueLine
 from app.models.material import Material
+from app.services.questionnaire_field_mapper import QuestionnaireFieldMapper
 
 
 class QuestionnaireValidationService:
@@ -88,23 +89,57 @@ class QuestionnaireValidationService:
         blue_line_data = blue_line.blue_line_data or {}
         responses = questionnaire.responses or {}
         
-        # Define critical fields to compare (MVP subset)
-        critical_fields = [
-            "quality_certificate",
-            "sustainability_score",
-            "allergen_declaration",
-            "organic_certified",
-            "kosher_certified",
-            "halal_certified"
-        ]
+        # Get all critical fieldCodes to validate
+        critical_field_codes = QuestionnaireFieldMapper.get_all_critical_fields()
         
-        for field_name in critical_fields:
+        for field_code in critical_field_codes:
+            # Check if this field exists in questionnaire responses
+            if field_code not in responses:
+                continue
+            
+            # Get Blue Line field name
+            bl_field = QuestionnaireFieldMapper.get_blue_line_field(field_code)
+            field_name = QuestionnaireFieldMapper.get_field_name(field_code)
+            
+            # Get values
+            questionnaire_field_data = responses[field_code]
+            actual_value = QuestionnaireFieldMapper.extract_simple_value(questionnaire_field_data)
+            actual_normalized = QuestionnaireFieldMapper.normalize_value(field_code, actual_value)
+            
+            # Check if Blue Line has expected value for this field
+            if bl_field in blue_line_data:
+                expected = str(blue_line_data[bl_field])
+                
+                if expected != actual_normalized:
+                    # Calculate deviation for numeric fields
+                    deviation_pct = self._calculate_deviation(expected, actual_normalized)
+                    severity = self._determine_severity(deviation_pct)
+                    
+                    # Override severity for critical fields
+                    if QuestionnaireFieldMapper.is_critical_field(field_code) and severity == ValidationSeverity.WARNING:
+                        severity = ValidationSeverity.CRITICAL
+                    
+                    validation = QuestionnaireValidation(
+                        questionnaire_id=questionnaire.id,
+                        validation_type=ValidationType.BLUE_LINE_COMPARISON,
+                        field_name=f"{field_code}:{field_name}",
+                        expected_value=expected,
+                        actual_value=actual_normalized,
+                        deviation_percentage=deviation_pct,
+                        severity=severity,
+                        requires_action=(severity == ValidationSeverity.CRITICAL),
+                        message=f"{field_name}: expected '{expected}', got '{actual_normalized}'"
+                    )
+                    validations.append(validation)
+        
+        # Also check legacy simple fields for backward compatibility
+        legacy_fields = ["sustainability_score", "allergen_declaration"]
+        for field_name in legacy_fields:
             if field_name in blue_line_data and field_name in responses:
                 expected = str(blue_line_data[field_name])
                 actual = str(responses[field_name])
                 
                 if expected != actual:
-                    # Calculate deviation for numeric fields
                     deviation_pct = self._calculate_deviation(expected, actual)
                     severity = self._determine_severity(deviation_pct)
                     
