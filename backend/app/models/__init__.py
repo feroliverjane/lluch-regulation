@@ -9,6 +9,7 @@ from .questionnaire import Questionnaire, QuestionnaireType, QuestionnaireStatus
 from .questionnaire_validation import QuestionnaireValidation, ValidationType, ValidationSeverity
 from .questionnaire_incident import QuestionnaireIncident, IncidentStatus, ResolutionAction
 from .questionnaire_template import QuestionnaireTemplate, TemplateType
+from .material_supplier import MaterialSupplier, MaterialSupplierStatus
 
 __all__ = [
     "Material",
@@ -32,6 +33,8 @@ __all__ = [
     "ResolutionAction",
     "QuestionnaireTemplate",
     "TemplateType",
+    "MaterialSupplier",
+    "MaterialSupplierStatus",
 ]
 
 

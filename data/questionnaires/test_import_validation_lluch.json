@@ -1,0 +1,1067 @@
+{
+  "requestId": 9999,
+  "data": [
+    {
+      "fieldCode": "q3t1s2f15",
+      "fieldName": "Supplier Name",
+      "fieldType": "inputText",
+      "value": "PROVEEDOR PRUEBA TEST"
+    },
+    {
+      "fieldCode": "q3t1s2f16",
+      "fieldName": "Product Name",
+      "fieldType": "inputText",
+      "value": "[BASIL0003] PRODUCTO PRUEBA TEST"
+    },
+    {
+      "fieldCode": "q3t1s2f17",
+      "fieldName": "Supplier´s product code",
+      "fieldType": "inputText",
+      "value": "BASIL0003"
+    },
+    {
+      "fieldCode": "q3t1s2f19",
+      "fieldName": "Type of supplier",
+      "fieldType": "lov",
+      "value": "M"
+    },
+    {
+      "fieldCode": "q3t1s2f21",
+      "fieldName": "Name of the facility where the product is manufactured",
+      "fieldType": "inputText",
+      "value": "SAS MPE"
+    },
+    {
+      "fieldCode": "q3t1s2f22",
+      "fieldName": "Which type of material is your product?",
+      "fieldType": "lov",
+      "value": "B"
+    },
+    {
+      "fieldCode": "q3t1s2f23",
+      "fieldName": "CAS",
+      "fieldType": "inputText",
+      "value": "TEST-123-4"
+    },
+    {
+      "fieldCode": "q3t1s2f24",
+      "fieldName": "EINECS",
+      "fieldType": "inputText",
+      "value": "283-900-8"
+    },
+    {
+      "fieldCode": "q3t1s2f25",
+      "fieldName": "FDA CFR 21",
+      "fieldType": "inputText",
+      "value": "182.20"
+    },
+    {
+      "fieldCode": "q3t1s3f27",
+      "fieldName": "KOSHER CERTIFICATE",
+      "fieldType": "checkComents",
+      "value": "true"
+    },
+    {
+      "fieldCode": "q3t1s3f28",
+      "fieldName": "HALAL CERTIFICATE",
+      "fieldType": "checkComents",
+      "value": "true"
+    },
+    {
+      "fieldCode": "q3t1s3f29",
+      "fieldName": "FOOD/FLAVOUR GRADE",
+      "fieldType": "checkComents",
+      "value": "true"
+    },
+    {
+      "fieldCode": "q3t1s3f30",
+      "fieldName": "FEED GRADE",
+      "fieldType": "checkComents",
+      "value": "false"
+    },
+    {
+      "fieldCode": "q3t1s4f33",
+      "fieldName": "Country of the botanical origin",
+      "fieldType": "selectManyMenu",
+      "value": "IN"
+    },
+    {
+      "fieldCode": "q3t1s4f34",
+      "fieldName": "Country of the manufacturing site",
+      "fieldType": "selectManyMenu",
+      "value": "FR"
+    },
+    {
+      "fieldCode": "q3t1s4f35",
+      "fieldName": "Country of the processing site",
+      "fieldType": "selectManyMenu",
+      "value": "FR"
+    },
+    {
+      "fieldCode": "q3t1s4f36",
+      "fieldName": "Source",
+      "fieldType": "lov",
+      "value": "V"
+    },
+    {
+      "fieldCode": "q3t1s4f38",
+      "fieldName": "Botanical name (plant or animal origin)",
+      "fieldType": "inputText",
+      "value": "Ocimum basilicum L."
+    },
+    {
+      "fieldCode": "q3t1s4f39",
+      "fieldName": "Part of the pant (roots, leaves, etc)",
+      "fieldType": "inputText",
+      "value": "the whole plant"
+    },
+    {
+      "fieldCode": "q3t1s4f40",
+      "fieldName": "Cultivation mode (culture)",
+      "fieldType": "selectManyCheckbox",
+      "value": "Tradidion"
+    },
+    {
+      "fieldCode": "q3t1s4f41",
+      "fieldName": "Crop season",
+      "fieldType": "inputText",
+      "value": "from July to November"
+    },
+    {
+      "fieldCode": "q3t1s4f42",
+      "fieldName": "Processing factor according to EC 396/2005 Art. 20 in combination with Annex I: How many Kg of basic material was used to produce 1 kg of the raw material?",
+      "fieldType": "inputText",
+      "value": "800 kg of basil makes 1 litre of essential oil"
+    },
+    {
+      "fieldCode": "q3t1s4f44",
+      "fieldName": "Is the product 100% Natural?",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f45",
+      "fieldName": "Can you guarantee the naturaless by providing a C14 analysis? If so, please, provide the last report performed",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t1s4f46",
+      "fieldName": "Is the product 100% Pure (if not, please indicate all the Botanical Names)?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t1s4f47",
+      "fieldName": "Natural According European Directive 1334/2008/EC",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f48",
+      "fieldName": "Natural According American Directive (Code of Federal Regulations, Title 21, section 101.22a (3), Food & Drugs)",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f49",
+      "fieldName": "Natural According to UNE-EN ISO 9235:2014",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f50",
+      "fieldName": "Does the product follow NaTrue?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t1s4f51",
+      "fieldName": "Classification according to UNE-EN ISO 9235:2021",
+      "fieldType": "lov",
+      "value": "11"
+    },
+    {
+      "fieldCode": "q3t3s6f172",
+      "fieldName": "Is the product registered under REACH EU?",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t3s6f173",
+      "fieldName": "REACH EU Exemption",
+      "fieldType": "inputText",
+      "value": "<1 tonne/year"
+    },
+    {
+      "fieldCode": "q3t3s6f175",
+      "fieldName": "REACH EU volume tonnage band",
+      "fieldType": "lov",
+      "value": "A"
+    },
+    {
+      "fieldCode": "q3t3s14f176",
+      "fieldName": "Does the EE apply to the product? If no, please, advise in the Comments section the reason.",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t3s14f177",
+      "fieldName": "Are you sharing with Lluch Essence the following information: MSDS, Exposure Scenarios and Chemical Safety Report (CSR)?",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t3s15f179",
+      "fieldName": "Is the product pre-registered under KKDIK? If yes provided the number",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t3s15f180",
+      "fieldName": "Is the product pre-registered under Korea-REACH? If yes provided the number",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t3s15f181",
+      "fieldName": "Is the product notificated under UK-REACH? If yes provided the number",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t3s20f188",
+      "fieldName": "Is the product in compliance with the Cosmetics Regulation (EU) N° 1223/2009 in its latest version in force?",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t3s22f194",
+      "fieldName": "Is the raw material fully compliant with US cosmetic regulation?",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t3s22f198",
+      "fieldName": "Is the product a color additive or contain color additives subjected to certification according to 21 CFR (Parts 70-80)? If so, please specify the Lot Batch Certify number. Have you verified its validity with FDA? Please send proof for it.",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t3s22f199",
+      "fieldName": "Is the product a color additive or contain color additives exempt from certification according to 21 CFR (Parts 70-80)?",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t3s24f215",
+      "fieldName": "Is this material or any of its components in compliance with the China Safety and Technical Standards for Cosmetics\" issued in 2015 and its subsequent amendments?",
+      "fieldType": "yesNoComments",
+      "value": "NA|YES"
+    },
+    {
+      "fieldCode": "q3t3s24f218",
+      "fieldName": "Is this material or any of its components in compliance with the  \"Cosmetic Act \"  by MFDS No. 2015-43, July 10, 2015 in its latest version?",
+      "fieldType": "yesNoComments",
+      "value": "NA|YES"
+    },
+    {
+      "fieldCode": "q3t3s24f219",
+      "fieldName": "Are substances contained which are listed in the Negative Ingredient Cosmetic List (Appendix 1), the Restricted Cosmetic Ingredient List (Appendix 2) under the Korea Cosmetic Safety Standard, KFDA No. 2013-2 or in the Cosmetic Color Additive list?",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t3s24f221",
+      "fieldName": "Is this material or any of its components in compliance with the Japan Standards for Cosmetics (Ministry of Health and Welfare Notification No.331 of 2000)?",
+      "fieldType": "yesNoComments",
+      "value": "NA|YES"
+    },
+    {
+      "fieldCode": "q3t3s24f222",
+      "fieldName": "Are substances contained which are identified in the Japan Standards for Cosmetics List?",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t3s24f224",
+      "fieldName": "Is this material or any of its components in compliance with the Drug and Cosmetic Act 1940 & Rules 1945 (amended up to Dec. 31st 2016) by Central Drug Standard Control Organization (CDSCO)?",
+      "fieldType": "yesNoComments",
+      "value": "NA|YES"
+    },
+    {
+      "fieldCode": "q3t3s24f225",
+      "fieldName": "Does the product contain any ingredients listed in the BIS standards IS 4707 Part 1 (colourants), IS 4707 Part 2 Annex  A (prohibited substances), Annex B (restricted substances), Annex C (preservatives) and/or Annex D (UV-filters)?",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t4s25f226",
+      "fieldName": "IFS (International Food Standard)",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s25f227",
+      "fieldName": "BRC (British Retail Consortium) ",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s25f228",
+      "fieldName": "HACCP CERTIFICATE (Hazard analysis and critical control points)",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s25f229",
+      "fieldName": "ISO 22000",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t4s25f230",
+      "fieldName": "FSSC 22000",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t4s25f231",
+      "fieldName": "HACCP internal (Hazard analysis and critical control points)",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s25f232",
+      "fieldName": "Authorization issued by the Administration ",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s25f233",
+      "fieldName": "OTHERS, please specify if yes",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s26f234",
+      "fieldName": "IFS (International Food Standard)",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s26f235",
+      "fieldName": "BRC (British Retail Consortium) ",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s26f236",
+      "fieldName": "HACCP CERTIFICATE(Hazard analysis and critical control points)",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s26f237",
+      "fieldName": "ISO 22000",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t4s26f238",
+      "fieldName": "FSSC 22000",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t4s26f239",
+      "fieldName": "HACCP internal (Hazard analysis and critical control points)",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s26f240",
+      "fieldName": "Authorization issued by the Administration ",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s26f241",
+      "fieldName": "OTHERS, please specify if yes",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s27f242",
+      "fieldName": "Is the raw material fully compliant with EU regulations?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s27f243",
+      "fieldName": "Type of product (according to Regulation (EC) 1334/2008):",
+      "fieldType": "lov",
+      "value": "P"
+    },
+    {
+      "fieldCode": "q3t4s27f244",
+      "fieldName": "Is the raw material fully compliant with CODEX Alimentarius?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s27f245",
+      "fieldName": "Is the raw material fully compliant with JECFA?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s27f246",
+      "fieldName": "Has the product being evaluated and considered as safe according to Article 4 (EC) 1334/2008?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s27f247",
+      "fieldName": "Is there any significant impurity in the product? If so, please, advise its content in \"Comments\".",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t4s28f249",
+      "fieldName": "Is the material in compliance with a HARPC program for food at your facility (per 21 CFR 117)?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s28f250",
+      "fieldName": "Is this material and its components  approved for use in food by FDA regulations (21 CFR)?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s28f251",
+      "fieldName": "Is the material and its components listed as being Generally Recognized as Safe (GRAS) by the FEMA Expert Panel?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s28f253",
+      "fieldName": "Is the raw material produced according to US FDA Good Manufacturing Practices, 21 CFR 110, 21 CFR 117 and/or Food Grade in accordance with the Food Chemicals Codes (FCC)?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s28f254",
+      "fieldName": "Is the product a Food color additive or contain color additives subjected to certification according to 21 CFR (Parts 70-80)? If so, please specify the Lot Batch Certify number. ",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t4s28f255",
+      "fieldName": "Is the product a Food color additive or contain color additives exempt from certification according to 21 CFR (Parts 70-80)? https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfcfr/CFRSearch.cfm?CFRPart=73",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t4s29f256",
+      "fieldName": "Is the raw material fully compliant with Colombian regulations (INVIMA)?",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s30f257",
+      "fieldName": "Is the raw material fully compliant with Mexican regulations (COFEPRIS, www.gob.mx/cofepris)?",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s30f258",
+      "fieldName": "Is the raw material listed on Annex XI (Saborizantes, https://www.gob.mx/cofepris/documentos/anexo-xi)?",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s31f259",
+      "fieldName": "Is the packaging used fully compliant with: (UE) 10/2011 and modifications on plastic materials and articles intended to come into contact with food",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s31f260",
+      "fieldName": "Is the packaging used fully compliant with: (EC) 1935/2004 and modifications on materials and articles  intended to come into contact with food",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s31f261",
+      "fieldName": "Is the packaging used fully compliant with: (EC) 2023/2006 and modification about production good practices and food contact objects",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s31f262",
+      "fieldName": "Is all direct-contact packaging material compliant with the following US FDA 21 CFR 174 and/or 21 CFR 175?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t4s32f265",
+      "fieldName": "Have you implemented a food allergen control plan?",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t4s32f266",
+      "fieldName": "Please describe your measures to avoid cross-contamination during production and transport.  (If, necessary, please, add your own documentation thorugh the button)",
+      "fieldType": "inputTextarea",
+      "value": "Separated packaging"
+    },
+    {
+      "fieldCode": "q3t4s32f267",
+      "fieldName": "Do you recommend a labelling \"may contain traces of...\"?",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t6s36f292",
+      "fieldName": "Does the product contain any ingredient from animal origin?",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t6s36f293",
+      "fieldName": "Could you confirm there is no substance from animal origin in the premises where the product is manufactured?",
+      "fieldType": "yesNoComments",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t6s36f294",
+      "fieldName": "Could you confirm neither the product nor its starting materials are obtained by fermentation or with the aid of enzymes, bacteria or yeasts?",
+      "fieldType": "yesNoComments",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t6s36f295",
+      "fieldName": "Does the final product contain ethanol? If so, please, specify its content.",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t6s36f296",
+      "fieldName": "Could you confirm none of its raw materials is obtained from ethanol?",
+      "fieldType": "yesNoComments",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t6s36f297",
+      "fieldName": "Is ethanol used as a cleaning agent? In the cleaning process of equipment and tools ethanol can be used, among other cleaning agents, and just a small technical residual quantity (maximum 0.005%) might remain. ",
+      "fieldType": "yesNoComments",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t6s36f298",
+      "fieldName": "Is the product in compliance with HALAL guidelines?",
+      "fieldType": "yesNoComments",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t8s38f306",
+      "fieldName": "Following Lluch Essence Renewable ingredients definition, is the product partly or fully derived from biological material (animal, plant, others) including chemicals derived from biological material e.g. pine, palm, rapeseed oil, clove etc.?",
+      "fieldType": "lov",
+      "value": "F"
+    },
+    {
+      "fieldCode": "q3t8s38f307",
+      "fieldName": "If so, please advise the botanical origin.",
+      "fieldType": "inputText",
+      "value": "Ocimum Basilicum L."
+    },
+    {
+      "fieldCode": "q3t8s38f308",
+      "fieldName": "If so, please advise the percentage of renewability.",
+      "fieldType": "inputText",
+      "value": "100"
+    },
+    {
+      "fieldCode": "q3t8s38f309",
+      "fieldName": "Does the biological material originate from cultivation, wild collection or biotechnology? ",
+      "fieldType": "lov",
+      "value": "C"
+    },
+    {
+      "fieldCode": "q3t8s38f310",
+      "fieldName": "Is the product 100% derived from non-renewable sources i.e. petrochemicals or inorganics?",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t8s38f311",
+      "fieldName": "Is the product fully compliant with 2023/1115/EC?",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t8s38f313",
+      "fieldName": "Is your product derived using reaction chemistry?",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t8s38f315",
+      "fieldName": "Do you use a catalyst?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t8s38f317",
+      "fieldName": "Is the product included on the Nagoya Protocol? Detail information with respect Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization (ABS) to the Convention on Biological Diversity. https://www.cbd.int/abs/about/default.shtml",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t8s38f318",
+      "fieldName": "Is the product regulated by CITES? Detail information with respect to Regulation (EC) 338/97 (CITES) as amended concerning the protection of species of wild fauna and flora. http://checklist.cites.org/#/en",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t8s39f320",
+      "fieldName": "What quantity of energy is consumed to generate 1 kg of product (Mw/Ton)?",
+      "fieldType": "inputText",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f321",
+      "fieldName": "Is there any renewable energy production implemented in your facilities? (solar panels, hydropower, windmills…)",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t8s39f322",
+      "fieldName": "If so, please specify the type and amount (%) of renewable energy produced (solar panels, hydropower, windmills…)",
+      "fieldType": "inputText",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f323",
+      "fieldName": "What amount of renewable energy (%) is consumed to generate 1kg of product (Mw/Ton)?",
+      "fieldType": "inputText",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f325",
+      "fieldName": "What amount of water is consumed to generate 1 Kg of product (m3/Ton)?",
+      "fieldType": "inputNumber",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f327",
+      "fieldName": "Do you perform the product carbon footprint calculations?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t8s39f328",
+      "fieldName": "Do you perform the product carbon footprint offseting?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t8s39f329",
+      "fieldName": "Provide the Kg of CO2eq emitted to produce 1 Kg of product",
+      "fieldType": "inputNumber",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f331",
+      "fieldName": "Is there a transportation of raw material from collection/harvest to process?",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t8s39f332",
+      "fieldName": "If there is a transportation, how many km are between collection / harvest to the processing site? (Km)",
+      "fieldType": "inputText",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f333",
+      "fieldName": "Do you perform the calculation and offsetting of the transport carbon footprint?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t8s39f335",
+      "fieldName": "How many Kg of Biomass or extract is produced per hectare of land? (Kg/ha)",
+      "fieldType": "inputNumber",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f336",
+      "fieldName": "Are inputs used to produce the product (such as nitrogen, pesticides…)?",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t8s39f338",
+      "fieldName": "What is the E-factor of this material?",
+      "fieldType": "inputText",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f340",
+      "fieldName": "What is the product reciclability?",
+      "fieldType": "inputText",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t8s39f341",
+      "fieldName": "If applicable, provide the composition in recycled raw materials",
+      "fieldType": "inputText",
+      "value": "N/A"
+    },
+    {
+      "fieldCode": "q3t1s2f342",
+      "fieldName": "FEMA",
+      "fieldType": "inputText",
+      "value": "2119"
+    },
+    {
+      "fieldCode": "q3t1s2f343",
+      "fieldName": "JECFA",
+      "fieldType": "inputText",
+      "value": "-"
+    },
+    {
+      "fieldCode": "q3t1s2f344",
+      "fieldName": "CoE",
+      "fieldType": "inputText",
+      "value": "308n"
+    },
+    {
+      "fieldCode": "q3t1s2f345",
+      "fieldName": "Flavis",
+      "fieldType": "inputText",
+      "value": "-"
+    },
+    {
+      "fieldCode": "q3t1s40f346",
+      "fieldName": "Does the product present a tamper-resistant package?",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s40f347",
+      "fieldName": "Recommended shelf life (days)\t",
+      "fieldType": "inputText",
+      "value": "According to the expiration date on the CoA"
+    },
+    {
+      "fieldCode": "q3t1s40f348",
+      "fieldName": "Recommended storage temperature (ºC)\t",
+      "fieldType": "inputText",
+      "value": "20°C"
+    },
+    {
+      "fieldCode": "q3t1s40f349",
+      "fieldName": "Recommended transport temperature (ºC)",
+      "fieldType": "inputText",
+      "value": "20°C"
+    },
+    {
+      "fieldCode": "q3t1s40f351",
+      "fieldName": "Special storage conditions\t",
+      "fieldType": "inputText",
+      "value": "Store product in full, tightly closed container"
+    },
+    {
+      "fieldCode": "q3t1s4f359",
+      "fieldName": "Does your company own a RSPO certificate for this product?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t1s4f360",
+      "fieldName": "Does the manufacturer own a RSPO certificate for this product?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t1s4f361",
+      "fieldName": "What is the Supply Chain model of certification of your product ?",
+      "fieldType": "lov",
+      "value": "-"
+    },
+    {
+      "fieldCode": "q3t3s14f365",
+      "fieldName": "Are all Lluch Essence (and IFRA) uses covered by your registration: PC 3, 28, 35 and 39? ",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t1s41f366",
+      "fieldName": "The supplier hereby guarantee that, as of the date of shipment or delivery, the articles comprising each shipment of delivery hereafter are on such date not adulterated or misbranded within the meaning of Federal Food, Drug & Cosmetics Act as amended; the Food Additives Amendment  (together, the “FD&C Act”)or (2) not an article which may not under the provisions of Sections 404 or 505 said Act, as amended, be introduced into interstate commerce and not adulterated  or  misbranded  within  the  meaning of the  food laws  or ordinance (then in effect) of the state or city to which such  articles are shipped, the provisions of which are identical or substantially the same as those found in the Federal Food and Drug & Cosmetic Act. That the food products, ingredients and components are of merchantable quality, fit for the ordinary purposes for which such food products are normally used and wholesome and fit for human consumption. Non-Irradiated/No-Sludge Guarantee 7 CFR 205.105  are not grown or handled with the use of sewer sludge and ionizing radiation, as described in Food and Drug Administration regulation, 21 CFR 179.26 . Lot Code have been assigned a unique lot code to ensure complete traceability down to each raw material and packaging material used. BSE / TSE are NOT of animal origin. Furthermore, as a FDA (Food and Drug Administration) regulated facility, and in accordance with the FDA proposed rules and approved guidelines, we have taken appropriate steps to minimize the risk of contamination of our products with Bovine Spongiform Encephalopathy (BSE) or Transmissible Spongiform Encephalopathy (TSE).  Animal By-Products, Human-Derived Products, BPA, Melamine are free of animal by-products, human-derived products, BPA, or Melamine. Our products have not been tested on animals. 1.13 Food Contact Packaging Safely NOP 7 CFR 205.272(b)(1)  have not been allowed to come in contact with synthetic fungicide, preservative, or fumigant. All food contact packaging materials are free of prohibited synthetic fungicide, preservative, or fumigant. 1.14 Heavy Metals, California Toxics in Packaging Prevention Act (AB2021), and Ethical Standards / California Transparency in Supply Chains Act of 2010 and applicable US Federal regulations were produced without the use of forced labor such as child labor, slavery, prison labor. We strive to comply with all applicable laws and regulations regarding employment, occupational health and safety, and immigration. Our suppliers are also required to meet our ethical standards. ",
+      "fieldType": "lov",
+      "value": "S"
+    },
+    {
+      "fieldCode": "q3t4s27f367",
+      "fieldName": "Is the raw material a food additive as laid down and listed in EU 1333/2008 on food additives?\t",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t4s27f369",
+      "fieldName": "The supplier certifies that the impurities present in the product are technically unavoidable residues, kept to the lowest levels whenever it is achievable through good working practices and are present in amounts which are acceptable in accordance with public health and toxicology regulations",
+      "fieldType": "lov",
+      "value": "S"
+    },
+    {
+      "fieldCode": "q3t4s32f372",
+      "fieldName": "Is there a potential risk of cross-contamination? (If yes, please specify which)",
+      "fieldType": "yesNoComments",
+      "value": "NO|"
+    },
+    {
+      "fieldCode": "q3t1s4f378",
+      "fieldName": "Please specify raw material",
+      "fieldType": "inputText",
+      "value": "Ocimum basilicum L."
+    },
+    {
+      "fieldCode": "q3t1s4f383",
+      "fieldName": "Drying of the plant before distillation",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f385",
+      "fieldName": "Is the product deterpenated?",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t1s4f386",
+      "fieldName": "Distillation time (min)",
+      "fieldType": "inputText",
+      "value": "5-6 hours per sample"
+    },
+    {
+      "fieldCode": "q3t1s4f389",
+      "fieldName": "Number of crops per year",
+      "fieldType": "inputText",
+      "value": "3"
+    },
+    {
+      "fieldCode": "q3t1s4f390",
+      "fieldName": "Harvesting process",
+      "fieldType": "selectManyCheckbox",
+      "value": "Manual"
+    },
+    {
+      "fieldCode": "q3t1s4f425",
+      "fieldName": " Drying system",
+      "fieldType": "lov",
+      "value": "S"
+    },
+    {
+      "fieldCode": "q3t1s4f427",
+      "fieldName": "Refined product",
+      "fieldType": "yesNoNA",
+      "value": "NO"
+    },
+    {
+      "fieldCode": "q3t1s4f430",
+      "fieldName": "Are you a RSPO Member? If so, please, provide the RSPO registration number",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t1s4f432",
+      "fieldName": "Natural",
+      "fieldType": "inputNumber",
+      "value": "1"
+    },
+    {
+      "fieldCode": "q3t1s4f433",
+      "fieldName": "Natural origin",
+      "fieldType": "inputNumber",
+      "value": "1"
+    },
+    {
+      "fieldCode": "q3t1s4f434",
+      "fieldName": "Organic",
+      "fieldType": "inputNumber",
+      "value": "0"
+    },
+    {
+      "fieldCode": "q3t1s4f435",
+      "fieldName": "Origin organic",
+      "fieldType": "inputNumber",
+      "value": "0"
+    },
+    {
+      "fieldCode": "q3t3s15f453",
+      "fieldName": "Is the product registered under KKDIK? If yes provided the number in the comments field",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t3s15f459",
+      "fieldName": "Is the product registered under Korea-REACH? If yes provided the number",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t3s15f465",
+      "fieldName": "Is the product registered under UK-REACH?",
+      "fieldType": "yesNoComments",
+      "value": "NA|"
+    },
+    {
+      "fieldCode": "q3t8s38f474",
+      "fieldName": "Does the manufacturing of the product involve one of the following processes?",
+      "fieldType": "lov",
+      "value": "-"
+    },
+    {
+      "fieldCode": "q3t1s2f479",
+      "fieldName": "HS Code",
+      "fieldType": "inputText",
+      "value": "33012949"
+    },
+    {
+      "fieldCode": "q3t14s43f482",
+      "fieldName": "Completed by:",
+      "fieldType": "inputText",
+      "value": "Maxime Scarpa"
+    },
+    {
+      "fieldCode": "q3t14s43f483",
+      "fieldName": "Position:",
+      "fieldType": "inputText",
+      "value": "General Director"
+    },
+    {
+      "fieldCode": "q3t14s43f484",
+      "fieldName": "E-mail adress:",
+      "fieldType": "inputText",
+      "value": "maxime.scarpa@mpe-grasse.fr"
+    },
+    {
+      "fieldCode": "q3t1s4f510",
+      "fieldName": "Product' status: natural or synthetic",
+      "fieldType": "lov",
+      "value": "N"
+    },
+    {
+      "fieldCode": "q3t1s2f511",
+      "fieldName": "Recommended application (savory, pastry, lipstick, vanilla flavour, meat flavours...)",
+      "fieldType": "inputText",
+      "value": "-"
+    },
+    {
+      "fieldCode": "q3t1s5f52",
+      "fieldName": "General Information",
+      "fieldType": "tableDescYesNoSubtCASPercent",
+      "value": "[{\"id\":1,\"field1\":\"ADDITIVES\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":2,\"field1\":\"SOLVENTS USED\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":3,\"field1\":\"RESIDUAL SOLVENTS\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":4,\"field1\":\"GMO\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":5,\"field1\":\"GMO3\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":6,\"field1\":\"GMO2\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":7,\"field1\":\"NANOMATERIALS\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":8,\"field1\":\"GLYCOL ESTERS\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":9,\"field1\":\"P.A.H.C.\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":10,\"field1\":\"SWISS V.O.C.\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":11,\"field1\":\"CARB V.O.C.\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":12,\"field1\":\"CMR\",\"field2\":\"YES\",\"field3\":\"see certificate\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":13,\"field1\":\"CALIFORNIA 65 PROPOS\",\"field2\":\"YES\",\"field3\":\"see certificate\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":14,\"field1\":\"VEGAN\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":15,\"field1\":\"COELIAC\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":16,\"field1\":\"ANIMAL TESTING\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":17,\"field1\":\"ANIMAL ORIGIN\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":18,\"field1\":\"ANIMAL ORIGIN 2\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":19,\"field1\":\"ANIMAL DERIVED MATER\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":20,\"field1\":\"AD2\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":21,\"field1\":\"AD3\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":22,\"field1\":\"RADIATIONS\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":23,\"field1\":\"RADIATIONS 2\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":24,\"field1\":\"MOHS/MOHA\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t3s17f185",
+      "fieldName": "Does the product contains any substance included in the Authorisation List (Annex XIV of REACH)",
+      "fieldType": "checkTableMatCasPercen",
+      "value": "[]"
+    },
+    {
+      "fieldCode": "q3t3s18f186",
+      "fieldName": "Does the product contains any substance subject to Restriction as per Annex XVII of REACH? If so, please indicate: https://echa.europa.eu/es/substances-restricted-under-reach",
+      "fieldType": "checkTableMatCasPercen",
+      "value": "[]"
+    },
+    {
+      "fieldCode": "q3t3s19f187",
+      "fieldName": "Is the product subject to IFRA restrictions or prohibitions (Last amendment)? If yes, please indicate:                                                                                             ",
+      "fieldType": "checkTableMatCasPercen",
+      "value": "[{\"id\":1,\"field1\":\"see certificate\",\"field2\":null,\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t3s20f189",
+      "fieldName": "Does the product contain any ingredients listed in Annex II (prohibited materials), Annex III (restricted substances), Annex IV (colours), Annex V (preservatives) and/or Annex VI (UV filters) of the Cosmetics Regulation (EU) N° 1223/2009? For the substances considered as fragrance allergens (Cosmetic Regulation (EC) No 1223/2009, Annex III, No. 67-92) please complete the separate table. ",
+      "fieldType": "checkTableMatCasAnnexPercen",
+      "value": "[{\"id\":1,\"field1\":\"see certificate\",\"field2\":null,\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t3s21f193",
+      "fieldName": "Does the product contain any allergen ingredient listed according to Regulation 1223/2009 relating to Cosmetic products, and further amendments? If yes, please indicate the maximum content present in your product. ",
+      "fieldType": "checkTableMatCasROPercen",
+      "value": "[{\"id\":1,\"field1\":\"3-Propylidenephthalide\",\"field2\":\"3-Propylidenephthalide\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":1,\"field1\":\"Jasmine Oil/Extract\",\"field2\":\"Jasmine Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":3,\"field1\":\"6-Methylcoumarin\",\"field2\":\"6-Methylcoumarin\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":3,\"field1\":\"Jasmine Oil/Extract 90045-94-6\",\"field2\":\"Jasmine Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":5,\"field1\":\"Acetyl Cedrene\",\"field2\":\"Acetyl Cedrene\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":5,\"field1\":\"Jasmine Oil/Extract 8022-96-6\",\"field2\":\"Jasmine Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":7,\"field1\":\"alpha-Isomethyl iono\",\"field2\":\"alpha-Isomethyl iono\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":7,\"field1\":\"Jasmine Oil/Extract 8024-43-9\",\"field2\":\"Jasmine Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":9,\"field1\":\"Alpha-Terpinene\",\"field2\":\"99-86-5\",\"field3\":\"0.01\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":9,\"field1\":\"Juniperus Virginiana\",\"field2\":\"8000-27-9\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":11,\"field1\":\"Amyl cinnamal\",\"field2\":\"Amyl cinnamal\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":11,\"field1\":\"Juniperus Virginiana Oil 85085-41-2\",\"field2\":\"Juniperus Virginiana Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":13,\"field1\":\"Amyl Salicylate\",\"field2\":\"Amyl Salicylate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":13,\"field1\":\"Laurus Nobilis oil\",\"field2\":\"Laurus Nobilis oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":15,\"field1\":\"Amylcinnamyl alcohol\",\"field2\":\"Amylcinnamyl alcohol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":15,\"field1\":\"Laurus Nobilis oil 8007-48-5\",\"field2\":\"Laurus Nobilis oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":17,\"field1\":\"Anethole\",\"field2\":\"104-46-1\",\"field3\":\"0.01\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":17,\"field1\":\"Laurus Nobilis oil 84603-73-6\",\"field2\":\"84603-73-6\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":19,\"field1\":\"Anethole 4180-23-8\",\"field2\":\"Anethole\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":19,\"field1\":\"Lavandula Oil/ Extra\",\"field2\":\"Lavandula Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":21,\"field1\":\"Anise Alcohol\",\"field2\":\"Anise Alcohol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":21,\"field1\":\"Lavandula Oil/ Extract 8022-15-9\",\"field2\":\"Lavandula Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":23,\"field1\":\"Benzaldehyde\",\"field2\":\"100-52-7\",\"field3\":\"0.01\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":23,\"field1\":\"Lavandula Oil/ Extract 93455-96-0\",\"field2\":\"93455-96-0\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":25,\"field1\":\"Benzyl alcohol\",\"field2\":\"100-51-6\",\"field3\":\"0.01\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":25,\"field1\":\"Lavandula Oil/ Extract 93455-97-1\",\"field2\":\"93455-97-1\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":27,\"field1\":\"Benzyl Benzoate\",\"field2\":\"Benzyl Benzoate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":27,\"field1\":\"Lavandula Oil/ Extract 84776-65-8\",\"field2\":\"Lavandula Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":29,\"field1\":\"Benzyl Cinnamate\",\"field2\":\"Benzyl Cinnamate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":29,\"field1\":\"Lavandula Oil/ Extract 8000-28-0\",\"field2\":\"Lavandula Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":31,\"field1\":\"Benzyl Salicylate\",\"field2\":\"Benzyl Salicylate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":31,\"field1\":\"Lavandula Oil/ Extract 90063-37-9\",\"field2\":\"Lavandula Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":33,\"field1\":\"Bergamot oil\",\"field2\":\"Bergamot oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":33,\"field1\":\"Lemongrass oil\",\"field2\":\"Lemongrass oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":35,\"field1\":\"Bergamot oil 89957-91-5\",\"field2\":\"Bergamot oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":35,\"field1\":\"Lemongrass oil 89998-16-3\",\"field2\":\"Lemongrass oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":37,\"field1\":\"Bergamot oil 68648-33-9\",\"field2\":\"Bergamot oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":37,\"field1\":\"Lemongrass oil 91844-92-7\",\"field2\":\"Lemongrass oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":39,\"field1\":\"Bergamot oil 8007-75-8\",\"field2\":\"Bergamot oil \",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":39,\"field1\":\"Lemongrass oil 8007-02-1\",\"field2\":\"Lemongrass oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":41,\"field1\":\"Bergamot oil 85049-52-1\",\"field2\":\"Bergamot oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":41,\"field1\":\"Limonene\",\"field2\":\"Limonene\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":43,\"field1\":\"beta-Caryophyllene\",\"field2\":\"87-44-5\",\"field3\":\"0.6\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":43,\"field1\":\"Limonene 138-86-3\",\"field2\":\"138-86-3\",\"field3\":\"0.1\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":45,\"field1\":\"Camphor\",\"field2\":\"Camphor\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":45,\"field1\":\"Limonene 5989-54-8\",\"field2\":\"Limonene\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":47,\"field1\":\"Camphor  21368-68-3\",\"field2\":\"21368-68-3\",\"field3\":\"0.05\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":47,\"field1\":\"Linalool\",\"field2\":\"78-70-6\",\"field3\":\"20\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":49,\"field1\":\"Camphor 464-49-3\",\"field2\":\"Camphor\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":49,\"field1\":\"Linalyl acetate\",\"field2\":\"Linalyl acetate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":51,\"field1\":\"Camphor 464-48-2\",\"field2\":\"Camphor\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":51,\"field1\":\"Mentha Piperita oil\",\"field2\":\"Mentha Piperita oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":53,\"field1\":\"Cananga Odorata Oil/\",\"field2\":\"Cananga Odorata Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":53,\"field1\":\"Mentha Piperita oil 84082-70-2\",\"field2\":\"Mentha Piperita oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":55,\"field1\":\"Cananga Odorata Oil/Extract 8006-81-3\",\"field2\":\"Cananga Odorata Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":55,\"field1\":\"Mentha Spicata oil \",\"field2\":\"Mentha Spicata oil \",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":57,\"field1\":\"Cananga Odorata Oil/Extract 68606-83-7\",\"field2\":\"Cananga Odorata Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":57,\"field1\":\"Mentha Spicata oil  84696-51-5\",\"field2\":\"Mentha Spicata oil \",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":59,\"field1\":\"Cananga Odorata Oil/Extract 93686-30-7\",\"field2\":\"Cananga Odorata Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":59,\"field1\":\"Menthol\",\"field2\":\"Menthol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":61,\"field1\":\"Carvone\",\"field2\":\"99-49-0\",\"field3\":\"0.01\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":61,\"field1\":\"Menthol 1490-04-6\",\"field2\":\"1490-04-6\",\"field3\":\"0.5\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":63,\"field1\":\"Carvone 6485-40-1\",\"field2\":\"Carvone\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":63,\"field1\":\"Menthol 2216-51-5\",\"field2\":\"Menthol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":65,\"field1\":\"Carvone 2244-16-8\",\"field2\":\"Carvone\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":65,\"field1\":\"Menthol 15356-60-2\",\"field2\":\"Menthol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":67,\"field1\":\"Cedrus Atlantica Oil\",\"field2\":\"Cedrus Atlantica Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":67,\"field1\":\"Methyl 2-octynoate\",\"field2\":\"Methyl 2-octynoate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":69,\"field1\":\"Cedrus Atlantica Oil/ Extract 8023-85-6\",\"field2\":\"Cedrus Atlantica Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":69,\"field1\":\"Methyl salicylate\",\"field2\":\"Methyl salicylate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":71,\"field1\":\"Cedrus Atlantica Oil/ Extract 9005-90-7\",\"field2\":\"Cedrus Atlantica Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":71,\"field1\":\"Myroxylon Pereirae O\",\"field2\":\"Myroxylon Pereirae Oil/ Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":73,\"field1\":\"Cinnamal\",\"field2\":\"Cinnamal\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":73,\"field1\":\"Narcissus Extract\",\"field2\":\"Narcissus Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":75,\"field1\":\"Cinnamomum Cassia Le\",\"field2\":\"Cinnamomum Cassia Leaf Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":75,\"field1\":\"Narcissus Extract 68917-12-4\",\"field2\":\"Narcissus Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":77,\"field1\":\"Cinnamomum Cassia Leaf Oil  84961-46-6\",\"field2\":\"Cinnamomum Cassia Leaf Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":77,\"field1\":\"Narcissus Extract 90064-27-0\",\"field2\":\"Narcissus Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":79,\"field1\":\"Cinnamomum Zeylanicu\",\"field2\":\"Cinnamomum Zeylanicum Bark Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":79,\"field1\":\"Narcissus Extract 90064-25-8\",\"field2\":\"Narcissus Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":81,\"field1\":\"Cinnamomum Zeylanicum Bark Oil 84649-98-9\",\"field2\":\"Cinnamomum Zeylanicum Bark Oil 84649-98-9\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":81,\"field1\":\"Pelargonium Graveole\",\"field2\":\"Pelargonium Graveolens oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":83,\"field1\":\"Cinnamyl alcohol\",\"field2\":\"Cinnamyl alcohol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":83,\"field1\":\"Pelargonium Graveolens oil 8000-46-2\",\"field2\":\"Pelargonium Graveolens oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":85,\"field1\":\"Citral\",\"field2\":\"5392-40-5\",\"field3\":\"2.6\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":85,\"field1\":\"Pinene\",\"field2\":\"80-56-8\",\"field3\":\"0.2\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":87,\"field1\":\"Citral 141-27-5\",\"field2\":\"Citral\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":87,\"field1\":\"Pinene 7785-70-8\",\"field2\":\"Pinene\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":89,\"field1\":\"Citral 106-26-3\",\"field2\":\"Citral\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":89,\"field1\":\"Pinus Mugo\",\"field2\":\"Pinus Mugo\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":91,\"field1\":\"Citronellol\",\"field2\":\"106-22-9\",\"field3\":\"0.1\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":91,\"field1\":\"Pinus Pumila\",\"field2\":\"97676-05-6\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":93,\"field1\":\"Citronellol 26489-01-0\",\"field2\":\"Citronellol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":93,\"field1\":\"Pogostemon Cablin oi\",\"field2\":\"Pogostemon Cablin oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":95,\"field1\":\"Citronellol 1117-61-9\",\"field2\":\"Citronellol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":95,\"field1\":\"Pogostemon Cablin oil 84238-39-1\",\"field2\":\"Pogostemon Cablin oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":97,\"field1\":\"Citronellol 7540-51-4 \",\"field2\":\"Citronellol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":97,\"field1\":\"Rose Flower Oil/Extr\",\"field2\":\"Rose Flower Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":99,\"field1\":\"Citrus Aurantium Flo\",\"field2\":\"Citrus Aurantium Flower Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":99,\"field1\":\"Rose Flower Oil/Extract 93334-48-6\",\"field2\":\"Rose Flower Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":101,\"field1\":\"Citrus Aurantium Flower Oil 8028-48-6\",\"field2\":\"Citrus Aurantium Flower Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":101,\"field1\":\"Rose Flower Oil/Extract 84696-47-9\",\"field2\":\"Rose Flower Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":103,\"field1\":\"Citrus Aurantium Flower Oil 8016-38-4\",\"field2\":\"Citrus Aurantium Flower Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":103,\"field1\":\"Rose Flower Oil/Extract 84604-12-6\",\"field2\":\"Rose Flower Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":105,\"field1\":\"Citrus Aurantium Pee\",\"field2\":\"Citrus Aurantium Peel Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":105,\"field1\":\"Rose Flower Oil/Extract 90106-38-0\",\"field2\":\"Rose Flower Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":107,\"field1\":\"Citrus Aurantium Peel Oil 72968-50-4\",\"field2\":\"Citrus Aurantium Peel Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":107,\"field1\":\"Rose Flower Oil/Extract 92347-25-6\",\"field2\":\"Rose Flower Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":109,\"field1\":\"Citrus Aurantium Peel Oil 97766-30-8\",\"field2\":\"Citrus Aurantium Peel Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":109,\"field1\":\"Rose Flower Oil/Extract 84604-13-7\",\"field2\":\"Rose Flower Oil/Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":111,\"field1\":\"Citrus Aurantium Peel Oil 8028-48-6\",\"field2\":\"Citrus Aurantium Peel Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":111,\"field1\":\"Rose Ketones\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":113,\"field1\":\"Citrus Aurantium Peel Oil 8008-57-9\",\"field2\":\"Citrus Aurantium Peel Oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":113,\"field1\":\"Rose Ketones 23726-94-5\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":115,\"field1\":\"Citrus Limon oil\",\"field2\":\"Citrus Limon oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":115,\"field1\":\"Rose Ketones 24720-09-0\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":117,\"field1\":\"Citrus Limon oil 8008-56-8\",\"field2\":\"Citrus Limon oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":117,\"field1\":\"Rose Ketones 23696-85-7\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":119,\"field1\":\"Coumarin\",\"field2\":\"Coumarin\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":119,\"field1\":\"Rose Ketones 57378-68-4\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":121,\"field1\":\"Dimethyl Phenethyl A\",\"field2\":\"Dimethyl Phenethyl Acetate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":121,\"field1\":\"Rose Ketones 23726-92-3\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":123,\"field1\":\"Ebanol\",\"field2\":\"Ebanol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":123,\"field1\":\"Rose Ketones 71048-82-3\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":125,\"field1\":\"Eucalyptus Globulus \",\"field2\":\"Eucalyptus Globulus oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":125,\"field1\":\"Rose Ketones 23726-91-2\",\"field2\":\"Rose Ketones\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":127,\"field1\":\"Eucalyptus Globulus oil 8000-48-4\",\"field2\":\"Eucalyptus Globulus oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":127,\"field1\":\"Salicylaldehyde\",\"field2\":\"Salicylaldehyde\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":129,\"field1\":\"Eugenia Caryophyllus\",\"field2\":\"Eugenia Caryophyllus oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":129,\"field1\":\"Santalol\",\"field2\":\"Santalol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":131,\"field1\":\"Eugenia Caryophyllus oil 8015-97-2\",\"field2\":\"Eugenia Caryophyllus oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":131,\"field1\":\"Santalol 115-71-9\",\"field2\":\"Santalol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":133,\"field1\":\"Eugenia Caryophyllus oil 84961-50-2\",\"field2\":\"Eugenia Caryophyllus oil\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":133,\"field1\":\"Santalol 77-42-9\",\"field2\":\"Santalol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":135,\"field1\":\"Eugenol\",\"field2\":\"97-53-0\",\"field3\":\"0.05\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":135,\"field1\":\"Santalum Album oil\",\"field2\":\"8006-87-9\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":137,\"field1\":\"Eugenyl acetate\",\"field2\":\"Eugenyl acetate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":137,\"field1\":\"Sclareol\",\"field2\":\"Sclareol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":139,\"field1\":\"Evernia Furfuracea E\",\"field2\":\"Evernia Furfuracea Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":139,\"field1\":\"Terpineol\",\"field2\":\"Terpineol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":141,\"field1\":\"Evernia Prunastri Ex\",\"field2\":\"Evernia Prunastri Extract\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":141,\"field1\":\"Terpineol 98-55-5\",\"field2\":\"Terpineol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":143,\"field1\":\"Farnesol\",\"field2\":\"Farnesol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":143,\"field1\":\"Terpineol 138-87-4\",\"field2\":\"Terpineol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":145,\"field1\":\"Geraniol\",\"field2\":\"106-24-1\",\"field3\":\"0.06\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":145,\"field1\":\"Terpinolene\",\"field2\":\"586-62-9\",\"field3\":\"0.01\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":147,\"field1\":\"Geranyl acetate\",\"field2\":\"105-87-3\",\"field3\":\"0.02\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":147,\"field1\":\"Terpineol 586-81-2\",\"field2\":\"586-81-2\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":149,\"field1\":\"Hexadecanolactone\",\"field2\":\"Hexadecanolactone\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":149,\"field1\":\"Tetramethyl acetyloc\",\"field2\":\"Tetramethyl acetyloctahydro- naphthalenes\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":151,\"field1\":\"Hexamethylindanopyra\",\"field2\":\"Hexamethylindanopyran\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":151,\"field1\":\"Tetramethyl acetyloctahydro- naphthalenes 54464-59-4\",\"field2\":\"Tetramethyl acetyloctahydro- naphthalenes\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":153,\"field1\":\"Hexyl Cinnamal\",\"field2\":\"Hexyl Cinnamal\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":153,\"field1\":\"Tetramethyl acetyloctahydro- naphthalenes 68155-66-8\",\"field2\":\"Tetramethyl acetyloctahydro- naphthalenes\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":155,\"field1\":\"Hydroxycitronellal\",\"field2\":\"Hydroxycitronellal\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":155,\"field1\":\"Tetramethyl acetyloctahydro- naphthalenes 68155-67-9\",\"field2\":\"Tetramethyl acetyloctahydro- naphthalenes\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":157,\"field1\":\"Vanillin\",\"field2\":\"Vanillin\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":157,\"field1\":\"Trimethyl- benzenepr\",\"field2\":\"Trimethyl- benzenepropanol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":159,\"field1\":\"Isoeugenol\",\"field2\":\"Isoeugenol\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":159,\"field1\":\"Turpentine\",\"field2\":\"Turpentine\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":161,\"field1\":\"Isoeugenyl acetate\",\"field2\":\"Isoeugenyl acetate\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":161,\"field1\":\"Turpentine 8052-14-0\",\"field2\":\"Turpentine\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":163,\"field1\":\"Verbena absolute\",\"field2\":\"Verbena absolute\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":163,\"field1\":\"Verbena absolute 85116-63-8\",\"field2\":\"Verbena absolute\",\"field3\":\"<0.001\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t3s22f195",
+      "fieldName": "Certain ingredients are prohibited from use in cosmetic products marketed in the United States and others have restrictions on their use. Does the product contain any restricted or prohibited cosmetic ingredient following 21 CFR part 700? If so, please indicate: ",
+      "fieldType": "checkTableMatStatusCFRPercen",
+      "value": "[]"
+    },
+    {
+      "fieldCode": "q3t4s32f263",
+      "fieldName": "Food allergens according Annex II to Regulation (EU) 1169/2011 of 25th October 2011 of the European Parliament",
+      "fieldType": "presenceIngredientTablePercentHandlers2",
+      "value": "[{\"id\":1,\"field1\":\"ALFOOD005\",\"field2\":\"Cereals containing gluten (wheat,  rye,  barley,  oats,  spelt,  kamut  or  their  hybridised  strai\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":2,\"field1\":\"ALFOOD008\",\"field2\":\"Crustaceans and products thereof\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":3,\"field1\":\"ALFOOD009\",\"field2\":\"Eggs and products thereof\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":4,\"field1\":\"ALFOOD010\",\"field2\":\"Fish and products thereof\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":5,\"field1\":\"ALFOOD018\",\"field2\":\"Peanuts and products thereof\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":6,\"field1\":\"ALFOOD022\",\"field2\":\"Soybeans and products thereof\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":7,\"field1\":\"ALFOOD014\",\"field2\":\"Milk and products thereof (including lactose)ç\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":8,\"field1\":\"ALFOOD025\",\"field2\":\"Tree nuts\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":9,\"field1\":\"ALFOOD004\",\"field2\":\"Celery and products thereof\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":10,\"field1\":\"ALFOOD016\",\"field2\":\"Mustard and products thereof\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":11,\"field1\":\"ALFOOD021\",\"field2\":\"Sesame seeds and products thereof\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":12,\"field1\":\"ALFOOD023\",\"field2\":\"Sulphur dioxide and sulphites at concentrations of more than 10mg/kg or 10mg/liter expressed as SO2\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":13,\"field1\":\"ALFOOD012\",\"field2\":\"Lupin and products thereof\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":14,\"field1\":\"ALFOOD015\",\"field2\":\"Molluscs and products thereof\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":15,\"field1\":\"ALFOOD007\",\"field2\":\"Coconut *\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":16,\"field1\":\"ALFOOD003\",\"field2\":\"Bee pollens/Propolis thereof *\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":17,\"field1\":\"ALFOOD013\",\"field2\":\"Mango*\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":18,\"field1\":\"ALFOOD020\",\"field2\":\"Royal Jelly thereof *\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":19,\"field1\":\"ALFOOD017\",\"field2\":\"Peach thereof *\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":20,\"field1\":\"ALFOOD011\",\"field2\":\"Pork thereof *\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":21,\"field1\":\"ALFOOD019\",\"field2\":\"Glutamates, Glutanuc Acid, MSG or derivatives*\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":22,\"field1\":\"ALFOOD002\",\"field2\":\"Azo dyes*\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":23,\"field1\":\"ALFOOD001\",\"field2\":\"Artificial FD&C Colors*\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":24,\"field1\":\"ALFOOD024\",\"field2\":\"Tomato thereof *\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"},{\"id\":25,\"field1\":\"ALFOOD006\",\"field2\":\"Cocoa*\\t\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":\"NO\",\"field7\":\"NO\"}]"
+    },
+    {
+      "fieldCode": "q3t4s33f268",
+      "fieldName": "Substances restricted according to EU Regulation 1334/2008 (Annex III Part B) and Mexican Law (Acuerdo de aditivos)",
+      "fieldType": "tableDescYesNoPercen",
+      "value": "[{\"id\":1,\"field1\":\"666-99-9\",\"field2\":\"Agaric acid\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":2,\"field1\":\"8015-61-0\",\"field2\":\"Aloin\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":3,\"field1\":\"404-86-4\",\"field2\":\"Capsaicin\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":4,\"field1\":\"91-64-5\",\"field2\":\"Coumarin\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":5,\"field1\":\"5273-86-9\",\"field2\":\"Beta-asarone\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":6,\"field1\":\"140-67-0\",\"field2\":\"Estragole\",\"field3\":\"YES\",\"field4\":\"75\",\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":7,\"field1\":\"74-90-8\",\"field2\":\"Hydrocyanic acid\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":8,\"field1\":\"548-04-9\",\"field2\":\"Hipericine\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":9,\"field1\":\"494-90-6\",\"field2\":\"Menthofuran\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":10,\"field1\":\"93-15-2\",\"field2\":\"Methyleugenol\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":11,\"field1\":\"15932-80-6\",\"field2\":\"Pulegone\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":12,\"field1\":\"76-78-8\",\"field2\":\"Quassin\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":13,\"field1\":\"94-59-7\",\"field2\":\"Safrole\",\"field3\":\"YES\",\"field4\":\"0.05\",\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":14,\"field1\":\"12798-51-5\",\"field2\":\"Teucrin A\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":15,\"field1\":\"76231-76-0\",\"field2\":\"Thujone (alpha and beta)\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":16,\"field1\":\"481-06-1\",\"field2\":\"Santonina\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":17,\"field1\":\"130-95-0\",\"field2\":\"Quinina\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t4s33f269",
+      "fieldName": "Substances prohibited from use in human food (PART 189)",
+      "fieldType": "tableDescYesNoPercen",
+      "value": "[{\"id\":1,\"field1\":\"189.5\",\"field2\":\"189.5 - Cattle materials\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":2,\"field1\":\"189.110\",\"field2\":\"189.110 - Calamus and its derivatives\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":3,\"field1\":\"189.113\",\"field2\":\"189.113 - Cinnamyl anthranilate\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":4,\"field1\":\"189.120\",\"field2\":\"189.120 - Cobaltous salts and its derivatives\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":5,\"field1\":\"189.130\",\"field2\":\"189.130 - Coumarin\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":6,\"field1\":\"189.135\",\"field2\":\"189.135 - Cyclamate and its derivatives\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":7,\"field1\":\"189.140\",\"field2\":\"189.140 - Diethylpyrocarbonate (DEPC)\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":8,\"field1\":\"189.145\",\"field2\":\"189.145 - Dulcin\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":9,\"field1\":\"189.155\",\"field2\":\"189.155 - Monochloroacetic acid\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":10,\"field1\":\"189.165\",\"field2\":\"189.165 - Nordihydroguaiaretic acid (NDGA)\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":11,\"field1\":\"189.175\",\"field2\":\"189.175 - P-4000\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":12,\"field1\":\"189.180\",\"field2\":\"189.180 - Safrole\",\"field3\":\"YES\",\"field4\":\"0.05\",\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":13,\"field1\":\"189.190\",\"field2\":\"189.190 - Thiourea\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":14,\"field1\":\"189.191\",\"field2\":\"189.191 - Chlorofluorocarbon propellants\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":15,\"field1\":\"189.220\",\"field2\":\"189.220 - Flectol H\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":16,\"field1\":\"189.240\",\"field2\":\"189.240 - Lead solders\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":17,\"field1\":\"189.250 \",\"field2\":\"189.250 - Mercaptoimidazoline and 2-mercaptoimidazoline\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":18,\"field1\":\"189.280\",\"field2\":\"189.280 - 4,4'-Methylenebis (2-chloroanaline)\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":19,\"field1\":\"189.300\",\"field2\":\"189.300 - Hydrogenated 4,4'-isopropylidene-diphenolphosphite ester resins\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":20,\"field1\":\"189.301\",\"field2\":\"189.301 - Tin-coated lead foil capsules for wine bottles\",\"field3\":\"NO\",\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t1s5f352",
+      "fieldName": "Contaminants",
+      "fieldType": "tableDescYesNoSubtCASPercent",
+      "value": "[{\"id\":1,\"field1\":\"EU DIOXINS and PCB's\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":2,\"field1\":\"US DIOXINS and PCB's\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":3,\"field1\":\"EU PESTICIDES \",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":4,\"field1\":\"US PESTICIDES \",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":5,\"field1\":\"PESTICIDES \",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":6,\"field1\":\"PST2\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":7,\"field1\":\"PST3\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":8,\"field1\":\"EU MYCOTOXINS\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":9,\"field1\":\"US MYCOTOXINS\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":10,\"field1\":\"EU HEAVY METAL\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":11,\"field1\":\"US HEAVY METAL\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":12,\"field1\":\"EU PAH (Polycyclic aromatic hydrocarbons)\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":13,\"field1\":\"FUMIGACION\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":14,\"field1\":\"EPA Inerts List\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":15,\"field1\":\"EPA\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":16,\"field1\":\"PFSA\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t3s23f391",
+      "fieldName": "Other restricted substances",
+      "fieldType": "tableDescYesNoSubtCASPercent",
+      "value": "[{\"id\":1,\"field1\":\"DIOXANE\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":2,\"field1\":\"PHTHALATES\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":3,\"field1\":\"NITROSAMINES\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":4,\"field1\":\"FUROCOUMARINS\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":5,\"field1\":\"PAHs, DHA, Antranol and Chloroatranol\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":6,\"field1\":\"NITROMUSK / POLYCYCLIC MUSK / MACROCYCLIC MUSK\",\"field2\":\"NO\",\"field3\":null,\"field4\":null,\"field5\":null,\"field6\":null,\"field7\":null},{\"id\":7,\"field1\":\"TERPENOIDS\",\"field2\":\"YES\",\"field3\":\"EUCALYPTOL\",\"field4\":\"470-82-6\",\"field5\":\"0.15\",\"field6\":null,\"field7\":null},{\"id\":8,\"field1\":\"TERPENOIDS\",\"field2\":null,\"field3\":\"CAMPHOR\",\"field4\":\"76-22-2\",\"field5\":\"0.05\",\"field6\":null,\"field7\":null},{\"id\":9,\"field1\":\"TERPENOIDS\",\"field2\":\"YES\",\"field3\":\"MENTHOL\",\"field4\":\"89-78-1\",\"field5\":\"0.5\",\"field6\":null,\"field7\":null}]"
+    },
+    {
+      "fieldCode": "q3t3s16f397",
+      "fieldName": "Does the product contain Substances Very High Concern (REACH EU law)? If yes, please indicate: https://echa.europa.eu/es/candidate-list-table",
+      "fieldType": "checkTableMatCasPercen",
+      "value": "[]"
+    },
+    {
+      "fieldCode": "q3t4s28f488",
+      "fieldName": "Does the material contain any ingredients listed on the Drug Enforcement Administration (DEA) Listed Precursors and Essential Chemicals as defined under 21 CFR 1310.02?",
+      "fieldType": "checkTableMatCasPercen",
+      "value": "[]"
+    },
+    {
+      "fieldCode": "_metadata",
+      "fieldName": "",
+      "fieldType": "",
+      "value": ""
+    },
+    {
+      "fieldCode": "_request_id",
+      "fieldName": "",
+      "fieldType": "",
+      "value": "2027"
+    },
+    {
+      "fieldCode": "_imported_from",
+      "fieldName": "",
+      "fieldType": "",
+      "value": "questionnaire_20251030_155845_JSON (2).txt"
+    }
+  ]
+}

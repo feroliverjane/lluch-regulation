@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from datetime import datetime
 
 from app.core.database import get_db
 from app.models.blue_line import BlueLine
@@ -29,26 +30,25 @@ async def calculate_blue_line(
     db: Session = Depends(get_db)
 ):
     """
-    Calculate Blue Line for a material-supplier pair
+    Calculate Blue Line for a material
     
     This endpoint:
     1. Checks eligibility (purchase history, approval states)
     2. Calculates all 446 fields based on configured logic
-    3. Creates or updates the Blue Line record
+    3. Creates or updates the Blue Line record (one per material)
     """
     calculator = BlueLineCalculator(db)
     
     try:
         blue_line = await calculator.calculate_blue_line(
             material_id=request.material_id,
-            supplier_code=request.supplier_code,
             force_recalculate=request.force_recalculate
         )
         
         if not blue_line:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Material-supplier pair is not eligible for Blue Line or calculation failed"
+                detail="Material is not eligible for Blue Line or calculation failed"
             )
         
         return blue_line
@@ -60,35 +60,20 @@ async def calculate_blue_line(
         )
 
 
-@router.get("/material/{material_id}", response_model=List[BlueLineResponse])
-def get_blue_lines_by_material(
+@router.get("/material/{material_id}", response_model=BlueLineResponse)
+def get_blue_line_by_material(
     material_id: int,
     db: Session = Depends(get_db)
 ):
-    """Get all Blue Line records for a material"""
-    blue_lines = db.query(BlueLine).filter(
-        BlueLine.material_id == material_id
-    ).all()
-    
-    return blue_lines
-
-
-@router.get("/material/{material_id}/supplier/{supplier_code}", response_model=BlueLineResponse)
-def get_blue_line_by_material_supplier(
-    material_id: int,
-    supplier_code: str,
-    db: Session = Depends(get_db)
-):
-    """Get specific Blue Line for material-supplier pair"""
+    """Get Blue Line for a material (one Blue Line per material)"""
     blue_line = db.query(BlueLine).filter(
-        BlueLine.material_id == material_id,
-        BlueLine.supplier_code == supplier_code
+        BlueLine.material_id == material_id
     ).first()
     
     if not blue_line:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Blue Line not found for material {material_id}, supplier {supplier_code}"
+            detail=f"Blue Line not found for material {material_id}"
         )
     
     return blue_line
@@ -169,27 +154,26 @@ async def list_eligible_materials(
     """
     List all materials eligible for Blue Line creation
     Checks: purchase history, approval states
+    
+    Note: Blue Line is associated with a material, not a supplier.
+    When questionnaires arrive from different suppliers, they are all
+    compared against the same Blue Line for that material.
     """
     calculator = BlueLineCalculator(db)
     
-    # Get all active materials with supplier codes
+    # Get all active materials
     materials = db.query(Material).filter(
-        Material.is_active == True,
-        Material.supplier_code.isnot(None)
+        Material.is_active == True
     ).all()
     
     eligibility_results = []
     
     for material in materials:
-        is_eligible, details = await calculator.check_eligibility(
-            material.id,
-            material.supplier_code
-        )
+        is_eligible, details = await calculator.check_eligibility(material.id)
         
         eligibility_results.append(
             BlueLineEligibilityCheck(
                 material_id=material.id,
-                supplier_code=material.supplier_code,
                 is_eligible=is_eligible,
                 reasons=details.get("reasons", []),
                 has_purchase_history=details.get("has_purchase_history", False),
@@ -202,14 +186,17 @@ async def list_eligible_materials(
     return eligibility_results
 
 
-@router.get("/check-eligibility/material/{material_id}/supplier/{supplier_code}", response_model=BlueLineEligibilityCheck)
+@router.get("/check-eligibility/material/{material_id}", response_model=BlueLineEligibilityCheck)
 async def check_eligibility(
     material_id: int,
-    supplier_code: str,
     db: Session = Depends(get_db)
 ):
     """
-    Check if a specific material-supplier pair is eligible for Blue Line
+    Check if a specific material is eligible for Blue Line
+    
+    The Blue Line is associated with a material (not a supplier).
+    When a questionnaire arrives from any supplier, it is compared against 
+    the Blue Line for that material.
     """
     calculator = BlueLineCalculator(db)
     
@@ -220,11 +207,10 @@ async def check_eligibility(
             detail=f"Material {material_id} not found"
         )
     
-    is_eligible, details = await calculator.check_eligibility(material_id, supplier_code)
+    is_eligible, details = await calculator.check_eligibility(material_id)
     
     return BlueLineEligibilityCheck(
         material_id=material_id,
-        supplier_code=supplier_code,
         is_eligible=is_eligible,
         reasons=details.get("reasons", []),
         has_purchase_history=details.get("has_purchase_history", False),
@@ -419,5 +405,118 @@ def bulk_import_field_logics(
         "updated": updated,
         "errors": errors,
         "total_processed": len(bulk_import.field_logics)
+    }
+
+@router.post("/{blue_line_id}/create-composite", response_model=dict, status_code=status.HTTP_201_CREATED)
+def create_composite_z1(
+    blue_line_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Create a composite Z1 (mockup) for a Blue Line.
+    
+    This creates a mock composite with dummy data for testing purposes.
+    In the future, this will be generated using AI.
+    """
+    from app.models.composite import Composite, CompositeStatus, CompositeOrigin, CompositeComponent
+    from app.models.blue_line import BlueLine
+    from app.models.material import Material
+    
+    blue_line = db.query(BlueLine).filter(BlueLine.id == blue_line_id).first()
+    if not blue_line:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Blue Line {blue_line_id} not found"
+        )
+    
+    # Check if composite already exists
+    if blue_line.composite_id:
+        existing_composite = db.query(Composite).filter(Composite.id == blue_line.composite_id).first()
+        if existing_composite and existing_composite.components:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Composite already exists for Blue Line {blue_line_id} (ID: {existing_composite.id})"
+            )
+    
+    material = db.query(Material).filter(Material.id == blue_line.material_id).first()
+    if not material:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Material {blue_line.material_id} not found"
+        )
+    
+    # Get CAS number from Blue Line responses
+    cas_number = material.cas_number or "000-00-0"
+    if blue_line.responses:
+        cas_field = blue_line.responses.get("q3t1s2f23")
+        if cas_field:
+            if isinstance(cas_field, dict):
+                cas_number = cas_field.get("value", cas_number)
+            else:
+                cas_number = str(cas_field)
+    
+    # Create mock composite with dummy components
+    composite = Composite(
+        material_id=blue_line.material_id,
+        version=1,
+        origin=CompositeOrigin.LAB,
+        status=CompositeStatus.APPROVED,
+        composite_metadata={
+            "source": "blue_line_mockup",
+            "blue_line_id": blue_line_id,
+            "type": "Z1_MOCKUP",
+            "generated_at": datetime.now().isoformat()
+        },
+        notes=f"Mock composite Z1 generated for Blue Line - {material.name}"
+    )
+    
+    db.add(composite)
+    db.flush()
+    
+    # Create mock components
+    mock_components = [
+        {
+            "cas_number": cas_number,
+            "component_name": f"{material.name.split()[0] if material.name else 'Main'} Component",
+            "percentage": 92.5,
+            "component_type": "COMPONENT"
+        },
+        {
+            "cas_number": "000-00-1",
+            "component_name": "Component A",
+            "percentage": 5.2,
+            "component_type": "COMPONENT"
+        },
+        {
+            "cas_number": "000-00-2",
+            "component_name": "Impurity B",
+            "percentage": 2.3,
+            "component_type": "IMPURITY"
+        }
+    ]
+    
+    for comp_data in mock_components:
+        component = CompositeComponent(
+            composite_id=composite.id,
+            cas_number=comp_data["cas_number"],
+            component_name=comp_data["component_name"],
+            percentage=comp_data["percentage"],
+            component_type=comp_data["component_type"]
+        )
+        db.add(component)
+    
+    # Update Blue Line to reference this composite
+    if not blue_line.composite_id:
+        blue_line.composite_id = composite.id
+    
+    db.commit()
+    db.refresh(composite)
+    
+    return {
+        "composite_id": composite.id,
+        "blue_line_id": blue_line_id,
+        "material_id": material.id,
+        "components_count": len(mock_components),
+        "message": "Composite Z1 mockup created successfully"
     }
 

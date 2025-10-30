@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { materialsApi } from '../services/api';
-import { Upload, FileJson, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Upload, FileJson, AlertCircle, CheckCircle, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,6 +14,34 @@ interface Material {
   name: string;
 }
 
+interface MismatchField {
+  field_code: string;
+  field_name: string;
+  expected_value?: string;
+  actual_value?: string;
+  severity: string;
+  accepted: boolean;
+}
+
+interface ComparisonResult {
+  blue_line_exists: boolean;
+  matches: number;
+  mismatches: MismatchField[];
+  score: number;
+  message?: string;
+}
+
+interface ImportResult {
+  id: number;
+  material_id: number;
+  supplier_code: string;
+  questionnaire_type: string;
+  version: number;
+  status: string;
+  created_at: string;
+  comparison?: ComparisonResult;
+}
+
 export default function QuestionnaireImport() {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -23,6 +51,11 @@ export default function QuestionnaireImport() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [filePreview, setFilePreview] = useState<string>('');
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [acceptedMismatches, setAcceptedMismatches] = useState<Set<string>>(new Set());
+  const [creatingBlueLine, setCreatingBlueLine] = useState(false);
+  const [creatingComposite, setCreatingComposite] = useState(false);
+  const [acceptingQuestionnaire, setAcceptingQuestionnaire] = useState(false);
 
   // Load materials on mount
   useEffect(() => {
@@ -59,7 +92,9 @@ export default function QuestionnaireImport() {
       // Try to extract material code from JSON if available
       try {
         const json = JSON.parse(content);
-        // Look for Product Name field which contains [MATERIAL_CODE]
+        let detectedCode: string | null = null;
+        
+        // Strategy 1: Look for Product Name field which contains [MATERIAL_CODE]
         const productNameField = json.data?.find((item: any) => 
           item.fieldCode === 'q3t1s2f16' || 
           (item.fieldName && item.fieldName.toLowerCase().includes('product name'))
@@ -69,18 +104,40 @@ export default function QuestionnaireImport() {
           const productName = productNameField.value;
           // Extract code from format: [BASIL0003] H.E. BASILIC INDES
           if (productName.includes('[') && productName.includes(']')) {
-            const code = productName.split(']')[0].replace('[', '');
-            setMaterialCode(code);
-            
-            // Try to find matching material (materials might not be loaded yet)
-            if (materials.length > 0) {
-              const material = materials.find(m => m.reference_code === code);
-              if (material) {
-                setSelectedMaterialId(material.id);
-                toast.success(`Material detectado: ${code}`);
-              } else {
-                toast.info(`Código de material detectado: ${code}. Por favor selecciona el material manualmente.`);
-              }
+            detectedCode = productName.split(']')[0].replace('[', '');
+          }
+        }
+        
+        // Strategy 2: If not found, try Supplier's product code field
+        if (!detectedCode) {
+          const productCodeField = json.data?.find((item: any) => 
+            item.fieldCode === 'q3t1s2f17' || 
+            (item.fieldName && item.fieldName.toLowerCase().includes("supplier's product code"))
+          );
+          
+          if (productCodeField?.value) {
+            const productCode = productCodeField.value.trim();
+            // Try with brackets format: [BASIL0003]
+            if (productCode.includes('[') && productCode.includes(']')) {
+              detectedCode = productCode.split(']')[0].replace('[', '');
+            } else if (productCode) {
+              // Try without brackets: BASIL0003
+              detectedCode = productCode;
+            }
+          }
+        }
+        
+        if (detectedCode) {
+          setMaterialCode(detectedCode);
+          
+          // Try to find matching material (materials might not be loaded yet)
+          if (materials.length > 0) {
+            const material = materials.find(m => m.reference_code === detectedCode);
+            if (material) {
+              setSelectedMaterialId(material.id);
+              toast.success(`Material detectado: ${detectedCode}`);
+            } else {
+              toast.info(`Código de material detectado: ${detectedCode}. Por favor selecciona el material manualmente.`);
             }
           }
         }
@@ -134,19 +191,151 @@ export default function QuestionnaireImport() {
         throw new Error(errorData.detail || 'Error al importar cuestionario');
       }
 
-      const questionnaire = await response.json();
+      const result: ImportResult = await response.json();
       
-      toast.success(`✅ Cuestionario importado exitosamente! ID: ${questionnaire.id}`);
+      // Debug: log the result
+      console.log('Import result:', result);
+      console.log('Comparison:', result.comparison);
       
-      // Navigate to questionnaire detail
+      toast.success(`✅ Cuestionario importado exitosamente! ID: ${result.id}`);
+      
+      // Store result to show comparison
+      setImportResult(result);
+      
+      // Scroll to comparison section after a short delay
       setTimeout(() => {
-        navigate(`/questionnaires/${questionnaire.id}`);
-      }, 1500);
+        const comparisonSection = document.getElementById('comparison-section');
+        if (comparisonSection) {
+          comparisonSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 300);
+      
+      // If no Blue Line exists, don't navigate yet - show option to create Blue Line
+      if (!result.comparison?.blue_line_exists) {
+        return;
+      }
+      
+      // If Blue Line exists and no mismatches, auto-navigate
+      if (result.comparison.mismatches.length === 0) {
+        setTimeout(() => {
+          navigate(`/questionnaires/${result.id}`);
+        }, 1500);
+      }
 
     } catch (error: any) {
       toast.error(`❌ Error al importar: ${error.message || 'Error desconocido'}`);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleToggleMismatch = (fieldCode: string) => {
+    setAcceptedMismatches(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(fieldCode)) {
+        newSet.delete(fieldCode);
+      } else {
+        newSet.add(fieldCode);
+      }
+      return newSet;
+    });
+  };
+
+  const handleAcceptAllMismatches = () => {
+    if (!importResult?.comparison) return;
+    const allMismatchCodes = importResult.comparison.mismatches.map(m => m.field_code);
+    setAcceptedMismatches(new Set(allMismatchCodes));
+  };
+
+  const handleAcceptQuestionnaire = async () => {
+    if (!importResult) return;
+    
+    setAcceptingQuestionnaire(true);
+    try {
+      const response = await fetch(`${API_URL}${API_PREFIX}/material-suppliers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          questionnaire_id: importResult.id,
+          accepted_mismatches: Array.from(acceptedMismatches)
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Error al aceptar cuestionario');
+      }
+
+      const materialSupplier = await response.json();
+      toast.success(`✅ Cuestionario aceptado! MaterialSupplier creado (ID: ${materialSupplier.id})`);
+      
+      setTimeout(() => {
+        navigate(`/questionnaires/${importResult.id}`);
+      }, 1500);
+    } catch (error: any) {
+      toast.error(`❌ Error: ${error.message || 'Error desconocido'}`);
+    } finally {
+      setAcceptingQuestionnaire(false);
+    }
+  };
+
+  const handleCreateBlueLine = async () => {
+    if (!importResult) return;
+    
+    setCreatingBlueLine(true);
+    try {
+      const response = await fetch(`${API_URL}${API_PREFIX}/questionnaires/${importResult.id}/create-blue-line?create_composite=false`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Error al crear Blue Line');
+      }
+
+      const result = await response.json();
+      toast.success(`✅ Blue Line creada exitosamente! ID: ${result.blue_line_id}`);
+      
+      // Ask if user wants to create composite
+      const createComposite = window.confirm('¿Crear composite Z1 ahora?');
+      if (createComposite) {
+        await handleCreateComposite(result.blue_line_id);
+      } else {
+        setTimeout(() => {
+          navigate(`/questionnaires/${importResult.id}`);
+        }, 1500);
+      }
+    } catch (error: any) {
+      toast.error(`❌ Error: ${error.message || 'Error desconocido'}`);
+    } finally {
+      setCreatingBlueLine(false);
+    }
+  };
+
+  const handleCreateComposite = async (blueLineId: number) => {
+    setCreatingComposite(true);
+    try {
+      const response = await fetch(`${API_URL}${API_PREFIX}/blue-line/${blueLineId}/create-composite`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Error al crear composite');
+      }
+
+      const result = await response.json();
+      toast.success(`✅ Composite Z1 creado exitosamente! ID: ${result.composite_id}`);
+      
+      setTimeout(() => {
+        navigate(`/questionnaires/${importResult?.id}`);
+      }, 1500);
+    } catch (error: any) {
+      toast.error(`❌ Error: ${error.message || 'Error desconocido'}`);
+    } finally {
+      setCreatingComposite(false);
     }
   };
 
@@ -308,6 +497,212 @@ export default function QuestionnaireImport() {
           </span>
         </div>
       </div>
+
+      {importResult && (
+        <div id="comparison-section" className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px' }}>
+          <h2 style={{ marginTop: 0, color: 'white', marginBottom: '20px' }}>
+            Comparación con Blue Line
+          </h2>
+          
+          {importResult.comparison ? (
+            importResult.comparison.blue_line_exists ? (
+              <>
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      backgroundColor: importResult.comparison.score >= 80 ? '#065f46' : importResult.comparison.score >= 50 ? '#92400e' : '#991b1b',
+                      color: 'white',
+                      fontWeight: '600'
+                    }}>
+                      Score: {importResult.comparison.score}%
+                    </div>
+                    <span style={{ color: '#d1d5db' }}>
+                      {importResult.comparison.matches} de 10 campos coinciden
+                    </span>
+                  </div>
+                  
+                  {importResult.comparison.mismatches.length > 0 && (
+                    <div style={{
+                      marginTop: '16px',
+                      padding: '16px',
+                      backgroundColor: '#111827',
+                      borderRadius: '6px',
+                      border: '1px solid #374151'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <h3 style={{ margin: 0, color: 'white', fontSize: '16px' }}>
+                          Campos que no coinciden ({importResult.comparison.mismatches.length}):
+                        </h3>
+                        <button
+                          onClick={handleAcceptAllMismatches}
+                          style={{
+                            padding: '6px 12px',
+                            backgroundColor: '#374151',
+                            color: 'white',
+                            border: '1px solid #4b5563',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Aceptar todas
+                        </button>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {importResult.comparison.mismatches.map((mismatch, idx) => (
+                          <div key={idx} style={{
+                            padding: '12px',
+                            backgroundColor: mismatch.severity === 'CRITICAL' ? '#7f1d1d' : mismatch.severity === 'WARNING' ? '#78350f' : '#1e293b',
+                            borderRadius: '4px',
+                            border: `1px solid ${mismatch.severity === 'CRITICAL' ? '#991b1b' : mismatch.severity === 'WARNING' ? '#92400e' : '#334155'}`
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={acceptedMismatches.has(mismatch.field_code)}
+                                    onChange={() => handleToggleMismatch(mismatch.field_code)}
+                                    style={{ cursor: 'pointer' }}
+                                  />
+                                  <div style={{ fontWeight: '600', color: 'white' }}>
+                                    {mismatch.field_name} ({mismatch.field_code})
+                                  </div>
+                                </div>
+                                {mismatch.expected_value && (
+                                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '2px' }}>
+                                    Esperado: <span style={{ color: '#d1d5db' }}>{mismatch.expected_value}</span>
+                                  </div>
+                                )}
+                                <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                                  Actual: <span style={{ color: '#d1d5db' }}>{mismatch.actual_value || 'N/A'}</span>
+                                </div>
+                              </div>
+                              <span style={{
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                backgroundColor: mismatch.severity === 'CRITICAL' ? '#dc2626' : mismatch.severity === 'WARNING' ? '#f59e0b' : '#3b82f6',
+                                color: 'white'
+                              }}>
+                                {mismatch.severity}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {importResult.comparison.mismatches.length === 0 && (
+                    <div style={{
+                      marginTop: '16px',
+                      padding: '16px',
+                      backgroundColor: '#065f46',
+                      borderRadius: '6px',
+                      border: '1px solid #10b981',
+                      textAlign: 'center'
+                    }}>
+                      <CheckCircle size={20} style={{ color: '#10b981', marginRight: '8px', verticalAlign: 'middle' }} />
+                      <span style={{ color: 'white', fontWeight: '500' }}>
+                        ¡Perfecto! Todos los campos coinciden con la Blue Line.
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                  <button
+                    onClick={handleAcceptQuestionnaire}
+                    disabled={acceptingQuestionnaire}
+                    className="btn-primary"
+                    style={{
+                      backgroundColor: '#059669',
+                      color: 'white',
+                      border: 'none',
+                      opacity: acceptingQuestionnaire ? 0.5 : 1
+                    }}
+                  >
+                    {acceptingQuestionnaire ? (
+                      <>
+                        <Loader2 size={18} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+                        Aceptando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle size={18} style={{ marginRight: '8px' }} />
+                        Aceptar Cuestionario y Crear MaterialSupplier
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{
+                  padding: '16px',
+                  backgroundColor: '#111827',
+                  borderRadius: '6px',
+                  border: '1px solid #374151',
+                  marginBottom: '16px'
+                }}>
+                  <AlertCircle size={20} style={{ color: '#f59e0b', marginRight: '8px', verticalAlign: 'middle' }} />
+                  <span style={{ color: '#d1d5db' }}>
+                    No existe una Blue Line para este material. Puedes crear una nueva usando este cuestionario.
+                  </span>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                  <button
+                    onClick={handleCreateBlueLine}
+                    disabled={creatingBlueLine || creatingComposite}
+                    className="btn-primary"
+                    style={{
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      opacity: (creatingBlueLine || creatingComposite) ? 0.5 : 1
+                    }}
+                  >
+                    {creatingBlueLine ? (
+                      <>
+                        <Loader2 size={18} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+                        Creando...
+                      </>
+                    ) : creatingComposite ? (
+                      <>
+                        <Loader2 size={18} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+                        Creando Composite...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle size={18} style={{ marginRight: '8px' }} />
+                        Crear Blue Line desde este Cuestionario
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )
+          ) : (
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#111827',
+              borderRadius: '6px',
+              border: '1px solid #374151',
+              marginBottom: '16px'
+            }}>
+              <AlertCircle size={20} style={{ color: '#f59e0b', marginRight: '8px', verticalAlign: 'middle' }} />
+              <span style={{ color: '#d1d5db' }}>
+                Comparación no disponible. Verificando estado...
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
         <button

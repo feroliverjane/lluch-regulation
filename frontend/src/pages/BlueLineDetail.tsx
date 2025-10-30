@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import '../components/Layout.css';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface BlueLine {
   id: number;
   material_id: number;
-  supplier_code: string;
   template_id?: number;
   responses: Record<string, any>;
   blue_line_data: Record<string, any>;
@@ -46,23 +46,31 @@ interface QuestionField {
   critical: boolean;
 }
 
-interface Template {
+interface MaterialSupplier {
   id: number;
-  name: string;
-  questions_schema: QuestionField[];
-  section_names?: { [key: string]: string };
-  tab_names?: { [key: string]: string };
+  material_id: number;
+  questionnaire_id: number;
+  supplier_code: string;
+  supplier_name?: string;
+  status: string;
+  validation_score: number;
+  mismatch_fields: any[];
+  accepted_mismatches: string[];
+  validated_at?: string;
+  created_at: string;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_PREFIX = '/api';
 
 export default function BlueLineDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id, material_id } = useParams<{ id?: string; material_id?: string }>();
   const [blueLine, setBlueLine] = useState<BlueLine | null>(null);
   const [material, setMaterial] = useState<Material | null>(null);
   const [template, setTemplate] = useState<Template | null>(null);
   const [composite, setComposite] = useState<Composite | null>(null);
+  const [materialSuppliers, setMaterialSuppliers] = useState<MaterialSupplier[]>([]);
+  const [expandedSuppliers, setExpandedSuppliers] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -70,14 +78,23 @@ export default function BlueLineDetail() {
 
   useEffect(() => {
     fetchBlueLineDetail();
-  }, [id]);
+  }, [id, material_id]);
 
   const fetchBlueLineDetail = async () => {
     try {
       setLoading(true);
       
-      // Load Blue Line
-      const response = await fetch(`${API_URL}${API_PREFIX}/blue-line/${id}`);
+      // Load Blue Line by material_id (preferred) or by id (backward compatibility)
+      let response;
+      if (material_id) {
+        response = await fetch(`${API_URL}${API_PREFIX}/blue-line/material/${material_id}`);
+      } else if (id) {
+        // Backward compatibility: support /blue-line/:id
+        response = await fetch(`${API_URL}${API_PREFIX}/blue-line/${id}`);
+      } else {
+        throw new Error('No id or material_id provided');
+      }
+      
       const data = await response.json();
       setBlueLine(data);
 
@@ -110,6 +127,17 @@ export default function BlueLineDetail() {
       const matResponse = await fetch(`${API_URL}${API_PREFIX}/materials/${data.material_id}`);
       const materialData = await matResponse.json();
       setMaterial(materialData);
+
+      // Load MaterialSuppliers for this material
+      try {
+        const suppliersRes = await fetch(`${API_URL}${API_PREFIX}/material-suppliers/by-material/${data.material_id}`);
+        if (suppliersRes.ok) {
+          const suppliersData = await suppliersRes.json();
+          setMaterialSuppliers(suppliersData);
+        }
+      } catch (err) {
+        console.warn('Could not load material suppliers:', err);
+      }
 
       setLoading(false);
     } catch (error) {
@@ -249,9 +277,9 @@ export default function BlueLineDetail() {
           <Link to="/blue-line" className="link" style={{ marginBottom: '8px', display: 'inline-block', color: 'white' }}>
             ← Volver a Líneas Azules
           </Link>
-          <h1 style={{ color: 'white' }}>Línea Azul #{blueLine.id}</h1>
+          <h1 style={{ color: 'white' }}>Línea Azul - {material.reference_code}</h1>
           <p style={{ color: '#d1d5db', marginTop: '4px' }}>
-            {material.reference_code} - {material.name}
+            {material.name}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -291,8 +319,8 @@ export default function BlueLineDetail() {
             <div style={{ fontSize: '14px', color: '#d1d5db' }}>{material.name}</div>
           </div>
           <div>
-            <div style={{ fontSize: '12px', color: '#9ca3af' }}>Proveedor</div>
-            <div style={{ fontWeight: '500', marginTop: '4px', color: 'white' }}>{blueLine.supplier_code}</div>
+            <div style={{ fontSize: '12px', color: '#9ca3af' }}>ID BlueLine</div>
+            <div style={{ fontWeight: '500', marginTop: '4px', color: 'white' }}>#{blueLine.id}</div>
           </div>
           <div>
             <div style={{ fontSize: '12px', color: '#9ca3af' }}>Tipo</div>
@@ -504,6 +532,182 @@ export default function BlueLineDetail() {
           </div>
         </div>
       )}
+
+      {/* Material Suppliers Section */}
+      <div className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginTop: '24px' }}>
+        <h2 style={{ marginTop: 0, color: 'white', marginBottom: '20px' }}>
+          Material-Proveedores Asociados ({materialSuppliers.length})
+        </h2>
+
+        {materialSuppliers.length === 0 ? (
+          <div style={{
+            padding: '24px',
+            textAlign: 'center',
+            color: '#9ca3af',
+            backgroundColor: '#111827',
+            borderRadius: '6px',
+            border: '1px solid #374151'
+          }}>
+            No hay proveedores asociados a esta Blue Line aún.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {materialSuppliers.map((supplier) => {
+              const isExpanded = expandedSuppliers.has(supplier.id);
+              
+              return (
+                <div
+                  key={supplier.id}
+                  style={{
+                    backgroundColor: '#111827',
+                    borderRadius: '6px',
+                    border: '1px solid #374151',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {/* Header - Always visible */}
+                  <div
+                    onClick={() => {
+                      setExpandedSuppliers(prev => {
+                        const newSet = new Set(prev);
+                        if (newSet.has(supplier.id)) {
+                          newSet.delete(supplier.id);
+                        } else {
+                          newSet.add(supplier.id);
+                        }
+                        return newSet;
+                      });
+                    }}
+                    style={{
+                      padding: '16px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: isExpanded ? '#1a1f2e' : '#111827',
+                      transition: 'background-color 0.2s'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                      {isExpanded ? (
+                        <ChevronUp size={20} style={{ color: '#9ca3af' }} />
+                      ) : (
+                        <ChevronDown size={20} style={{ color: '#9ca3af' }} />
+                      )}
+                      <div>
+                        <div style={{ fontWeight: '600', color: 'white', marginBottom: '4px' }}>
+                          {supplier.supplier_name || supplier.supplier_code}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                          Código: {supplier.supplier_code}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{
+                        padding: '4px 12px',
+                        borderRadius: '4px',
+                        backgroundColor: supplier.validation_score >= 80 ? '#065f46' : supplier.validation_score >= 50 ? '#92400e' : '#991b1b',
+                        color: 'white',
+                        fontWeight: '600',
+                        fontSize: '14px'
+                      }}>
+                        Score: {supplier.validation_score}%
+                      </div>
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        backgroundColor: supplier.status === 'ACTIVE' ? '#059669' : '#6b7280',
+                        color: 'white'
+                      }}>
+                        {supplier.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Expanded Content */}
+                  {isExpanded && (
+                    <div style={{
+                      padding: '16px',
+                      borderTop: '1px solid #374151',
+                      backgroundColor: '#0f1419'
+                    }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                        <div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Cuestionario ID</div>
+                          <div style={{ fontWeight: '500', color: 'white' }}>
+                            <Link 
+                              to={`/questionnaires/${supplier.questionnaire_id}`}
+                              style={{ color: '#60a5fa', textDecoration: 'none' }}
+                            >
+                              #{supplier.questionnaire_id}
+                            </Link>
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Fecha Validación</div>
+                          <div style={{ fontWeight: '500', color: 'white' }}>
+                            {supplier.validated_at 
+                              ? new Date(supplier.validated_at).toLocaleDateString('es-ES', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })
+                              : 'N/A'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {supplier.mismatch_fields && supplier.mismatch_fields.length > 0 && (
+                        <div style={{ marginTop: '16px' }}>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px' }}>
+                            Diferencias aceptadas ({supplier.accepted_mismatches?.length || 0} de {supplier.mismatch_fields.length})
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {supplier.mismatch_fields.map((mismatch: any, idx: number) => (
+                              <div
+                                key={idx}
+                                style={{
+                                  padding: '8px 12px',
+                                  backgroundColor: mismatch.accepted ? '#065f46' : '#7f1d1d',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center'
+                                }}
+                              >
+                                <span style={{ color: 'white' }}>
+                                  {mismatch.field_name} ({mismatch.field_code})
+                                </span>
+                                {mismatch.accepted && (
+                                  <span style={{
+                                    padding: '2px 6px',
+                                    backgroundColor: '#10b981',
+                                    color: 'white',
+                                    borderRadius: '3px',
+                                    fontSize: '10px'
+                                  }}>
+                                    ACEPTADO
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

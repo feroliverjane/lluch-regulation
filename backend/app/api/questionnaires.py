@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import json
+import logging
 
 from app.core.database import get_db
 from app.core.config import settings
@@ -30,6 +31,10 @@ from app.schemas.questionnaire import (
 )
 from app.services.questionnaire_validation_service import QuestionnaireValidationService
 from app.services.questionnaire_ai_service import QuestionnaireAIService
+from app.services.material_supplier_comparison import MaterialSupplierComparisonService
+from app.schemas.material_supplier import ComparisonResult
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/questionnaires", tags=["questionnaires"])
 
@@ -37,7 +42,7 @@ router = APIRouter(prefix="/questionnaires", tags=["questionnaires"])
 # ===== Questionnaire CRUD =====
 
 @router.post("", response_model=QuestionnaireResponse, status_code=status.HTTP_201_CREATED)
-def create_questionnaire(
+async def create_questionnaire(
     questionnaire: QuestionnaireCreate,
     db: Session = Depends(get_db)
 ):
@@ -58,6 +63,14 @@ def create_questionnaire(
     db.add(db_questionnaire)
     db.commit()
     db.refresh(db_questionnaire)
+    
+    # Automatically validate against Blue Line
+    try:
+        validation_service = QuestionnaireValidationService(db)
+        validation_service.validate_questionnaire(db_questionnaire.id)
+    except Exception as e:
+        # Log error but don't fail questionnaire creation
+        logger.warning(f"Validation failed for questionnaire {db_questionnaire.id}: {e}")
     
     return db_questionnaire
 
@@ -239,12 +252,19 @@ async def import_questionnaire_from_json(
             product_code = metadata.get("product_code", "")
             product_name = metadata.get("product_name", "")
             
-            # Try product_code first
-            if product_code and product_code.startswith("[") and "]" in product_code:
-                material_code_from_json = product_code.split("]")[0].replace("[", "")
-                material = db.query(Material).filter(
-                    Material.reference_code == material_code_from_json
-                ).first()
+            # Try product_code first (with or without brackets)
+            if product_code:
+                # Try with brackets format: [BASIL0003]
+                if product_code.startswith("[") and "]" in product_code:
+                    material_code_from_json = product_code.split("]")[0].replace("[", "")
+                    material = db.query(Material).filter(
+                        Material.reference_code == material_code_from_json
+                    ).first()
+                # Try without brackets: BASIL0003
+                elif not material and product_code.strip():
+                    material = db.query(Material).filter(
+                        Material.reference_code == product_code.strip()
+                    ).first()
             
             # If not found, try product_name (format: [BASIL0003] H.E. BASILIC INDES)
             if not material and product_name and product_name.startswith("[") and "]" in product_name:
@@ -314,7 +334,52 @@ async def import_questionnaire_from_json(
         db.commit()
         db.refresh(questionnaire)
         
-        return questionnaire
+        # Automatically validate against Blue Line
+        try:
+            validation_service = QuestionnaireValidationService(db)
+            validation_service.validate_questionnaire(questionnaire.id)
+        except Exception as e:
+            # Log error but don't fail questionnaire import
+            logger.warning(f"Validation failed for imported questionnaire {questionnaire.id}: {e}")
+        
+        # Check if Blue Line exists and perform comparison
+        from app.models.blue_line import BlueLine
+        blue_line = db.query(BlueLine).filter(
+            BlueLine.material_id == material.id
+        ).first()
+        
+        comparison_result = None
+        if blue_line:
+            # Perform material-specific comparison
+            comparison_result = MaterialSupplierComparisonService.compare_questionnaire_with_blue_line(
+                questionnaire, blue_line
+            )
+        else:
+            # No Blue Line exists
+            comparison_result = ComparisonResult(
+                blue_line_exists=False,
+                matches=0,
+                mismatches=[],
+                score=0,
+                message="No Blue Line exists for this material. You can create one from this questionnaire."
+            )
+        
+        # Return questionnaire with comparison result in a dict
+        # Serialize datetime to ISO string format
+        created_at_str = questionnaire.created_at.isoformat() if questionnaire.created_at else None
+        
+        questionnaire_dict = {
+            "id": questionnaire.id,
+            "material_id": questionnaire.material_id,
+            "supplier_code": questionnaire.supplier_code,
+            "questionnaire_type": questionnaire.questionnaire_type.value,
+            "version": questionnaire.version,
+            "status": questionnaire.status.value,
+            "created_at": created_at_str,
+            "comparison": comparison_result.model_dump() if comparison_result else None
+        }
+        
+        return questionnaire_dict
         
     except json.JSONDecodeError as e:
         raise HTTPException(
@@ -329,7 +394,131 @@ async def import_questionnaire_from_json(
         )
 
 
-# ===== Questionnaire Actions =====
+@router.post("/{questionnaire_id}/create-blue-line", response_model=dict, status_code=status.HTTP_201_CREATED)
+def create_blue_line_from_questionnaire(
+    questionnaire_id: int,
+    create_composite: bool = False,
+    db: Session = Depends(get_db)
+):
+    """
+    Create a Blue Line from an imported questionnaire.
+    
+    This is used when no Blue Line exists for the material.
+    The questionnaire responses become the Blue Line baseline.
+    Also creates a MaterialSupplier automatically.
+    """
+    from app.models.questionnaire import Questionnaire
+    from app.models.material import Material
+    from app.models.blue_line import BlueLine, BlueLineMaterialType, BlueLineSyncStatus
+    from app.models.questionnaire_template import QuestionnaireTemplate, TemplateType
+    from app.services.blue_line_calculator import BlueLineCalculator
+    from app.models.composite import Composite, CompositeStatus
+    from app.models.material_supplier import MaterialSupplier
+    
+    questionnaire = db.query(Questionnaire).filter(Questionnaire.id == questionnaire_id).first()
+    if not questionnaire:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Questionnaire {questionnaire_id} not found"
+        )
+    
+    material = db.query(Material).filter(Material.id == questionnaire.material_id).first()
+    if not material:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Material {questionnaire.material_id} not found"
+        )
+    
+    # Check if Blue Line already exists
+    existing_blue_line = db.query(BlueLine).filter(BlueLine.material_id == material.id).first()
+    if existing_blue_line:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Blue Line already exists for material {material.reference_code} (ID: {existing_blue_line.id})"
+        )
+    
+    # Get default template
+    default_template = db.query(QuestionnaireTemplate).filter(
+        QuestionnaireTemplate.is_default == True,
+        QuestionnaireTemplate.template_type == TemplateType.INITIAL_HOMOLOGATION
+    ).first()
+    
+    # Determine material type (default to Z001)
+    material_type = BlueLineMaterialType.Z001
+    
+    # Extract responses from questionnaire
+    responses = questionnaire.responses.copy() if questionnaire.responses else {}
+    
+    # Remove metadata fields
+    responses_clean = {k: v for k, v in responses.items() if not k.startswith("_")}
+    
+    # Create empty composite first
+    calculator = BlueLineCalculator(db)
+    composite = calculator._create_empty_composite(material.id)
+    
+    # Create Blue Line
+    blue_line = BlueLine(
+        material_id=material.id,
+        template_id=default_template.id if default_template else questionnaire.template_id,
+        responses=responses_clean,
+        material_type=material_type,
+        composite_id=composite.id,
+        sync_status=BlueLineSyncStatus.PENDING,
+        calculation_metadata={
+            "source": "questionnaire_import",
+            "questionnaire_id": questionnaire_id,
+            "created_from": "imported_questionnaire",
+            "date_established": datetime.utcnow().isoformat()
+        }
+    )
+    
+    db.add(blue_line)
+    db.flush()
+    
+    # Extract supplier name from questionnaire
+    supplier_name = None
+    if questionnaire.responses:
+        supplier_field = questionnaire.responses.get("q3t1s2f15")
+        if supplier_field:
+            if isinstance(supplier_field, dict):
+                supplier_name = supplier_field.get("value", "")
+            else:
+                supplier_name = str(supplier_field)
+    
+    # Create MaterialSupplier automatically
+    material_supplier = MaterialSupplier(
+        material_id=material.id,
+        questionnaire_id=questionnaire.id,
+        blue_line_id=blue_line.id,
+        supplier_code=questionnaire.supplier_code,
+        supplier_name=supplier_name,
+        status="ACTIVE",
+        validation_score=100,  # Perfect match since Blue Line created from this questionnaire
+        mismatch_fields=[],
+        accepted_mismatches=[],
+        validated_at=datetime.utcnow()
+    )
+    
+    db.add(material_supplier)
+    
+    # Update questionnaire status
+    questionnaire.status = QuestionnaireStatus.APPROVED
+    questionnaire.approved_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(blue_line)
+    db.refresh(material_supplier)
+    
+    result = {
+        "blue_line_id": blue_line.id,
+        "material_id": material.id,
+        "material_code": material.reference_code,
+        "composite_id": composite.id,
+        "material_supplier_id": material_supplier.id,
+        "message": "Blue Line created successfully from questionnaire"
+    }
+    
+    return result
 
 @router.post("/{questionnaire_id}/submit", response_model=QuestionnaireResponse)
 async def submit_questionnaire(

@@ -21,8 +21,10 @@ class BlueLineSyncStatus(str, enum.Enum):
 
 class BlueLine(Base):
     """
-    Blue Line (Línea Azul) - LLUCH material-supplier homologation record
-    Represents the internal homologation specification for a material-supplier pair
+    Blue Line (Línea Azul) - LLUCH material homologation specification
+    Represents the internal homologation specification for a material.
+    When a questionnaire arrives from a supplier (material + supplier_code), 
+    it is compared against this Blue Line to validate compliance.
     
     Uses the same structure as Questionnaire (template_id + responses organized by fieldCode)
     to maintain consistency with Lluch format.
@@ -30,12 +32,11 @@ class BlueLine(Base):
     __tablename__ = "blue_lines"
     
     __table_args__ = (
-        UniqueConstraint('material_id', 'supplier_code', name='uq_material_supplier'),
+        UniqueConstraint('material_id', name='uq_material_blue_line'),
     )
 
     id = Column(Integer, primary_key=True, index=True)
-    material_id = Column(Integer, ForeignKey("materials.id"), nullable=False, index=True)
-    supplier_code = Column(String(100), nullable=False, index=True)
+    material_id = Column(Integer, ForeignKey("materials.id"), nullable=False, unique=True, index=True)
     
     # Template reference (same as Questionnaire)
     template_id = Column(Integer, ForeignKey("questionnaire_templates.id"), nullable=True, index=True)
@@ -69,8 +70,8 @@ class BlueLine(Base):
     # Relationships
     material = relationship("Material", back_populates="blue_lines")
     template = relationship("QuestionnaireTemplate", foreign_keys=[template_id], backref="blue_lines")
-    composite = relationship("Composite", foreign_keys=[composite_id], uselist=False, cascade="all, delete-orphan")
+    composite = relationship("Composite", foreign_keys=[composite_id], uselist=False, cascade="all, delete-orphan", single_parent=True)
 
     def __repr__(self):
-        return f"<BlueLine(id={self.id}, material_id={self.material_id}, supplier_code='{self.supplier_code}', type={self.material_type})>"
+        return f"<BlueLine(id={self.id}, material_id={self.material_id}, type={self.material_type})>"
 

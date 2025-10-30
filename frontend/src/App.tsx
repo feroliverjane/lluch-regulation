@@ -44,6 +44,7 @@ function App() {
           <Route path="workflows" element={<Workflows />} />
           <Route path="blue-line" element={<BlueLine />} />
           <Route path="blue-line/:id" element={<BlueLineDetail />} />
+          <Route path="blue-line/material/:material_id" element={<BlueLineDetail />} />
           <Route path="blue-line/field-logic" element={<BlueLineFieldLogic />} />
           <Route path="questionnaires" element={<Questionnaires />} />
           <Route path="questionnaires/new" element={<QuestionnaireFormDynamic />} />

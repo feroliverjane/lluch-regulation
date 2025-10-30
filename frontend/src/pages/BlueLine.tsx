@@ -5,12 +5,13 @@ import '../components/Layout.css';
 interface BlueLine {
   id: number;
   material_id: number;
-  supplier_code: string;
   material_type: 'Z001' | 'Z002';
   sync_status: 'PENDING' | 'SYNCED' | 'FAILED' | 'NOT_REQUIRED';
   calculated_at: string;
   last_synced_at?: string;
   blue_line_data: Record<string, any>;
+  template_id?: number;
+  responses?: Record<string, any>;
 }
 
 interface Material {
@@ -176,9 +177,8 @@ export default function BlueLine() {
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Código Material</th>
               <th>Material</th>
-              <th>Código Proveedor</th>
               <th>Tipo</th>
               <th>Estado Sync</th>
               <th>Estado SAP</th>
@@ -190,7 +190,7 @@ export default function BlueLine() {
           <tbody>
             {filteredBlueLines.length === 0 ? (
               <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: '2rem' }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '2rem' }}>
                   No se encontraron registros de Línea Azul
                 </td>
               </tr>
@@ -199,25 +199,30 @@ export default function BlueLine() {
                 const material = materials.get(blueLine.material_id);
                 return (
                   <tr key={blueLine.id}>
-                    <td>#{blueLine.id}</td>
+                    <td>
+                      {material ? (
+                        <code style={{ fontSize: '0.875rem', fontWeight: '600' }}>
+                          {material.reference_code}
+                        </code>
+                      ) : (
+                        <code style={{ fontSize: '0.875rem' }}>MAT-{blueLine.material_id}</code>
+                      )}
+                    </td>
                     <td>
                       {material ? (
                         <div>
                           <div style={{ fontWeight: '500' }}>
                             <Link to={`/materials/${material.id}`} className="link">
-                              {material.reference_code}
+                              {material.name}
                             </Link>
                           </div>
-                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                            {material.name}
+                          <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                            ID: {material.id}
                           </div>
                         </div>
                       ) : (
                         `Material ${blueLine.material_id}`
                       )}
-                    </td>
-                    <td>
-                      <code style={{ fontSize: '0.875rem' }}>{blueLine.supplier_code}</code>
                     </td>
                     <td>{getMaterialTypeBadge(blueLine.material_type)}</td>
                     <td>{getSyncStatusBadge(blueLine.sync_status)}</td>
@@ -247,7 +252,7 @@ export default function BlueLine() {
                         : <span style={{ color: '#9ca3af' }}>Nunca</span>}
                     </td>
                     <td>
-                      <Link to={`/blue-line/${blueLine.id}`} className="link">
+                      <Link to={`/blue-line/material/${blueLine.material_id}`} className="link">
                         Ver Detalles
                       </Link>
                     </td>

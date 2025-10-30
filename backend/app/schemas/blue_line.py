@@ -21,7 +21,6 @@ class BlueLineSyncStatusSchema(str, Enum):
 class BlueLineBase(BaseModel):
     """Base Blue Line schema"""
     material_id: int
-    supplier_code: str
     template_id: Optional[int] = None
     responses: Dict[str, Any] = Field(default_factory=dict)
     blue_line_data: Dict[str, Any] = Field(default_factory=dict)  # Legacy, for backward compatibility
@@ -59,6 +58,18 @@ class BlueLineResponse(BlueLineBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+    @field_validator('responses', mode='before')
+    @classmethod
+    def ensure_responses_is_dict(cls, v):
+        """Ensure responses is always a dict, not None"""
+        return v if v is not None else {}
+    
+    @field_validator('blue_line_data', mode='before')
+    @classmethod
+    def ensure_blue_line_data_is_dict(cls, v):
+        """Ensure blue_line_data is always a dict, not None"""
+        return v if v is not None else {}
+
     class Config:
         from_attributes = True
 
@@ -66,7 +77,6 @@ class BlueLineResponse(BlueLineBase):
 class BlueLineCalculateRequest(BaseModel):
     """Schema for calculating a Blue Line"""
     material_id: int
-    supplier_code: str
     force_recalculate: bool = False
 
 
@@ -88,7 +98,6 @@ class BlueLineSyncResponse(BaseModel):
 class BlueLineEligibilityCheck(BaseModel):
     """Schema for eligibility check result"""
     material_id: int
-    supplier_code: str
     is_eligible: bool
     reasons: List[str] = Field(default_factory=list)
     has_purchase_history: bool

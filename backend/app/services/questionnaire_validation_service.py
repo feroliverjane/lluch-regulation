@@ -63,13 +63,17 @@ class QuestionnaireValidationService:
         return validations
     
     def compare_with_blue_line(self, questionnaire: Questionnaire) -> List[QuestionnaireValidation]:
-        """Compare questionnaire responses with Blue Line expected values"""
+        """Compare questionnaire responses with Blue Line expected values
+        
+        The Blue Line is associated with a material (not a supplier).
+        When a questionnaire arrives from a supplier, it is compared against 
+        the Blue Line for that material.
+        """
         validations = []
         
-        # Get Blue Line for this material-supplier pair
+        # Get Blue Line for this material (one Blue Line per material)
         blue_line = self.db.query(BlueLine).filter(
-            BlueLine.material_id == questionnaire.material_id,
-            BlueLine.supplier_code == questionnaire.supplier_code
+            BlueLine.material_id == questionnaire.material_id
         ).first()
         
         if not blue_line:
@@ -80,39 +84,41 @@ class QuestionnaireValidationService:
                 field_name="general",
                 severity=ValidationSeverity.INFO,
                 requires_action=False,
-                message="No Blue Line exists for this material-supplier pair. This will create a new baseline."
+                message=f"No Blue Line exists for material {questionnaire.material_id}. This questionnaire will be compared against future Blue Line when created."
             )
             validations.append(validation)
             return validations
         
-        # Compare key fields
-        blue_line_data = blue_line.blue_line_data or {}
-        responses = questionnaire.responses or {}
+        # Compare key fields using responses format (Lluch format)
+        # Blue Line responses are organized by fieldCode (e.g., "q3t1s2f15": {"value": "...", "name": "...", "type": "..."})
+        blue_line_responses = blue_line.responses or {}
+        questionnaire_responses = questionnaire.responses or {}
         
         # Get all critical fieldCodes to validate
         critical_field_codes = QuestionnaireFieldMapper.get_all_critical_fields()
         
         for field_code in critical_field_codes:
             # Check if this field exists in questionnaire responses
-            if field_code not in responses:
+            if field_code not in questionnaire_responses:
                 continue
             
-            # Get Blue Line field name
-            bl_field = QuestionnaireFieldMapper.get_blue_line_field(field_code)
+            # Get field name
             field_name = QuestionnaireFieldMapper.get_field_name(field_code)
             
-            # Get values
-            questionnaire_field_data = responses[field_code]
+            # Get values from responses format
+            questionnaire_field_data = questionnaire_responses[field_code]
             actual_value = QuestionnaireFieldMapper.extract_simple_value(questionnaire_field_data)
             actual_normalized = QuestionnaireFieldMapper.normalize_value(field_code, actual_value)
             
-            # Check if Blue Line has expected value for this field
-            if bl_field in blue_line_data:
-                expected = str(blue_line_data[bl_field])
+            # Check if Blue Line has expected value for this fieldCode
+            if field_code in blue_line_responses:
+                blue_line_field_data = blue_line_responses[field_code]
+                expected_value = QuestionnaireFieldMapper.extract_simple_value(blue_line_field_data)
+                expected_normalized = QuestionnaireFieldMapper.normalize_value(field_code, expected_value)
                 
-                if expected != actual_normalized:
+                if expected_normalized != actual_normalized:
                     # Calculate deviation for numeric fields
-                    deviation_pct = self._calculate_deviation(expected, actual_normalized)
+                    deviation_pct = self._calculate_deviation(expected_normalized, actual_normalized)
                     severity = self._determine_severity(deviation_pct)
                     
                     # Override severity for critical fields
@@ -123,38 +129,51 @@ class QuestionnaireValidationService:
                         questionnaire_id=questionnaire.id,
                         validation_type=ValidationType.BLUE_LINE_COMPARISON,
                         field_name=f"{field_code}:{field_name}",
-                        expected_value=expected,
+                        expected_value=expected_normalized,
                         actual_value=actual_normalized,
                         deviation_percentage=deviation_pct,
                         severity=severity,
                         requires_action=(severity == ValidationSeverity.CRITICAL),
-                        message=f"{field_name}: expected '{expected}', got '{actual_normalized}'"
+                        message=f"{field_name}: expected '{expected_normalized}', got '{actual_normalized}'"
                     )
                     validations.append(validation)
         
-        # Also check legacy simple fields for backward compatibility
-        legacy_fields = ["sustainability_score", "allergen_declaration"]
-        for field_name in legacy_fields:
-            if field_name in blue_line_data and field_name in responses:
-                expected = str(blue_line_data[field_name])
-                actual = str(responses[field_name])
+        # Legacy support: also check blue_line_data format for backward compatibility
+        blue_line_data = blue_line.blue_line_data or {}
+        if blue_line_data and not blue_line_responses:
+            # Only use legacy format if responses is empty
+            for field_code in critical_field_codes:
+                if field_code not in questionnaire_responses:
+                    continue
                 
-                if expected != actual:
-                    deviation_pct = self._calculate_deviation(expected, actual)
-                    severity = self._determine_severity(deviation_pct)
+                bl_field = QuestionnaireFieldMapper.get_blue_line_field(field_code)
+                field_name = QuestionnaireFieldMapper.get_field_name(field_code)
+                
+                if bl_field and bl_field in blue_line_data:
+                    questionnaire_field_data = questionnaire_responses[field_code]
+                    actual_value = QuestionnaireFieldMapper.extract_simple_value(questionnaire_field_data)
+                    actual_normalized = QuestionnaireFieldMapper.normalize_value(field_code, actual_value)
+                    expected = str(blue_line_data[bl_field])
                     
-                    validation = QuestionnaireValidation(
-                        questionnaire_id=questionnaire.id,
-                        validation_type=ValidationType.BLUE_LINE_COMPARISON,
-                        field_name=field_name,
-                        expected_value=expected,
-                        actual_value=actual,
-                        deviation_percentage=deviation_pct,
-                        severity=severity,
-                        requires_action=(severity == ValidationSeverity.CRITICAL),
-                        message=f"Value differs from Blue Line: expected '{expected}', got '{actual}'"
-                    )
-                    validations.append(validation)
+                    if expected != actual_normalized:
+                        deviation_pct = self._calculate_deviation(expected, actual_normalized)
+                        severity = self._determine_severity(deviation_pct)
+                        
+                        if QuestionnaireFieldMapper.is_critical_field(field_code) and severity == ValidationSeverity.WARNING:
+                            severity = ValidationSeverity.CRITICAL
+                        
+                        validation = QuestionnaireValidation(
+                            questionnaire_id=questionnaire.id,
+                            validation_type=ValidationType.BLUE_LINE_COMPARISON,
+                            field_name=f"{field_code}:{field_name}",
+                            expected_value=expected,
+                            actual_value=actual_normalized,
+                            deviation_percentage=deviation_pct,
+                            severity=severity,
+                            requires_action=(severity == ValidationSeverity.CRITICAL),
+                            message=f"{field_name}: expected '{expected}', got '{actual_normalized}'"
+                        )
+                        validations.append(validation)
         
         return validations
     

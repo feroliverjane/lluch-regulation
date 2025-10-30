@@ -25,7 +25,6 @@ class BlueLineCalculator:
     async def calculate_blue_line(
         self,
         material_id: int,
-        supplier_code: str,
         force_recalculate: bool = False
     ) -> Optional[BlueLine]:
         """
@@ -33,13 +32,12 @@ class BlueLineCalculator:
         
         Args:
             material_id: Material ID
-            supplier_code: Supplier code
             force_recalculate: Force recalculation even if exists
             
         Returns:
             BlueLine object or None if not eligible
         """
-        logger.info(f"Starting Blue Line calculation for material {material_id}, supplier {supplier_code}")
+        logger.info(f"Starting Blue Line calculation for material {material_id}")
         
         # Get material
         material = self.db.query(Material).filter(Material.id == material_id).first()
@@ -47,28 +45,27 @@ class BlueLineCalculator:
             logger.error(f"Material {material_id} not found")
             return None
         
-        # Check eligibility
-        is_eligible, eligibility_details = await self.check_eligibility(material_id, supplier_code)
+        # Check eligibility (no longer needs supplier_code)
+        is_eligible, eligibility_details = await self.check_eligibility(material_id)
         
         if not is_eligible:
             logger.info(f"Material {material_id} not eligible for Blue Line: {eligibility_details}")
             return None
         
-        # Check if Blue Line already exists
+        # Check if Blue Line already exists for this material
         existing_blue_line = self.db.query(BlueLine).filter(
-            BlueLine.material_id == material_id,
-            BlueLine.supplier_code == supplier_code
+            BlueLine.material_id == material_id
         ).first()
         
         if existing_blue_line and not force_recalculate:
-            logger.info(f"Blue Line already exists for material {material_id}, supplier {supplier_code}")
+            logger.info(f"Blue Line already exists for material {material_id}")
             return existing_blue_line
         
         # Determine material type (Z001 or Z002)
         material_type = self.determine_material_type(material)
         
-        # Aggregate homologation records
-        homologation_data = self.aggregate_homologation_records(material_id, supplier_code)
+        # Aggregate homologation records (now for all suppliers of this material)
+        homologation_data = self.aggregate_homologation_records(material_id)
         
         # Get active approved composites for this material
         approved_composites = self.db.query(Composite).filter(
@@ -79,7 +76,6 @@ class BlueLineCalculator:
         # Calculate 446 fields using field logic
         blue_line_data = await self.calculate_all_fields(
             material=material,
-            supplier_code=supplier_code,
             material_type=material_type,
             composites=approved_composites,
             homologation_data=homologation_data
@@ -142,7 +138,6 @@ class BlueLineCalculator:
             
             blue_line = BlueLine(
                 material_id=material_id,
-                supplier_code=supplier_code,
                 template_id=default_template.id if default_template else None,
                 responses=responses,
                 blue_line_data=blue_line_data,  # Keep for backward compatibility
@@ -164,7 +159,7 @@ class BlueLineCalculator:
         material.is_blue_line_eligible = True
         self.db.commit()
         
-        logger.info(f"Blue Line calculated successfully for material {material_id}, supplier {supplier_code}")
+        logger.info(f"Blue Line calculated successfully for material {material_id}")
         return blue_line
     
     def _create_empty_composite(self, material_id: int) -> Composite:
@@ -194,11 +189,10 @@ class BlueLineCalculator:
     
     async def check_eligibility(
         self,
-        material_id: int,
-        supplier_code: str
+        material_id: int
     ) -> Tuple[bool, Dict[str, Any]]:
         """
-        Check if material-supplier pair is eligible for Blue Line creation
+        Check if material is eligible for Blue Line creation
         
         Eligibility rules:
         1. Must have APC or APR in Regulatory section
@@ -309,11 +303,10 @@ class BlueLineCalculator:
     
     def aggregate_homologation_records(
         self,
-        material_id: int,
-        supplier_code: str
+        material_id: int
     ) -> List[Dict[str, Any]]:
         """
-        Aggregate homologation records, excluding CAN, REJ, EXP states
+        Aggregate homologation records for all suppliers of this material, excluding CAN, REJ, EXP states
         
         Returns:
             List of valid homologation workflow data
@@ -322,11 +315,8 @@ class BlueLineCalculator:
         
         workflows = self.db.query(ApprovalWorkflow).join(
             Composite, ApprovalWorkflow.composite_id == Composite.id
-        ).join(
-            Material, Composite.material_id == Material.id
         ).filter(
-            Material.id == material_id,
-            Material.supplier_code == supplier_code,
+            Composite.material_id == material_id,
             ~ApprovalWorkflow.status.in_(excluded_states)
         ).all()
         
@@ -346,7 +336,6 @@ class BlueLineCalculator:
     async def calculate_all_fields(
         self,
         material: Material,
-        supplier_code: str,
         material_type: BlueLineMaterialType,
         composites: List[Composite],
         homologation_data: List[Dict[str, Any]]
@@ -372,7 +361,6 @@ class BlueLineCalculator:
                 field_value = await self.apply_field_logic(
                     field_logic=field_logic,
                     material=material,
-                    supplier_code=supplier_code,
                     composites=composites,
                     homologation_data=homologation_data,
                     current_data=blue_line_data
@@ -388,7 +376,6 @@ class BlueLineCalculator:
         self,
         field_logic: BlueLineFieldLogic,
         material: Material,
-        supplier_code: str,
         composites: List[Composite],
         homologation_data: List[Dict[str, Any]],
         current_data: Dict[str, Any]
@@ -403,9 +390,12 @@ class BlueLineCalculator:
         
         Example logic_expression formats:
         - {"source": "material.name"} -> Return material.name
-        - {"source": "material.supplier"} -> Return material.supplier
+        - {"source": "material.supplier_code"} -> Return material.supplier_code (if exists)
         - {"fixed_value": "LLUCH"} -> Return "LLUCH"
         - {"calculation": {"type": "count", "source": "composites"}} -> Return len(composites)
+        
+        Note: Blue Line is material-specific, not supplier-specific.
+        If a field logic references supplier_code, it may return None or a default value.
         """
         logic = field_logic.logic_expression
         
@@ -426,7 +416,9 @@ class BlueLineCalculator:
                     return getattr(latest_composite, attr_name, None)
             
             elif source == "supplier_code":
-                return supplier_code
+                # Blue Line is material-specific, not supplier-specific
+                # Return None or material's supplier_code if exists (for backward compatibility)
+                return getattr(material, "supplier_code", None)
         
         elif "fixed_value" in logic:
             return logic["fixed_value"]
@@ -460,46 +452,38 @@ class BlueLineCalculator:
     
     async def handle_single_provider_rejection(
         self,
-        material_id: int,
-        supplier_code: str
+        material_id: int
     ) -> bool:
         """
-        Handle case where single provider's homologation is rejected/cancelled/expired
+        Handle case where all homologations for a material are rejected/cancelled/expired
         Should delete or empty the Blue Line
         
         Returns:
             True if Blue Line was deleted, False otherwise
         """
-        # Check if this is the only provider for this material
-        all_suppliers = self.db.query(Material.supplier_code).filter(
-            Material.id == material_id,
-            Material.supplier_code.isnot(None)
-        ).distinct().all()
+        # Check workflows for this material
+        workflows = self.db.query(ApprovalWorkflow).join(
+            Composite, ApprovalWorkflow.composite_id == Composite.id
+        ).filter(
+            Composite.material_id == material_id
+        ).all()
         
-        if len(all_suppliers) == 1:
-            # This is the only supplier, check if all workflows are rejected
-            workflows = self.db.query(ApprovalWorkflow).join(
-                Composite, ApprovalWorkflow.composite_id == Composite.id
-            ).filter(
-                Composite.material_id == material_id
-            ).all()
-            
+        if workflows:
             all_rejected = all(
                 workflow.status in [WorkflowStatus.CAN, WorkflowStatus.REJ, WorkflowStatus.EXP]
                 for workflow in workflows
             )
             
             if all_rejected:
-                # Delete Blue Line
+                # Delete Blue Line (one per material)
                 blue_line = self.db.query(BlueLine).filter(
-                    BlueLine.material_id == material_id,
-                    BlueLine.supplier_code == supplier_code
+                    BlueLine.material_id == material_id
                 ).first()
                 
                 if blue_line:
                     self.db.delete(blue_line)
                     self.db.commit()
-                    logger.info(f"Deleted Blue Line for material {material_id}, supplier {supplier_code} (single provider rejection)")
+                    logger.info(f"Deleted Blue Line for material {material_id} (all homologations rejected)")
                     return True
         
         return False
