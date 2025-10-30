@@ -22,8 +22,11 @@ class BlueLineBase(BaseModel):
     """Base Blue Line schema"""
     material_id: int
     supplier_code: str
-    blue_line_data: Dict[str, Any] = Field(default_factory=dict)
+    template_id: Optional[int] = None
+    responses: Dict[str, Any] = Field(default_factory=dict)
+    blue_line_data: Dict[str, Any] = Field(default_factory=dict)  # Legacy, for backward compatibility
     material_type: BlueLineMaterialTypeSchema
+    composite_id: Optional[int] = None
     calculation_metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 
@@ -34,8 +37,11 @@ class BlueLineCreate(BlueLineBase):
 
 class BlueLineUpdate(BaseModel):
     """Schema for updating a Blue Line"""
+    template_id: Optional[int] = None
+    responses: Optional[Dict[str, Any]] = None
     blue_line_data: Optional[Dict[str, Any]] = None
     material_type: Optional[BlueLineMaterialTypeSchema] = None
+    composite_id: Optional[int] = None
     calculation_metadata: Optional[Dict[str, Any]] = None
     sync_status: Optional[BlueLineSyncStatusSchema] = None
 
@@ -43,6 +49,9 @@ class BlueLineUpdate(BaseModel):
 class BlueLineResponse(BlueLineBase):
     """Schema for Blue Line response"""
     id: int
+    template_id: Optional[int] = None
+    responses: Dict[str, Any] = Field(default_factory=dict)
+    composite_id: Optional[int] = None
     sync_status: BlueLineSyncStatusSchema
     last_synced_at: Optional[datetime] = None
     sync_error_message: Optional[str] = None

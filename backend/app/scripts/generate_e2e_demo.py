@@ -21,6 +21,8 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.models.material import Material
 from app.models.blue_line import BlueLine, BlueLineMaterialType, BlueLineSyncStatus
+from app.models.questionnaire_template import QuestionnaireTemplate, TemplateType
+from app.models.composite import Composite, CompositeOrigin, CompositeStatus
 from app.models.questionnaire import Questionnaire, QuestionnaireType, QuestionnaireStatus
 from app.models.questionnaire_validation import QuestionnaireValidation, ValidationType, ValidationSeverity
 from app.models.questionnaire_incident import QuestionnaireIncident, IncidentStatus, ResolutionAction
@@ -83,24 +85,64 @@ def create_initial_scenario(db: Session) -> tuple:
     ).first()
     
     if not blue_line:
+        # Get default template
+        default_template = db.query(QuestionnaireTemplate).filter(
+            QuestionnaireTemplate.is_default == True,
+            QuestionnaireTemplate.template_type == TemplateType.INITIAL_HOMOLOGATION
+        ).first()
+        
+        blue_line_data = {
+            "material_reference": material.reference_code,
+            "material_name": material.name,
+            "supplier_name": material.supplier,
+            "quality_certificate": "ISO 9001:2015",
+            "purity_percentage": "99.8",
+            "moisture_content": "0.15",
+            "sustainability_score": "85",
+            "organic_certified": "Yes",
+            "allergen_declaration": "None",
+            "country_of_origin": "France",
+            "expected_standard": "EU Regulation Compliant"
+        }
+        
+        # Convert to responses format if template exists
+        responses = {}
+        if default_template:
+            from app.services.questionnaire_field_mapper import QuestionnaireFieldMapper
+            field_mapper = QuestionnaireFieldMapper()
+            for field in default_template.questions_schema:
+                field_code = field.get("fieldCode", "")
+                field_name = field.get("fieldName", "")
+                bl_field = field_mapper.get_blue_line_field(field_code)
+                if bl_field and bl_field in blue_line_data:
+                    responses[field_code] = {
+                        "value": blue_line_data[bl_field],
+                        "name": field_name,
+                        "type": field.get("fieldType", "text")
+                    }
+        
+        # Create empty composite
+        composite = Composite(
+            material_id=material.id,
+            version=1,
+            origin=CompositeOrigin.MANUAL,
+            status=CompositeStatus.DRAFT,
+            composite_metadata={},
+            notes="Empty composite created for Blue Line - to be filled manually"
+        )
+        db.add(composite)
+        db.commit()
+        db.refresh(composite)
+        
         blue_line = BlueLine(
             material_id=material.id,
             supplier_code=material.supplier_code,
+            template_id=default_template.id if default_template else None,
+            responses=responses,
+            blue_line_data=blue_line_data,  # Keep for backward compatibility
             material_type=BlueLineMaterialType.Z002,
+            composite_id=composite.id,
             sync_status=BlueLineSyncStatus.SYNCED,
-            blue_line_data={
-                "material_reference": material.reference_code,
-                "material_name": material.name,
-                "supplier_name": material.supplier,
-                "quality_certificate": "ISO 9001:2015",
-                "purity_percentage": "99.8",
-                "moisture_content": "0.15",
-                "sustainability_score": "85",
-                "organic_certified": "Yes",
-                "allergen_declaration": "None",
-                "country_of_origin": "France",
-                "expected_standard": "EU Regulation Compliant"
-            },
             calculation_metadata={
                 "source": "Lluch Laboratory Analysis",
                 "last_analysis_date": "2024-06-15",
@@ -112,11 +154,29 @@ def create_initial_scenario(db: Session) -> tuple:
         db.refresh(blue_line)
         print(f"✅ Created Blue Line for {material.reference_code}")
         print(f"   - Material Type: {blue_line.material_type.value}")
+        print(f"   - Template: {default_template.name if default_template else 'None'}")
+        print(f"   - Composite ID: {composite.id}")
         print(f"   - Expected Purity: {blue_line.blue_line_data['purity_percentage']}%")
         print(f"   - Expected Moisture: {blue_line.blue_line_data['moisture_content']}%")
         print(f"   - Sustainability Score: {blue_line.blue_line_data['sustainability_score']}")
     else:
         print(f"✅ Using existing Blue Line")
+        # Ensure composite exists
+        if not blue_line.composite_id:
+            composite = Composite(
+                material_id=material.id,
+                version=1,
+                origin=CompositeOrigin.MANUAL,
+                status=CompositeStatus.DRAFT,
+                composite_metadata={},
+                notes="Empty composite created for Blue Line - to be filled manually"
+            )
+            db.add(composite)
+            db.commit()
+            db.refresh(composite)
+            blue_line.composite_id = composite.id
+            db.commit()
+            print(f"   • Created missing composite: {composite.id}")
     
     return material, blue_line
 

@@ -7,7 +7,8 @@ from app.models.material import Material
 from app.models.blue_line import BlueLine, BlueLineMaterialType
 from app.models.blue_line_field_logic import BlueLineFieldLogic
 from app.models.approval_workflow import ApprovalWorkflow, WorkflowStatus
-from app.models.composite import Composite, CompositeStatus
+from app.models.composite import Composite, CompositeStatus, CompositeOrigin
+from app.models.questionnaire_template import QuestionnaireTemplate, TemplateType
 from app.core.config import settings
 from app.integrations.erp_adapter import ERPAdapter
 
@@ -84,9 +85,42 @@ class BlueLineCalculator:
             homologation_data=homologation_data
         )
         
+        # Get default template
+        default_template = self.db.query(QuestionnaireTemplate).filter(
+            QuestionnaireTemplate.is_default == True,
+            QuestionnaireTemplate.template_type == TemplateType.INITIAL_HOMOLOGATION
+        ).first()
+        
+        # Convert blue_line_data to responses format (organized by fieldCode)
+        responses = {}
+        if default_template:
+            # Map blue_line_data fields to fieldCode format
+            for field in default_template.questions_schema:
+                field_code = field.get("fieldCode", "")
+                field_name = field.get("fieldName", "")
+                # Try to find matching value in blue_line_data
+                # This is a simplified mapping - you may need to adjust based on your field mapping logic
+                if field_code and field_code in blue_line_data:
+                    responses[field_code] = {
+                        "value": blue_line_data[field_code],
+                        "name": field_name,
+                        "type": field.get("fieldType", "text")
+                    }
+                elif field_name and field_name in blue_line_data:
+                    responses[field_code] = {
+                        "value": blue_line_data[field_name],
+                        "name": field_name,
+                        "type": field.get("fieldType", "text")
+                    }
+        else:
+            # Fallback: keep original format in blue_line_data
+            responses = {}
+        
         # Create or update Blue Line
         if existing_blue_line:
             existing_blue_line.blue_line_data = blue_line_data
+            existing_blue_line.responses = responses if responses else existing_blue_line.responses
+            existing_blue_line.template_id = default_template.id if default_template else existing_blue_line.template_id
             existing_blue_line.material_type = material_type
             existing_blue_line.calculated_at = datetime.now()
             existing_blue_line.calculation_metadata = {
@@ -96,12 +130,24 @@ class BlueLineCalculator:
                 "homologation_records_count": len(homologation_data) if homologation_data else 0
             }
             blue_line = existing_blue_line
+            
+            # Ensure composite exists for existing blue line
+            if not blue_line.composite_id:
+                composite = self._create_empty_composite(material_id)
+                blue_line.composite_id = composite.id
+                self.db.commit()
         else:
+            # Create empty composite first
+            composite = self._create_empty_composite(material_id)
+            
             blue_line = BlueLine(
                 material_id=material_id,
                 supplier_code=supplier_code,
-                blue_line_data=blue_line_data,
+                template_id=default_template.id if default_template else None,
+                responses=responses,
+                blue_line_data=blue_line_data,  # Keep for backward compatibility
                 material_type=material_type,
+                composite_id=composite.id,
                 calculation_metadata={
                     "created": datetime.now().isoformat(),
                     "eligibility_details": eligibility_details,
@@ -120,6 +166,31 @@ class BlueLineCalculator:
         
         logger.info(f"Blue Line calculated successfully for material {material_id}, supplier {supplier_code}")
         return blue_line
+    
+    def _create_empty_composite(self, material_id: int) -> Composite:
+        """Create an empty composite for a Blue Line"""
+        # Get latest version for this material
+        latest_composite = self.db.query(Composite).filter(
+            Composite.material_id == material_id
+        ).order_by(Composite.version.desc()).first()
+        
+        next_version = (latest_composite.version + 1) if latest_composite else 1
+        
+        composite = Composite(
+            material_id=material_id,
+            version=next_version,
+            origin=CompositeOrigin.MANUAL,
+            status=CompositeStatus.DRAFT,
+            composite_metadata={},
+            notes="Empty composite created for Blue Line - to be filled manually"
+        )
+        
+        self.db.add(composite)
+        self.db.commit()
+        self.db.refresh(composite)
+        
+        logger.info(f"Created empty composite {composite.id} for Blue Line")
+        return composite
     
     async def check_eligibility(
         self,

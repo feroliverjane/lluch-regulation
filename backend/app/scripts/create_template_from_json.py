@@ -117,8 +117,28 @@ def create_template_from_json(db: SessionLocal):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
     json_file = os.path.join(project_root, "data", "questionnaires", "JSON Z1_Basicilo_MPE.txt")
+    section_names_file = os.path.join(project_root, "data", "questionnaires", "section_names_mapping.json")
+    tab_names_file = os.path.join(project_root, "data", "questionnaires", "tab_names_mapping.json")
     
     print(f"▶ Reading: {os.path.basename(json_file)}")
+    
+    # Load section names mapping if it exists
+    section_names = {}
+    if os.path.exists(section_names_file):
+        with open(section_names_file, 'r', encoding='utf-8') as f:
+            section_names = json.load(f)
+        print(f"✅ Loaded section names mapping: {len(section_names)} sections")
+    else:
+        print(f"⚠️  Section names mapping not found, using numeric names")
+    
+    # Load tab names mapping if it exists
+    tab_names = {}
+    if os.path.exists(tab_names_file):
+        with open(tab_names_file, 'r', encoding='utf-8') as f:
+            tab_names = json.load(f)
+        print(f"✅ Loaded tab names mapping: {len(tab_names)} tabs")
+    else:
+        print(f"⚠️  Tab names mapping not found, using numeric names")
     
     # Parse JSON
     parser = QuestionnaireJSONParser(json_file)
@@ -191,6 +211,8 @@ def create_template_from_json(db: SessionLocal):
         existing.questions_schema = questions_schema
         existing.total_questions = len(questions_schema)
         existing.total_sections = total_sections
+        existing.section_names = section_names
+        existing.tab_names = tab_names
         existing.version = "1.0"
         db.commit()
         template = existing
@@ -203,6 +225,8 @@ def create_template_from_json(db: SessionLocal):
             questions_schema=questions_schema,
             total_questions=len(questions_schema),
             total_sections=total_sections,
+            section_names=section_names,
+            tab_names=tab_names,
             is_active=True,
             is_default=True
         )

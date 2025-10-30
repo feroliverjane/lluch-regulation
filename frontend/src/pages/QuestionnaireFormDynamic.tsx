@@ -25,9 +25,12 @@ interface QuestionField {
 interface Template {
   id: number;
   name: string;
+  description: string;
   questions_schema: QuestionField[];
   total_questions: number;
   total_sections: number;
+  section_names?: { [key: string]: string };  // Mapping of "tab_section" to section name
+  tab_names?: { [key: string]: string };  // Mapping of "tab_number" to tab name
 }
 
 export default function QuestionnaireFormDynamic() {
@@ -104,8 +107,14 @@ export default function QuestionnaireFormDynamic() {
       width: '100%',
       padding: '8px',
       borderRadius: '6px',
-      border: '1px solid #e5e7eb',
-      fontSize: '14px'
+      border: '1px solid #4b5563',
+      fontSize: '14px',
+      backgroundColor: '#374151',
+      color: 'white'
+    } as React.CSSProperties;
+
+    const placeholderStyle = {
+      color: '#9ca3af'
     };
 
     switch (field.fieldType) {
@@ -152,10 +161,10 @@ export default function QuestionnaireFormDynamic() {
             required={field.required}
             style={commonStyle}
           >
-            <option value="">Select...</option>
-            <option value="YES">Yes</option>
-            <option value="NO">No</option>
-            <option value="NA">Not Applicable</option>
+            <option value="" style={{ backgroundColor: '#374151', color: '#9ca3af' }}>Select...</option>
+            <option value="YES" style={{ backgroundColor: '#374151', color: 'white' }}>Yes</option>
+            <option value="NO" style={{ backgroundColor: '#374151', color: 'white' }}>No</option>
+            <option value="NA" style={{ backgroundColor: '#374151', color: 'white' }}>Not Applicable</option>
           </select>
         );
 
@@ -172,10 +181,10 @@ export default function QuestionnaireFormDynamic() {
               }}
               style={{ ...commonStyle, flex: '0 0 120px' }}
             >
-              <option value="">Select...</option>
-              <option value="YES">Yes</option>
-              <option value="NO">No</option>
-              <option value="NA">N/A</option>
+              <option value="" style={{ backgroundColor: '#374151', color: '#9ca3af' }}>Select...</option>
+              <option value="YES" style={{ backgroundColor: '#374151', color: 'white' }}>Yes</option>
+              <option value="NO" style={{ backgroundColor: '#374151', color: 'white' }}>No</option>
+              <option value="NA" style={{ backgroundColor: '#374151', color: 'white' }}>N/A</option>
             </select>
             <input
               type="text"
@@ -311,11 +320,11 @@ export default function QuestionnaireFormDynamic() {
     <div>
       <div className="page-header">
         <div>
-          <Link to="/questionnaires" className="link" style={{ marginBottom: '8px', display: 'inline-block' }}>
+          <Link to="/questionnaires" className="link" style={{ marginBottom: '8px', display: 'inline-block', color: 'white' }}>
             ← Volver a Cuestionarios
           </Link>
-          <h1>Nuevo Cuestionario - Formato Lluch</h1>
-          <p style={{ color: '#374151', marginTop: '4px', fontWeight: '500' }}>
+          <h1 style={{ color: 'white' }}>Nuevo Cuestionario - Formato Lluch</h1>
+          <p style={{ color: '#d1d5db', marginTop: '4px' }}>
             {template.name} - {template.total_questions} campos organizados en {template.total_sections} secciones
           </p>
         </div>
@@ -324,72 +333,77 @@ export default function QuestionnaireFormDynamic() {
       {error && (
         <div style={{ 
           padding: '16px', 
-          backgroundColor: '#fef2f2', 
-          border: '1px solid #fecaca',
+          backgroundColor: '#7f1d1d', 
+          border: '1px solid #991b1b',
           borderRadius: '6px',
           marginBottom: '24px',
-          color: '#991b1b'
+          color: '#fca5a5'
         }}>
           {error}
         </div>
       )}
 
       <form onSubmit={(e) => handleSubmit(e, false)}>
-        {/* Basic Info */}
-        <div className="card" style={{ marginBottom: '24px' }}>
-          <h2 style={{ marginTop: 0, color: '#111827', fontSize: '20px', fontWeight: '600' }}>Información Básica</h2>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#111827' }}>
-                Material *
-              </label>
-              <select
-                value={materialId}
-                onChange={handleMaterialChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '6px',
-                  border: '1px solid #e5e7eb'
-                }}
-              >
-                <option value="">Seleccione un material</option>
-                {materials.map(material => (
-                  <option key={material.id} value={material.id}>
-                    {material.reference_code} - {material.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+      {/* Basic Info */}
+      <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
+        <h2 style={{ marginTop: 0, color: 'white' }}>Información Básica</h2>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: 'white' }}>
+              Material *
+            </label>
+            <select
+              value={materialId}
+              onChange={handleMaterialChange}
+              required
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #4b5563',
+                backgroundColor: '#374151',
+                color: 'white'
+              }}
+            >
+              <option value="" style={{ backgroundColor: '#374151', color: 'white' }}>Seleccione un material</option>
+              {materials.map(material => (
+                <option key={material.id} value={material.id} style={{ backgroundColor: '#374151', color: 'white' }}>
+                  {material.reference_code} - {material.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#111827' }}>
-                Código Proveedor *
-              </label>
-              <input
-                type="text"
-                value={supplierCode}
-                onChange={(e) => setSupplierCode(e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '6px',
-                  border: '1px solid #e5e7eb'
-                }}
-              />
-            </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: 'white' }}>
+              Código Proveedor *
+            </label>
+            <input
+              type="text"
+              value={supplierCode}
+              onChange={(e) => setSupplierCode(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #4b5563',
+                backgroundColor: '#374151',
+                color: 'white'
+              }}
+            />
           </div>
         </div>
+      </div>
 
         {/* Tab Navigation */}
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', gap: '4px', borderBottom: '2px solid #e5e7eb' }}>
+          <div style={{ display: 'flex', gap: '4px', borderBottom: '2px solid #4b5563' }}>
             {Object.keys(tabs).map(tab => {
               const tabNum = parseInt(tab);
               const isActive = currentTab === tabNum;
+              const tabName = template?.tab_names?.[tab] || `Tab ${tabNum}`;
               return (
                 <button
                   key={tab}
@@ -399,14 +413,14 @@ export default function QuestionnaireFormDynamic() {
                     padding: '12px 24px',
                     border: 'none',
                     borderBottom: isActive ? '3px solid #3b82f6' : '3px solid transparent',
-                    background: isActive ? '#eff6ff' : 'transparent',
-                    color: isActive ? '#1e40af' : '#6b7280',
+                    background: isActive ? '#374151' : 'transparent',
+                    color: isActive ? 'white' : '#9ca3af',
                     fontWeight: isActive ? '600' : '400',
                     cursor: 'pointer',
                     fontSize: '14px'
                   }}
                 >
-                  Tab {tabNum}
+                  {tabName}
                 </button>
               );
             })}
@@ -416,11 +430,14 @@ export default function QuestionnaireFormDynamic() {
         {/* Fields by Section */}
         {Object.entries(currentTabSections).map(([sectionNum, fields]) => {
           const sectionFields = fields as QuestionField[];
+          const sectionKey = `${currentTab}_${sectionNum}`;
+          const sectionName = template?.section_names?.[sectionKey] || `Sección ${sectionNum}`;
+          
           return (
-            <div key={sectionNum} className="card" style={{ marginBottom: '24px' }}>
-              <h2 style={{ marginTop: 0, fontSize: '18px', color: '#111827', fontWeight: '600' }}>
-                Section {sectionNum}
-                <span style={{ fontSize: '14px', fontWeight: 'normal', color: '#374151', marginLeft: '12px' }}>
+            <div key={sectionNum} className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
+              <h2 style={{ marginTop: 0, fontSize: '18px', color: 'white' }}>
+                {sectionName}
+                <span style={{ fontSize: '14px', fontWeight: 'normal', color: '#9ca3af', marginLeft: '12px' }}>
                   ({sectionFields.length} campos)
                 </span>
               </h2>
@@ -428,8 +445,8 @@ export default function QuestionnaireFormDynamic() {
               <div style={{ display: 'grid', gap: '20px' }}>
                 {sectionFields.map((field) => (
                   <div key={field.fieldCode}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#111827' }}>
-                      <span style={{ fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'white' }}>
+                      <span style={{ fontWeight: '500' }}>
                         {field.fieldName}
                         {field.required && <span style={{ color: '#ef4444', marginLeft: '4px' }}>*</span>}
                         {field.critical && (
@@ -437,10 +454,9 @@ export default function QuestionnaireFormDynamic() {
                             marginLeft: '8px', 
                             fontSize: '11px', 
                             padding: '2px 6px', 
-                            backgroundColor: '#fee2e2',
-                            color: '#991b1b',
-                            borderRadius: '4px',
-                            fontWeight: '500'
+                            backgroundColor: '#7f1d1d',
+                            color: '#fca5a5',
+                            borderRadius: '4px'
                           }}>
                             CRITICAL
                           </span>
@@ -448,10 +464,9 @@ export default function QuestionnaireFormDynamic() {
                       </span>
                       <span style={{ 
                         fontSize: '11px', 
-                        color: '#6b7280', 
+                        color: '#9ca3af', 
                         fontFamily: 'monospace',
-                        marginLeft: '8px',
-                        fontWeight: '400'
+                        marginLeft: '8px'
                       }}>
                         {field.fieldCode}
                       </span>
@@ -459,7 +474,7 @@ export default function QuestionnaireFormDynamic() {
                     {renderField(field)}
                     
                     {field.fieldType.includes('Table') && (
-                      <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+                      <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '4px' }}>
                         Formato tabla: Use "[]" para vacío o JSON array
                       </div>
                     )}
@@ -471,12 +486,12 @@ export default function QuestionnaireFormDynamic() {
         })}
 
         {/* Progress Indicator */}
-        <div className="card" style={{ marginBottom: '24px', backgroundColor: '#f9fafb' }}>
-          <div style={{ fontSize: '14px', color: '#374151', fontWeight: '600' }}>
+        <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
+          <div style={{ fontSize: '14px', color: '#d1d5db' }}>
             Progreso del cuestionario
           </div>
           <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ flex: 1, height: '8px', backgroundColor: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ flex: 1, height: '8px', backgroundColor: '#374151', borderRadius: '4px', overflow: 'hidden' }}>
               <div style={{
                 width: `${(Object.keys(responses).length / template.total_questions) * 100}%`,
                 height: '100%',
@@ -484,7 +499,7 @@ export default function QuestionnaireFormDynamic() {
                 transition: 'width 0.3s'
               }} />
             </div>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: '#111827' }}>
+            <div style={{ fontSize: '14px', fontWeight: '500', color: 'white' }}>
               {Object.keys(responses).length} / {template.total_questions}
             </div>
           </div>
@@ -492,28 +507,30 @@ export default function QuestionnaireFormDynamic() {
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '14px', color: '#374151', fontWeight: '500' }}>
+          <div style={{ fontSize: '14px', color: '#d1d5db' }}>
             {currentTab < Object.keys(tabs).length ? (
               <button
                 type="button"
                 onClick={() => setCurrentTab(currentTab + 1)}
                 className="btn-secondary"
+                style={{ backgroundColor: '#374151', color: 'white', border: '1px solid #4b5563' }}
               >
                 Siguiente Tab →
               </button>
             ) : (
-              <span>✅ Última sección</span>
+              <span style={{ color: '#d1d5db' }}>✅ Última sección</span>
             )}
           </div>
           
           <div style={{ display: 'flex', gap: '12px' }}>
-            <Link to="/questionnaires" className="btn-secondary">
+            <Link to="/questionnaires" className="btn-secondary" style={{ backgroundColor: '#374151', color: 'white', border: '1px solid #4b5563' }}>
               Cancelar
             </Link>
             <button
               type="submit"
               className="btn-secondary"
               disabled={saving}
+              style={{ backgroundColor: '#374151', color: 'white', border: '1px solid #4b5563' }}
             >
               {saving ? 'Guardando...' : 'Guardar Borrador'}
             </button>

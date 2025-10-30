@@ -22,6 +22,8 @@ from app.core.database import SessionLocal
 from app.models.material import Material
 from app.models.blue_line import BlueLine, BlueLineMaterialType, BlueLineSyncStatus
 from app.models.questionnaire import Questionnaire, QuestionnaireStatus
+from app.models.questionnaire_template import QuestionnaireTemplate, TemplateType
+from app.models.composite import Composite, CompositeOrigin, CompositeStatus
 from app.parsers.questionnaire_json_parser import QuestionnaireJSONParser
 from app.services.questionnaire_validation_service import QuestionnaireValidationService
 from app.services.questionnaire_ai_service import QuestionnaireAIService
@@ -100,6 +102,12 @@ def setup_material_and_blue_line(db: Session) -> tuple:
     ).first()
     
     if not blue_line:
+        # Get default template
+        default_template = db.query(QuestionnaireTemplate).filter(
+            QuestionnaireTemplate.is_default == True,
+            QuestionnaireTemplate.template_type == TemplateType.INITIAL_HOMOLOGATION
+        ).first()
+        
         # Create Blue Line with expected values (these would normally come from Lluch analysis)
         blue_line_data = {
             "material_reference": material.reference_code,
@@ -122,12 +130,55 @@ def setup_material_and_blue_line(db: Session) -> tuple:
             "renewability_percentage": "100",
         }
         
+        # Convert to responses format if template exists
+        responses = {}
+        if default_template:
+            # Map blue_line_data fields to fieldCode format using template
+            field_mapper = QuestionnaireFieldMapper()
+            for field in default_template.questions_schema:
+                field_code = field.get("fieldCode", "")
+                field_name = field.get("fieldName", "")
+                # Try to find matching value by field name or field code
+                bl_field = field_mapper.get_blue_line_field(field_code)
+                if bl_field and bl_field in blue_line_data:
+                    responses[field_code] = {
+                        "value": blue_line_data[bl_field],
+                        "name": field_name,
+                        "type": field.get("fieldType", "text")
+                    }
+                elif field_name and any(key in field_name for key in blue_line_data.keys()):
+                    # Fallback: try to match by field name
+                    for bl_key, bl_value in blue_line_data.items():
+                        if bl_key.lower() in field_name.lower() or field_name.lower() in bl_key.lower():
+                            responses[field_code] = {
+                                "value": bl_value,
+                                "name": field_name,
+                                "type": field.get("fieldType", "text")
+                            }
+                            break
+        
+        # Create empty composite
+        composite = Composite(
+            material_id=material.id,
+            version=1,
+            origin=CompositeOrigin.MANUAL,
+            status=CompositeStatus.DRAFT,
+            composite_metadata={},
+            notes="Empty composite created for Blue Line - to be filled manually"
+        )
+        db.add(composite)
+        db.commit()
+        db.refresh(composite)
+        
         blue_line = BlueLine(
             material_id=material.id,
             supplier_code=material.supplier_code,
+            template_id=default_template.id if default_template else None,
+            responses=responses,
+            blue_line_data=blue_line_data,  # Keep for backward compatibility
             material_type=BlueLineMaterialType.Z001,  # Estimated from supplier
+            composite_id=composite.id,
             sync_status=BlueLineSyncStatus.PENDING,
-            blue_line_data=blue_line_data,
             calculation_metadata={
                 "source": "Supplier Questionnaire",
                 "date_established": datetime.now().isoformat(),
@@ -138,12 +189,31 @@ def setup_material_and_blue_line(db: Session) -> tuple:
         db.commit()
         db.refresh(blue_line)
         print(f"\n✅ Created Blue Line (Type: {blue_line.material_type.value})")
+        print(f"   • Template: {default_template.name if default_template else 'None'}")
+        print(f"   • Composite ID: {composite.id}")
     else:
         print(f"\n✅ Found existing Blue Line")
+        # Ensure composite exists
+        if not blue_line.composite_id:
+            composite = Composite(
+                material_id=material.id,
+                version=1,
+                origin=CompositeOrigin.MANUAL,
+                status=CompositeStatus.DRAFT,
+                composite_metadata={},
+                notes="Empty composite created for Blue Line - to be filled manually"
+            )
+            db.add(composite)
+            db.commit()
+            db.refresh(composite)
+            blue_line.composite_id = composite.id
+            db.commit()
+            print(f"   • Created missing composite: {composite.id}")
     
     print(f"   • Expected Values Set:")
     for key in ["kosher_certified", "halal_certified", "food_grade", "is_natural"]:
-        print(f"     - {key}: {blue_line.blue_line_data.get(key, 'N/A')}")
+        value = blue_line.responses.get(key, {}).get("value") if blue_line.responses else blue_line.blue_line_data.get(key, 'N/A')
+        print(f"     - {key}: {value}")
     
     return material, blue_line
 

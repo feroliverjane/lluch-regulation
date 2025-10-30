@@ -96,6 +96,9 @@ export default function Questionnaires() {
           <Link to="/questionnaires/new" className="btn-primary">
             Nuevo Cuestionario
           </Link>
+          <Link to="/questionnaires/import" className="btn-secondary">
+            Importar JSON
+          </Link>
         </div>
       </div>
 

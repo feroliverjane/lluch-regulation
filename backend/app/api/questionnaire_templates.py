@@ -20,6 +20,8 @@ class QuestionnaireTemplateResponse(BaseModel):
     questions_schema: list
     total_questions: int | None
     total_sections: int | None
+    section_names: dict | None  # Mapping of tab_section to human-readable names
+    tab_names: dict | None  # Mapping of tab number to human-readable names
     is_active: bool
     is_default: bool
 

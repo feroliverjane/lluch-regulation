@@ -32,6 +32,14 @@ class QuestionnaireTemplate(Base):
     total_questions = Column(Integer)
     total_sections = Column(Integer)
     
+    # Section names mapping: {"tab_section": "Section Name"}
+    # Example: {"1_2": "Información del Proveedor y Producto", "1_3": "Certificaciones"}
+    section_names = Column(JSON)  # Optional: mapping of tab_section to human-readable names
+    
+    # Tab names mapping: {"tab_number": "Tab Name"}
+    # Example: {"1": "Información del Proveedor y Producto", "3": "Regulaciones y Cumplimiento"}
+    tab_names = Column(JSON)  # Optional: mapping of tab number to human-readable names
+    
     # Status
     is_active = Column(Boolean, default=True)
     is_default = Column(Boolean, default=False)

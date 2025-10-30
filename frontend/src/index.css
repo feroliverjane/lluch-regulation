@@ -117,6 +117,9 @@ input, select, textarea {
     border-color: var(--gray-600);
     color: white;
   }
+  input::placeholder, textarea::placeholder {
+    color: #9ca3af;
+  }
 }
 
 .table {

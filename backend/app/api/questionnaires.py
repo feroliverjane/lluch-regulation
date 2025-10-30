@@ -1,12 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
+from pathlib import Path
+import shutil
+import tempfile
+import json
 
 from app.core.database import get_db
+from app.core.config import settings
 from app.models.questionnaire import Questionnaire, QuestionnaireStatus
 from app.models.questionnaire_validation import QuestionnaireValidation
 from app.models.questionnaire_incident import QuestionnaireIncident, IncidentStatus
+from app.models.material import Material
+from app.parsers.questionnaire_json_parser import QuestionnaireJSONParser
 from app.schemas.questionnaire import (
     QuestionnaireCreate,
     QuestionnaireUpdate,
@@ -152,6 +159,174 @@ def delete_questionnaire(questionnaire_id: int, db: Session = Depends(get_db)):
     
     db.delete(questionnaire)
     db.commit()
+
+
+# ===== Questionnaire Import =====
+
+@router.post("/import/json", response_model=QuestionnaireResponse, status_code=status.HTTP_201_CREATED)
+async def import_questionnaire_from_json(
+    file: UploadFile = File(...),
+    material_id: Optional[int] = Form(None),
+    material_code: Optional[str] = Form(None),
+    db: Session = Depends(get_db)
+):
+    """
+    Import a questionnaire from JSON file (Lluch format).
+    
+    The JSON file should follow the Lluch format:
+    {
+      "requestId": 2027,
+      "data": [
+        {
+          "fieldCode": "q3t1s2f15",
+          "fieldName": "Supplier Name",
+          "fieldType": "inputText",
+          "value": "..."
+        },
+        ...
+      ]
+    }
+    
+    Material can be specified by:
+    - material_id: Direct material ID
+    - material_code: Material reference code (will be extracted from JSON if not provided)
+    """
+    # Validate file type
+    if not file.filename.endswith('.json') and not file.filename.endswith('.txt'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only JSON files (.json or .txt) are supported"
+        )
+    
+    # Save file temporarily
+    upload_dir = Path(settings.UPLOAD_DIR)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"questionnaire_{timestamp}_{file.filename}"
+    file_path = upload_dir / filename
+    
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    try:
+        # Parse JSON
+        parser = QuestionnaireJSONParser(str(file_path))
+        parsed_data = parser.parse()
+        
+        # Extract metadata
+        metadata = parsed_data.get("metadata", {})
+        responses = parsed_data.get("responses", {})
+        
+        # Determine material
+        material = None
+        if material_id:
+            material = db.query(Material).filter(Material.id == material_id).first()
+            if not material:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Material with ID {material_id} not found"
+                )
+        elif material_code:
+            material = db.query(Material).filter(Material.reference_code == material_code).first()
+            if not material:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Material with code '{material_code}' not found"
+                )
+        else:
+            # Try to extract from JSON metadata
+            product_code = metadata.get("product_code", "")
+            product_name = metadata.get("product_name", "")
+            
+            # Try product_code first
+            if product_code and product_code.startswith("[") and "]" in product_code:
+                material_code_from_json = product_code.split("]")[0].replace("[", "")
+                material = db.query(Material).filter(
+                    Material.reference_code == material_code_from_json
+                ).first()
+            
+            # If not found, try product_name (format: [BASIL0003] H.E. BASILIC INDES)
+            if not material and product_name and product_name.startswith("[") and "]" in product_name:
+                material_code_from_json = product_name.split("]")[0].replace("[", "")
+                material = db.query(Material).filter(
+                    Material.reference_code == material_code_from_json
+                ).first()
+        
+        if not material:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Material not found. Please provide material_id or material_code, "
+                       "or ensure the JSON contains a product code in format [MATERIAL_CODE]."
+            )
+        
+        # Extract supplier code
+        supplier_code = metadata.get("supplier_name", "SUPPLIER-UNKNOWN")
+        if len(supplier_code) > 100:
+            supplier_code = supplier_code[:100]
+        
+        # Determine questionnaire type and version
+        from app.models.questionnaire import QuestionnaireType
+        questionnaire_type = QuestionnaireType.INITIAL_HOMOLOGATION
+        existing_count = db.query(Questionnaire).filter(
+            Questionnaire.material_id == material.id,
+            Questionnaire.supplier_code == supplier_code
+        ).count()
+        
+        version = existing_count + 1
+        previous_version_id = None
+        
+        if version > 1:
+            questionnaire_type = QuestionnaireType.REHOMOLOGATION
+            previous = db.query(Questionnaire).filter(
+                Questionnaire.material_id == material.id,
+                Questionnaire.supplier_code == supplier_code
+            ).order_by(Questionnaire.version.desc()).first()
+            
+            if previous:
+                previous_version_id = previous.id
+        
+        # Get default template if available
+        from app.models.questionnaire_template import QuestionnaireTemplate, TemplateType
+        default_template = db.query(QuestionnaireTemplate).filter(
+            QuestionnaireTemplate.is_default == True,
+            QuestionnaireTemplate.template_type == TemplateType.INITIAL_HOMOLOGATION
+        ).first()
+        
+        # Create questionnaire
+        questionnaire = Questionnaire(
+            material_id=material.id,
+            supplier_code=supplier_code,
+            questionnaire_type=questionnaire_type,
+            version=version,
+            previous_version_id=previous_version_id,
+            template_id=default_template.id if default_template else None,
+            responses={
+                **responses,
+                "_metadata": metadata,
+                "_request_id": parsed_data.get("request_id"),
+                "_imported_from": filename
+            },
+            status=QuestionnaireStatus.DRAFT
+        )
+        
+        db.add(questionnaire)
+        db.commit()
+        db.refresh(questionnaire)
+        
+        return questionnaire
+        
+    except json.JSONDecodeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid JSON format: {str(e)}"
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error importing questionnaire: {str(e)}"
+        )
 
 
 # ===== Questionnaire Actions =====
