@@ -337,11 +337,11 @@ export default function QuestionnaireFormDynamic() {
       <form onSubmit={(e) => handleSubmit(e, false)}>
         {/* Basic Info */}
         <div className="card" style={{ marginBottom: '24px' }}>
-          <h2 style={{ marginTop: 0, color: '#111827', fontWeight: '600' }}>Información Básica</h2>
+          <h2 style={{ marginTop: 0, color: '#111827', fontSize: '20px', fontWeight: '600' }}>Información Básica</h2>
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#111827', fontSize: '14px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#111827' }}>
                 Material *
               </label>
               <select
@@ -365,7 +365,7 @@ export default function QuestionnaireFormDynamic() {
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#111827', fontSize: '14px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#111827' }}>
                 Código Proveedor *
               </label>
               <input
@@ -400,8 +400,8 @@ export default function QuestionnaireFormDynamic() {
                     border: 'none',
                     borderBottom: isActive ? '3px solid #3b82f6' : '3px solid transparent',
                     background: isActive ? '#eff6ff' : 'transparent',
-                    color: isActive ? '#1e40af' : '#374151',
-                    fontWeight: isActive ? '600' : '500',
+                    color: isActive ? '#1e40af' : '#6b7280',
+                    fontWeight: isActive ? '600' : '400',
                     cursor: 'pointer',
                     fontSize: '14px'
                   }}
@@ -429,7 +429,7 @@ export default function QuestionnaireFormDynamic() {
                 {sectionFields.map((field) => (
                   <div key={field.fieldCode}>
                     <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#111827' }}>
-                      <span style={{ fontWeight: '500' }}>
+                      <span style={{ fontWeight: '600' }}>
                         {field.fieldName}
                         {field.required && <span style={{ color: '#ef4444', marginLeft: '4px' }}>*</span>}
                         {field.critical && (
@@ -439,7 +439,8 @@ export default function QuestionnaireFormDynamic() {
                             padding: '2px 6px', 
                             backgroundColor: '#fee2e2',
                             color: '#991b1b',
-                            borderRadius: '4px'
+                            borderRadius: '4px',
+                            fontWeight: '500'
                           }}>
                             CRITICAL
                           </span>
@@ -450,7 +451,7 @@ export default function QuestionnaireFormDynamic() {
                         color: '#6b7280', 
                         fontFamily: 'monospace',
                         marginLeft: '8px',
-                        fontWeight: '500'
+                        fontWeight: '400'
                       }}>
                         {field.fieldCode}
                       </span>
@@ -458,8 +459,8 @@ export default function QuestionnaireFormDynamic() {
                     {renderField(field)}
                     
                     {field.fieldType.includes('Table') && (
-                      <div style={{ fontSize: '12px', color: '#374151', marginTop: '4px', fontWeight: '500' }}>
-                        💡 Formato tabla: Use "[]" para vacío o JSON array
+                      <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+                        Formato tabla: Use "[]" para vacío o JSON array
                       </div>
                     )}
                   </div>
@@ -471,11 +472,11 @@ export default function QuestionnaireFormDynamic() {
 
         {/* Progress Indicator */}
         <div className="card" style={{ marginBottom: '24px', backgroundColor: '#f9fafb' }}>
-          <div style={{ fontSize: '14px', color: '#111827', fontWeight: '600' }}>
-            📊 Progreso del cuestionario
+          <div style={{ fontSize: '14px', color: '#374151', fontWeight: '600' }}>
+            Progreso del cuestionario
           </div>
           <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ flex: 1, height: '10px', backgroundColor: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ flex: 1, height: '8px', backgroundColor: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
               <div style={{
                 width: `${(Object.keys(responses).length / template.total_questions) * 100}%`,
                 height: '100%',
@@ -491,7 +492,7 @@ export default function QuestionnaireFormDynamic() {
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '14px', color: '#111827', fontWeight: '500' }}>
+          <div style={{ fontSize: '14px', color: '#374151', fontWeight: '500' }}>
             {currentTab < Object.keys(tabs).length ? (
               <button
                 type="button"
@@ -501,7 +502,7 @@ export default function QuestionnaireFormDynamic() {
                 Siguiente Tab →
               </button>
             ) : (
-              <span style={{ color: '#059669', fontWeight: '600' }}>✅ Última sección</span>
+              <span>✅ Última sección</span>
             )}
           </div>
           
