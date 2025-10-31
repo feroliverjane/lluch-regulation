@@ -234,6 +234,8 @@ async def import_questionnaire_from_json(
         
         # Determine material
         material = None
+        detected_material_code = None  # Track if we detected a code from JSON
+        
         if material_id:
             material = db.query(Material).filter(Material.id == material_id).first()
             if not material:
@@ -257,23 +259,33 @@ async def import_questionnaire_from_json(
             if product_code:
                 # Try with brackets format: [BASIL0003]
                 if product_code.startswith("[") and "]" in product_code:
-                    material_code_from_json = product_code.split("]")[0].replace("[", "")
+                    detected_material_code = product_code.split("]")[0].replace("[", "")
                     material = db.query(Material).filter(
-                        Material.reference_code == material_code_from_json
+                        Material.reference_code == detected_material_code
                     ).first()
                 # Try without brackets: BASIL0003
                 elif not material and product_code.strip():
+                    detected_material_code = product_code.strip()
                     material = db.query(Material).filter(
-                        Material.reference_code == product_code.strip()
+                        Material.reference_code == detected_material_code
                     ).first()
             
             # If not found, try product_name (format: [BASIL0003] H.E. BASILIC INDES)
             if not material and product_name and product_name.startswith("[") and "]" in product_name:
-                material_code_from_json = product_name.split("]")[0].replace("[", "")
+                detected_material_code = product_name.split("]")[0].replace("[", "")
                 material = db.query(Material).filter(
-                    Material.reference_code == material_code_from_json
+                    Material.reference_code == detected_material_code
                 ).first()
         
+        # If material not found but we detected a code from JSON, return special error
+        if not material and detected_material_code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"NEW_MATERIAL_DETECTED: El material '{detected_material_code}' fue detectado del JSON pero no existe en el sistema. "
+                       f"Por favor, crea primero el material '{detected_material_code}' antes de importar el cuestionario."
+            )
+        
+        # If no material found and no code detected
         if not material:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -383,12 +395,17 @@ async def import_questionnaire_from_json(
         return questionnaire_dict
         
     except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid JSON format: {str(e)}"
         )
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
         db.rollback()
+        logger.error(f"Error importing questionnaire: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error importing questionnaire: {str(e)}"

@@ -1,18 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { materialsApi } from '../services/api';
-import { Upload, FileJson, AlertCircle, CheckCircle, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, FileJson, AlertCircle, CheckCircle, Loader2, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { materialsApi } from '../services/api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_PREFIX = '/api';
-
-interface Material {
-  id: number;
-  reference_code: string;
-  name: string;
-}
 
 interface MismatchField {
   field_code: string;
@@ -45,8 +39,6 @@ interface ImportResult {
 export default function QuestionnaireImport() {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [materials, setMaterials] = useState<Material[]>([]);
-  const [selectedMaterialId, setSelectedMaterialId] = useState<number | ''>('');
   const [materialCode, setMaterialCode] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -56,20 +48,20 @@ export default function QuestionnaireImport() {
   const [creatingBlueLine, setCreatingBlueLine] = useState(false);
   const [creatingComposite, setCreatingComposite] = useState(false);
   const [acceptingQuestionnaire, setAcceptingQuestionnaire] = useState(false);
+  const [newMaterialDetected, setNewMaterialDetected] = useState<{ code: string; productName?: string } | null>(null);
+  const [showCreateMaterialModal, setShowCreateMaterialModal] = useState(false);
+  const [creatingMaterial, setCreatingMaterial] = useState(false);
+  const [newMaterial, setNewMaterial] = useState({
+    reference_code: '',
+    name: '',
+    material_type: 'NATURAL',
+    supplier: '',
+    cas_number: '',
+    description: '',
+    is_active: true
+  });
 
-  // Load materials on mount
-  useEffect(() => {
-    loadMaterials();
-  }, []);
-
-  const loadMaterials = async () => {
-    try {
-      const data = await materialsApi.getAll({ active_only: true });
-      setMaterials(data);
-    } catch (error: any) {
-      toast.error(`Error loading materials: ${error.message}`);
-    }
-  };
+  // Material detection is automatic from JSON, no need to load materials list
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -82,6 +74,11 @@ export default function QuestionnaireImport() {
     }
 
     setSelectedFile(file);
+    
+    // Reset states when selecting a new file
+    setNewMaterialDetected(null);
+    setImportResult(null);
+    setMaterialCode('');
 
     // Preview file content
     const reader = new FileReader();
@@ -129,17 +126,7 @@ export default function QuestionnaireImport() {
         
         if (detectedCode) {
           setMaterialCode(detectedCode);
-          
-          // Try to find matching material (materials might not be loaded yet)
-          if (materials.length > 0) {
-            const material = materials.find(m => m.reference_code === detectedCode);
-            if (material) {
-              setSelectedMaterialId(material.id);
-              toast.success(`Material detectado: ${detectedCode}`);
-            } else {
-              toast.info(`Código de material detectado: ${detectedCode}. Por favor selecciona el material manualmente.`);
-            }
-          }
+          toast.success(`✅ Código de material detectado: ${detectedCode}`);
         }
       } catch (err) {
         // Not valid JSON preview, that's ok
@@ -148,15 +135,7 @@ export default function QuestionnaireImport() {
     reader.readAsText(file);
   };
 
-  // Update material selection when materials are loaded and materialCode is set
-  useEffect(() => {
-    if (materialCode && materials.length > 0 && !selectedMaterialId) {
-      const material = materials.find(m => m.reference_code === materialCode);
-      if (material) {
-        setSelectedMaterialId(material.id);
-      }
-    }
-  }, [materials, materialCode, selectedMaterialId]);
+  // Material detection is automatic from JSON
 
   const handleImport = async () => {
     if (!selectedFile) {
@@ -164,10 +143,11 @@ export default function QuestionnaireImport() {
       return;
     }
 
-    if (!selectedMaterialId && !materialCode) {
-      toast.error('Por favor selecciona un material o ingresa un código de material');
-      return;
-    }
+    // Allow import without material selection - backend will try to detect from JSON
+    // if (!selectedMaterialId && !materialCode) {
+    //   toast.error('Por favor selecciona un material o ingresa un código de material');
+    //   return;
+    // }
 
     setUploading(true);
 
@@ -175,11 +155,8 @@ export default function QuestionnaireImport() {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      if (selectedMaterialId) {
-        formData.append('material_id', selectedMaterialId.toString());
-      } else if (materialCode) {
-        formData.append('material_code', materialCode);
-      }
+      // Don't send material_id or material_code - let backend detect it automatically from JSON
+      // This ensures proper handling of new materials
 
       const response = await fetch(`${API_URL}${API_PREFIX}/questionnaires/import/json`, {
         method: 'POST',
@@ -188,7 +165,102 @@ export default function QuestionnaireImport() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Error al importar cuestionario');
+        const errorMessage = errorData.detail || 'Error al importar cuestionario';
+        
+        console.log('Import error:', errorMessage); // Debug log
+        
+        // Check if this is a new material detection
+        if (errorMessage.includes('NEW_MATERIAL_DETECTED:')) {
+          console.log('New material detected!'); // Debug log
+          
+          // Extract material code from error message
+          const match = errorMessage.match(/material '([^']+)'/);
+          const detectedCode = match ? match[1] : materialCode || 'UNKNOWN';
+          
+          console.log('Detected code:', detectedCode); // Debug log
+          
+          // Try to extract product name from JSON (use filePreview if available)
+          let productName = '';
+          try {
+            // Always use filePreview if available, otherwise try to read file again
+            const jsonContent = filePreview || (selectedFile ? await selectedFile.text() : '');
+            if (jsonContent) {
+              const json = JSON.parse(jsonContent);
+              const productNameField = json.data?.find((item: any) => 
+                item.fieldCode === 'q3t1s2f16' || 
+                (item.fieldName && item.fieldName.toLowerCase().includes('product name'))
+              );
+              if (productNameField?.value) {
+                productName = productNameField.value;
+                console.log('Product name extracted:', productName); // Debug log
+              }
+            }
+          } catch (e) {
+            console.error('Error parsing JSON for product name:', e); // Debug log
+            // Ignore parsing errors
+          }
+          
+          // Extract additional info from JSON for material creation
+          let casNumber = '';
+          let supplierName = '';
+          try {
+            const jsonContent = filePreview || (selectedFile ? await selectedFile.text() : '');
+            if (jsonContent) {
+              const json = JSON.parse(jsonContent);
+              // Extract CAS
+              const casField = json.data?.find((item: any) => 
+                item.fieldCode === 'q3t1s2f23' || 
+                (item.fieldName && item.fieldName.toLowerCase().includes('cas'))
+              );
+              if (casField?.value) {
+                casNumber = casField.value;
+              }
+              // Extract Supplier Name
+              const supplierField = json.data?.find((item: any) => 
+                item.fieldCode === 'q3t1s2f15' || 
+                (item.fieldName && item.fieldName.toLowerCase().includes('supplier name'))
+              );
+              if (supplierField?.value) {
+                supplierName = supplierField.value;
+              }
+            }
+          } catch (e) {
+            console.error('Error extracting material info:', e);
+          }
+          
+          // Set state to show new material UI
+          setNewMaterialDetected({ code: detectedCode, productName });
+          
+          // Pre-fill material form with detected info
+          setNewMaterial({
+            reference_code: detectedCode,
+            name: productName.replace(/\[.*?\]\s*/, '').trim() || detectedCode, // Remove [CODE] prefix
+            material_type: 'NATURAL',
+            supplier: supplierName,
+            cas_number: casNumber,
+            description: `Material creado automáticamente desde cuestionario importado`,
+            is_active: true
+          });
+          
+          console.log('Setting newMaterialDetected state'); // Debug log
+          
+          // Show toast notification
+          toast.warning(`⚠️ Material nuevo detectado: ${detectedCode}`);
+          
+          // Scroll to the new material section after a short delay
+          setTimeout(() => {
+            const newMaterialSection = document.getElementById('new-material-section');
+            if (newMaterialSection) {
+              newMaterialSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 300);
+          
+          return; // Don't throw error, show UI instead
+        }
+        
+        // For other errors, show error toast
+        toast.error(`❌ Error al importar: ${errorMessage}`);
+        throw new Error(errorMessage);
       }
 
       const result: ImportResult = await response.json();
@@ -210,17 +282,8 @@ export default function QuestionnaireImport() {
         }
       }, 300);
       
-      // If no Blue Line exists, don't navigate yet - show option to create Blue Line
-      if (!result.comparison?.blue_line_exists) {
-        return;
-      }
-      
-      // If Blue Line exists and no mismatches, auto-navigate
-      if (result.comparison.mismatches.length === 0) {
-        setTimeout(() => {
-          navigate(`/questionnaires/${result.id}`);
-        }, 1500);
-      }
+      // Don't auto-navigate - let user decide when to go to questionnaire
+      // Show comparison results and let user manually navigate
 
     } catch (error: any) {
       toast.error(`❌ Error al importar: ${error.message || 'Error desconocido'}`);
@@ -271,9 +334,7 @@ export default function QuestionnaireImport() {
       const materialSupplier = await response.json();
       toast.success(`✅ Cuestionario aceptado! MaterialSupplier creado (ID: ${materialSupplier.id})`);
       
-      setTimeout(() => {
-        navigate(`/questionnaires/${importResult.id}`);
-      }, 1500);
+      // Don't auto-navigate - let user decide when to go to questionnaire
     } catch (error: any) {
       toast.error(`❌ Error: ${error.message || 'Error desconocido'}`);
     } finally {
@@ -302,11 +363,8 @@ export default function QuestionnaireImport() {
       const createComposite = window.confirm('¿Crear composite Z1 ahora?');
       if (createComposite) {
         await handleCreateComposite(result.blue_line_id);
-      } else {
-        setTimeout(() => {
-          navigate(`/questionnaires/${importResult.id}`);
-        }, 1500);
       }
+      // Don't auto-navigate - let user decide when to go to questionnaire
     } catch (error: any) {
       toast.error(`❌ Error: ${error.message || 'Error desconocido'}`);
     } finally {
@@ -329,9 +387,7 @@ export default function QuestionnaireImport() {
       const result = await response.json();
       toast.success(`✅ Composite Z1 creado exitosamente! ID: ${result.composite_id}`);
       
-      setTimeout(() => {
-        navigate(`/questionnaires/${importResult?.id}`);
-      }, 1500);
+      // Don't auto-navigate - let user decide when to go to questionnaire
     } catch (error: any) {
       toast.error(`❌ Error: ${error.message || 'Error desconocido'}`);
     } finally {
@@ -431,109 +487,207 @@ export default function QuestionnaireImport() {
         )}
       </div>
 
-      <div className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px' }}>
-        <h2 style={{ marginTop: 0, color: 'white', marginBottom: '20px' }}>
-          Seleccionar Material
-        </h2>
+      {materialCode && (
+        <div className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px', border: '2px solid #10b981' }}>
+          <h2 style={{ marginTop: 0, color: '#10b981', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CheckCircle size={24} style={{ color: '#10b981' }} />
+            Material Detectado Automáticamente
+          </h2>
+          
+          <div style={{
+            padding: '16px',
+            backgroundColor: '#065f46',
+            borderRadius: '6px',
+            border: '1px solid #10b981',
+            marginBottom: '16px'
+          }}>
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>Código del Material:</div>
+              <div style={{ fontSize: '20px', fontWeight: '600', color: '#10b981' }}>{materialCode}</div>
+            </div>
+            
+            <div style={{
+              padding: '12px',
+              backgroundColor: '#064e3b',
+              borderRadius: '6px',
+              border: '1px solid #047857',
+              marginTop: '12px'
+            }}>
+              <CheckCircle size={18} style={{ color: '#10b981', marginRight: '8px', verticalAlign: 'middle' }} />
+              <span style={{ color: '#d1d5db', fontSize: '14px' }}>
+                El código del material fue detectado automáticamente del JSON. 
+                Haz clic en "Validar Cuestionario" para importar y comparar con la Blue Line.
+                Si el material no existe, el sistema te guiará para crearlo.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: 'white' }}>
-              Material *
-            </label>
-            <select
-              value={selectedMaterialId}
-              onChange={(e) => setSelectedMaterialId(e.target.value ? parseInt(e.target.value) : '')}
-              style={{
-                width: '100%',
-                padding: '8px',
-                borderRadius: '6px',
-                border: '1px solid #4b5563',
-                backgroundColor: '#374151',
-                color: 'white'
+      {!materialCode && (
+        <div className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px' }}>
+          <h2 style={{ marginTop: 0, color: 'white', marginBottom: '20px' }}>
+            Información del Material
+          </h2>
+          
+          <div style={{
+            padding: '16px',
+            backgroundColor: '#111827',
+            borderRadius: '6px',
+            border: '1px solid #374151'
+          }}>
+            <AlertCircle size={20} style={{ color: '#f59e0b', marginRight: '8px', verticalAlign: 'middle' }} />
+            <span style={{ color: '#d1d5db', fontSize: '14px' }}>
+              <strong>💡 El material se detecta automáticamente del JSON.</strong> 
+              El sistema buscará el código del material en el campo "Product Name" o "Supplier's product code" 
+              con formato [MATERIAL_CODE]. Si el material no existe, el sistema te guiará para crearlo después de importar.
+            </span>
+          </div>
+        </div>
+      )}
+
+      {newMaterialDetected && (
+        <div id="new-material-section" className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px', border: '2px solid #f59e0b' }}>
+          <h2 style={{ marginTop: 0, color: '#f59e0b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={24} style={{ color: '#f59e0b' }} />
+            Material Nuevo Detectado
+          </h2>
+          
+          <div style={{
+            padding: '16px',
+            backgroundColor: '#111827',
+            borderRadius: '6px',
+            border: '1px solid #374151',
+            marginBottom: '16px'
+          }}>
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>Código del Material:</div>
+              <div style={{ fontSize: '18px', fontWeight: '600', color: '#f59e0b' }}>{newMaterialDetected.code}</div>
+            </div>
+            
+            {newMaterialDetected.productName && (
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>Nombre del Producto:</div>
+                <div style={{ fontSize: '16px', color: '#d1d5db' }}>{newMaterialDetected.productName}</div>
+              </div>
+            )}
+            
+            <div style={{
+              padding: '12px',
+              backgroundColor: '#78350f',
+              borderRadius: '6px',
+              border: '1px solid #92400e',
+              marginTop: '16px'
+            }}>
+              <AlertCircle size={18} style={{ color: '#f59e0b', marginRight: '8px', verticalAlign: 'middle' }} />
+              <span style={{ color: '#fbbf24', fontSize: '14px' }}>
+                Este material no existe en el sistema. Por favor, crea primero el material antes de importar el cuestionario.
+              </span>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => {
+                setNewMaterialDetected(null);
+                setMaterialCode('');
               }}
+              className="btn-secondary"
+              style={{ backgroundColor: '#374151', color: 'white', border: '1px solid #4b5563' }}
             >
-              <option value="">Seleccionar Material</option>
-              {materials.map(material => (
-                <option key={material.id} value={material.id} style={{ backgroundColor: '#374151', color: 'white' }}>
-                  {material.reference_code} - {material.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: 'white' }}>
-              O ingresa código de material
-            </label>
-            <input
-              type="text"
-              value={materialCode}
-              onChange={(e) => setMaterialCode(e.target.value)}
-              placeholder="Ej: BASIL0003"
-              style={{
-                width: '100%',
-                padding: '8px',
-                borderRadius: '6px',
-                border: '1px solid #4b5563',
-                backgroundColor: '#374151',
-                color: 'white'
+              Cerrar
+            </button>
+            <button
+              onClick={() => {
+                setShowCreateMaterialModal(true);
               }}
-            />
+              className="btn-primary"
+              style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none' }}
+            >
+              Crear Material Ahora
+            </button>
           </div>
         </div>
-
-        <div style={{
-          marginTop: '16px',
-          padding: '12px',
-          backgroundColor: '#111827',
-          borderRadius: '6px',
-          border: '1px solid #374151'
-        }}>
-          <AlertCircle size={16} style={{ color: '#f59e0b', marginRight: '8px', verticalAlign: 'middle' }} />
-          <span style={{ fontSize: '14px', color: '#d1d5db' }}>
-            El material se puede detectar automáticamente del JSON si contiene un código en formato [MATERIAL_CODE].
-            También puedes seleccionarlo manualmente o ingresar el código aquí.
-          </span>
-        </div>
-      </div>
+      )}
 
       {importResult && (
         <div id="comparison-section" className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px' }}>
           <h2 style={{ marginTop: 0, color: 'white', marginBottom: '20px' }}>
-            Comparación con Blue Line
+            Resultado de la Importación
           </h2>
+          
+          {/* Success message when Blue Line exists */}
+          {importResult.comparison?.blue_line_exists && (
+            <div style={{
+              marginBottom: '20px',
+              padding: '16px',
+              backgroundColor: '#065f46',
+              borderRadius: '6px',
+              border: '1px solid #10b981',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <CheckCircle size={24} style={{ color: '#10b981', flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ color: 'white', fontWeight: '600', marginBottom: '4px' }}>
+                  ✅ Cuestionario validado con Blue Line
+                </div>
+                <div style={{ color: '#d1d5db', fontSize: '14px' }}>
+                  El cuestionario ha sido importado exitosamente y comparado con la Blue Line existente.
+                  Puedes revisar los detalles de la comparación a continuación.
+                </div>
+              </div>
+            </div>
+          )}
           
           {importResult.comparison ? (
             importResult.comparison.blue_line_exists ? (
               <>
                 <div style={{ marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '16px', 
+                    marginBottom: '16px',
+                    padding: '16px',
+                    backgroundColor: importResult.comparison.score >= 80 ? '#065f46' : importResult.comparison.score >= 50 ? '#92400e' : '#991b1b',
+                    borderRadius: '8px',
+                    border: `2px solid ${importResult.comparison.score >= 80 ? '#10b981' : importResult.comparison.score >= 50 ? '#f59e0b' : '#dc2626'}`
+                  }}>
                     <div style={{
-                      padding: '8px 16px',
+                      padding: '10px 20px',
                       borderRadius: '6px',
-                      backgroundColor: importResult.comparison.score >= 80 ? '#065f46' : importResult.comparison.score >= 50 ? '#92400e' : '#991b1b',
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
                       color: 'white',
-                      fontWeight: '600'
+                      fontWeight: '700',
+                      fontSize: '18px'
                     }}>
-                      Score: {importResult.comparison.score}%
+                      Score de Validación: {importResult.comparison.score}%
                     </div>
-                    <span style={{ color: '#d1d5db' }}>
-                      {importResult.comparison.matches} de 10 campos coinciden
-                    </span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: 'white', fontWeight: '600', marginBottom: '4px' }}>
+                        Comparación Completa con Blue Line
+                      </div>
+                      <div style={{ color: '#d1d5db', fontSize: '14px' }}>
+                        {importResult.comparison.matches + importResult.comparison.mismatches.length} campos comparados • {importResult.comparison.matches} coinciden • {importResult.comparison.mismatches.length} con diferencias
+                      </div>
+                    </div>
                   </div>
                   
                   {importResult.comparison.mismatches.length > 0 && (
                     <div style={{
-                      marginTop: '16px',
-                      padding: '16px',
+                      marginTop: '20px',
+                      padding: '20px',
                       backgroundColor: '#111827',
-                      borderRadius: '6px',
-                      border: '1px solid #374151'
+                      borderRadius: '8px',
+                      border: '2px solid #dc2626',
+                      boxShadow: '0 4px 6px rgba(220, 38, 38, 0.2)'
                     }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <h3 style={{ margin: 0, color: 'white', fontSize: '16px' }}>
-                          Campos que no coinciden ({importResult.comparison.mismatches.length}):
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h3 style={{ margin: 0, color: '#fee2e2', fontSize: '18px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <AlertCircle size={20} style={{ color: '#dc2626' }} />
+                          Campos que NO coinciden ({importResult.comparison.mismatches.length}):
                         </h3>
                         <button
                           onClick={handleAcceptAllMismatches}
@@ -550,46 +704,81 @@ export default function QuestionnaireImport() {
                           Aceptar todas
                         </button>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {importResult.comparison.mismatches.map((mismatch, idx) => (
                           <div key={idx} style={{
-                            padding: '12px',
-                            backgroundColor: mismatch.severity === 'CRITICAL' ? '#7f1d1d' : mismatch.severity === 'WARNING' ? '#78350f' : '#1e293b',
-                            borderRadius: '4px',
-                            border: `1px solid ${mismatch.severity === 'CRITICAL' ? '#991b1b' : mismatch.severity === 'WARNING' ? '#92400e' : '#334155'}`
+                            padding: '16px',
+                            backgroundColor: '#7f1d1d',
+                            borderRadius: '6px',
+                            border: '2px solid #dc2626',
+                            boxShadow: '0 2px 4px rgba(220, 38, 38, 0.3)'
                           }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                               <div style={{ flex: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                                   <input
                                     type="checkbox"
                                     checked={acceptedMismatches.has(mismatch.field_code)}
                                     onChange={() => handleToggleMismatch(mismatch.field_code)}
-                                    style={{ cursor: 'pointer' }}
+                                    style={{ 
+                                      cursor: 'pointer',
+                                      width: '18px',
+                                      height: '18px',
+                                      accentColor: '#10b981'
+                                    }}
                                   />
-                                  <div style={{ fontWeight: '600', color: 'white' }}>
-                                    {mismatch.field_name} ({mismatch.field_code})
+                                  <div style={{ fontWeight: '700', color: '#fee2e2', fontSize: '15px' }}>
+                                    ❌ {mismatch.field_name}
+                                  </div>
+                                  <span style={{
+                                    padding: '4px 10px',
+                                    borderRadius: '4px',
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    backgroundColor: '#dc2626',
+                                    color: 'white',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px'
+                                  }}>
+                                    {mismatch.severity}
+                                  </span>
+                                </div>
+                                <div style={{ 
+                                  padding: '10px',
+                                  backgroundColor: '#991b1b',
+                                  borderRadius: '4px',
+                                  marginBottom: '8px',
+                                  border: '1px solid #dc2626'
+                                }}>
+                                  <div style={{ fontSize: '12px', color: '#fca5a5', marginBottom: '4px', fontWeight: '600' }}>
+                                    Esperado (Blue Line):
+                                  </div>
+                                  <div style={{ fontSize: '14px', color: '#fee2e2', fontWeight: '500' }}>
+                                    {mismatch.expected_value || 'No especificado'}
                                   </div>
                                 </div>
-                                {mismatch.expected_value && (
-                                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '2px' }}>
-                                    Esperado: <span style={{ color: '#d1d5db' }}>{mismatch.expected_value}</span>
+                                <div style={{ 
+                                  padding: '10px',
+                                  backgroundColor: '#7f1d1d',
+                                  borderRadius: '4px',
+                                  border: '1px solid #dc2626'
+                                }}>
+                                  <div style={{ fontSize: '12px', color: '#fca5a5', marginBottom: '4px', fontWeight: '600' }}>
+                                    Actual (Cuestionario):
                                   </div>
-                                )}
-                                <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                                  Actual: <span style={{ color: '#d1d5db' }}>{mismatch.actual_value || 'N/A'}</span>
+                                  <div style={{ fontSize: '14px', color: '#fee2e2', fontWeight: '500' }}>
+                                    {mismatch.actual_value || 'N/A'}
+                                  </div>
+                                </div>
+                                <div style={{ 
+                                  fontSize: '11px', 
+                                  color: '#9ca3af', 
+                                  marginTop: '8px',
+                                  fontStyle: 'italic'
+                                }}>
+                                  Código: {mismatch.field_code}
                                 </div>
                               </div>
-                              <span style={{
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                fontWeight: '600',
-                                backgroundColor: mismatch.severity === 'CRITICAL' ? '#dc2626' : mismatch.severity === 'WARNING' ? '#f59e0b' : '#3b82f6',
-                                color: 'white'
-                              }}>
-                                {mismatch.severity}
-                              </span>
                             </div>
                           </div>
                         ))}
@@ -610,11 +799,28 @@ export default function QuestionnaireImport() {
                       <span style={{ color: 'white', fontWeight: '500' }}>
                         ¡Perfecto! Todos los campos coinciden con la Blue Line.
                       </span>
+                      <div style={{ marginTop: '12px' }}>
+                        <button
+                          onClick={() => navigate(`/questionnaires/${importResult.id}`)}
+                          className="btn-primary"
+                          style={{
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: '500'
+                          }}
+                        >
+                          Ver Cuestionario Importado
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
                 
-                <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap' }}>
                   <button
                     onClick={handleAcceptQuestionnaire}
                     disabled={acceptingQuestionnaire}
@@ -637,6 +843,17 @@ export default function QuestionnaireImport() {
                         Aceptar Cuestionario y Crear MaterialSupplier
                       </>
                     )}
+                  </button>
+                  <button
+                    onClick={() => navigate(`/questionnaires/${importResult.id}`)}
+                    className="btn-secondary"
+                    style={{
+                      backgroundColor: '#374151',
+                      color: 'white',
+                      border: '1px solid #4b5563'
+                    }}
+                  >
+                    Ver Cuestionario Importado
                   </button>
                 </div>
               </>
@@ -714,26 +931,298 @@ export default function QuestionnaireImport() {
         </button>
         <button
           onClick={handleImport}
-          disabled={!selectedFile || uploading || (!selectedMaterialId && !materialCode)}
+          disabled={!selectedFile || uploading}
           className="btn-primary"
           style={{
-            opacity: (!selectedFile || (!selectedMaterialId && !materialCode)) ? 0.5 : 1,
-            cursor: (!selectedFile || (!selectedMaterialId && !materialCode)) ? 'not-allowed' : 'pointer'
+            opacity: !selectedFile ? 0.5 : 1,
+            cursor: !selectedFile ? 'not-allowed' : 'pointer',
+            backgroundColor: materialCode ? '#3b82f6' : '#059669'
           }}
         >
           {uploading ? (
             <>
               <Loader2 size={18} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
-              Importando...
+              {materialCode ? 'Validando...' : 'Importando...'}
             </>
           ) : (
             <>
-              <Upload size={18} style={{ marginRight: '8px' }} />
-              Importar Cuestionario
+              {materialCode ? (
+                <>
+                  <CheckCircle size={18} style={{ marginRight: '8px' }} />
+                  Validar Cuestionario
+                </>
+              ) : (
+                <>
+                  <Upload size={18} style={{ marginRight: '8px' }} />
+                  Importar Cuestionario
+                </>
+              )}
             </>
           )}
         </button>
       </div>
+
+      {/* Modal para crear material */}
+      {showCreateMaterialModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: '#1f2937',
+            borderRadius: '12px',
+            padding: '2rem',
+            maxWidth: '600px',
+            width: '90%',
+            maxHeight: '90vh',
+            overflow: 'auto',
+            border: '2px solid #374151'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ margin: 0, color: 'white', fontSize: '1.5rem', fontWeight: 600 }}>Crear Nuevo Material</h2>
+              <button 
+                onClick={() => setShowCreateMaterialModal(false)}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '1.5rem', 
+                  cursor: 'pointer',
+                  color: '#9ca3af',
+                  padding: '0.25rem',
+                  borderRadius: '4px',
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseEnter={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#374151'}
+                onMouseLeave={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'white', fontSize: '0.9rem' }}>
+                  Código de Referencia *
+                </label>
+                <input
+                  type="text"
+                  value={newMaterial.reference_code}
+                  onChange={(e) => setNewMaterial({ ...newMaterial, reference_code: e.target.value })}
+                  placeholder="Ej: JASMINE001"
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem', 
+                    border: '1px solid #4b5563', 
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#374151',
+                    color: 'white',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'white', fontSize: '0.9rem' }}>
+                  Nombre *
+                </label>
+                <input
+                  type="text"
+                  value={newMaterial.name}
+                  onChange={(e) => setNewMaterial({ ...newMaterial, name: e.target.value })}
+                  placeholder="Nombre del material"
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem', 
+                    border: '1px solid #4b5563', 
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#374151',
+                    color: 'white',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'white', fontSize: '0.9rem' }}>
+                  Tipo de Material
+                </label>
+                <select
+                  value={newMaterial.material_type}
+                  onChange={(e) => setNewMaterial({ ...newMaterial, material_type: e.target.value })}
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem', 
+                    border: '1px solid #4b5563', 
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#374151',
+                    color: 'white',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                >
+                  <option value="NATURAL">Natural</option>
+                  <option value="SYNTHETIC">Sintético</option>
+                  <option value="BLEND">Mezcla</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'white', fontSize: '0.9rem' }}>
+                  Proveedor
+                </label>
+                <input
+                  type="text"
+                  value={newMaterial.supplier}
+                  onChange={(e) => setNewMaterial({ ...newMaterial, supplier: e.target.value })}
+                  placeholder="Nombre del proveedor"
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem', 
+                    border: '1px solid #4b5563', 
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#374151',
+                    color: 'white',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'white', fontSize: '0.9rem' }}>
+                  Número CAS
+                </label>
+                <input
+                  type="text"
+                  value={newMaterial.cas_number}
+                  onChange={(e) => setNewMaterial({ ...newMaterial, cas_number: e.target.value })}
+                  placeholder="Ej: 8008-56-8"
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem', 
+                    border: '1px solid #4b5563', 
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#374151',
+                    color: 'white',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'white', fontSize: '0.9rem' }}>
+                  Descripción
+                </label>
+                <textarea
+                  value={newMaterial.description}
+                  onChange={(e) => setNewMaterial({ ...newMaterial, description: e.target.value })}
+                  placeholder="Descripción del material"
+                  rows={3}
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem', 
+                    border: '1px solid #4b5563', 
+                    borderRadius: '8px', 
+                    resize: 'vertical',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#374151',
+                    color: 'white',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ 
+              display: 'flex', 
+              gap: '1rem', 
+              marginTop: '2rem',
+              paddingTop: '1rem',
+              borderTop: '1px solid #374151'
+            }}>
+              <button 
+                className="btn-primary"
+                onClick={async () => {
+                  if (!newMaterial.name || !newMaterial.reference_code) {
+                    toast.error('Por favor completa los campos obligatorios (Nombre y Código de Referencia)');
+                    return;
+                  }
+
+                  setCreatingMaterial(true);
+                  try {
+                    const createdMaterial = await materialsApi.create(newMaterial);
+                    toast.success(`✅ Material creado exitosamente: ${createdMaterial.reference_code}`);
+                    setShowCreateMaterialModal(false);
+                    setNewMaterialDetected(null);
+                    
+                    // Automatically retry import after creating material
+                    if (selectedFile) {
+                      toast.info('Reintentando importar cuestionario...');
+                      setTimeout(() => {
+                        handleImport();
+                      }, 1000);
+                    }
+                  } catch (error: any) {
+                    toast.error(`❌ Error al crear material: ${error.message || 'Error desconocido'}`);
+                  } finally {
+                    setCreatingMaterial(false);
+                  }
+                }}
+                disabled={creatingMaterial}
+                style={{ 
+                  flex: 1,
+                  padding: '0.75rem 1.5rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  borderRadius: '8px',
+                  backgroundColor: creatingMaterial ? '#4b5563' : '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  cursor: creatingMaterial ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {creatingMaterial ? (
+                  <>
+                    <Loader2 size={18} style={{ marginRight: '8px', animation: 'spin 1s linear infinite', display: 'inline-block' }} />
+                    Creando...
+                  </>
+                ) : (
+                  'Crear Material'
+                )}
+              </button>
+              <button 
+                onClick={() => setShowCreateMaterialModal(false)}
+                style={{ 
+                  flex: 1, 
+                  background: '#374151',
+                  color: 'white',
+                  padding: '0.75rem 1.5rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  borderRadius: '8px',
+                  border: '1px solid #4b5563',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes spin {
