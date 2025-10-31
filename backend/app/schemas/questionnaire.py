@@ -83,6 +83,21 @@ class QuestionnaireResponse(QuestionnaireBase):
         from_attributes = True
 
 
+class QuestionnaireImportResponse(BaseModel):
+    """Response for questionnaire import endpoint with comparison result"""
+    id: int
+    material_id: int
+    supplier_code: str
+    questionnaire_type: QuestionnaireTypeSchema
+    version: int
+    status: QuestionnaireStatusSchema
+    created_at: datetime
+    comparison: Optional[Dict[str, Any]] = None  # ComparisonResult as dict
+
+    class Config:
+        from_attributes = True
+
+
 # Validation Schemas
 class QuestionnaireValidationResponse(BaseModel):
     id: int

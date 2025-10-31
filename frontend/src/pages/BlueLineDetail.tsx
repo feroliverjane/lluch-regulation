@@ -305,6 +305,198 @@ export default function BlueLineDetail() {
         </div>
       </div>
 
+      {/* Material Suppliers Section - Moved to top */}
+      <div className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px' }}>
+        <h2 style={{ marginTop: 0, color: 'white', marginBottom: '20px' }}>
+          Material-Proveedores Asociados ({materialSuppliers.length})
+        </h2>
+
+        {materialSuppliers.length === 0 ? (
+          <div style={{
+            padding: '24px',
+            textAlign: 'center',
+            color: '#9ca3af',
+            backgroundColor: '#111827',
+            borderRadius: '6px',
+            border: '1px solid #374151'
+          }}>
+            No hay proveedores asociados a esta Blue Line aún.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {materialSuppliers.map((supplier) => {
+              const isExpanded = expandedSuppliers.has(supplier.id);
+              
+              return (
+                <div
+                  key={supplier.id}
+                  style={{
+                    backgroundColor: '#111827',
+                    borderRadius: '6px',
+                    border: '1px solid #374151',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {/* Header - Always visible */}
+                  <div
+                    onClick={() => {
+                      setExpandedSuppliers(prev => {
+                        const newSet = new Set(prev);
+                        if (newSet.has(supplier.id)) {
+                          newSet.delete(supplier.id);
+                        } else {
+                          newSet.add(supplier.id);
+                        }
+                        return newSet;
+                      });
+                    }}
+                    style={{
+                      padding: '16px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: isExpanded ? '#1a1f2e' : '#111827',
+                      transition: 'background-color 0.2s'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                      {isExpanded ? (
+                        <ChevronUp size={20} style={{ color: '#9ca3af' }} />
+                      ) : (
+                        <ChevronDown size={20} style={{ color: '#9ca3af' }} />
+                      )}
+                      <div>
+                        <div style={{ fontWeight: '600', color: 'white', marginBottom: '4px' }}>
+                          {supplier.supplier_name || supplier.supplier_code}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                          Código: {supplier.supplier_code}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                          Score de Validación
+                        </div>
+                        <div style={{
+                          fontSize: '18px',
+                          fontWeight: '600',
+                          color: supplier.validation_score >= 80 ? '#10b981' : supplier.validation_score >= 50 ? '#f59e0b' : '#ef4444'
+                        }}>
+                          {supplier.validation_score}%
+                        </div>
+                      </div>
+                      <div style={{
+                        padding: '4px 12px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        backgroundColor: supplier.status === 'ACTIVE' ? '#065f46' : '#991b1b',
+                        color: 'white'
+                      }}>
+                        {supplier.status}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Content */}
+                  {isExpanded && (
+                    <div style={{ padding: '16px', borderTop: '1px solid #374151' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '16px' }}>
+                        <div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                            Questionario ID
+                          </div>
+                          <div style={{ fontWeight: '500', color: 'white' }}>
+                            #{supplier.questionnaire_id}
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                            Validado el
+                          </div>
+                          <div style={{ fontWeight: '500', color: 'white' }}>
+                            {supplier.validated_at ? new Date(supplier.validated_at).toLocaleString() : 'N/A'}
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                            Campos con diferencias
+                          </div>
+                          <div style={{ fontWeight: '500', color: 'white' }}>
+                            {supplier.mismatch_fields?.length || 0}
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                            Diferencias aceptadas
+                          </div>
+                          <div style={{ fontWeight: '500', color: 'white' }}>
+                            {supplier.accepted_mismatches?.length || 0}
+                          </div>
+                        </div>
+                      </div>
+
+                      {supplier.mismatch_fields && supplier.mismatch_fields.length > 0 && (
+                        <div style={{ marginTop: '16px' }}>
+                          <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'white', marginBottom: '12px' }}>
+                            Campos con Diferencias:
+                          </h3>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {supplier.mismatch_fields.map((mismatch: any, idx: number) => (
+                              <div
+                                key={idx}
+                                style={{
+                                  padding: '12px',
+                                  backgroundColor: mismatch.severity === 'CRITICAL' ? '#7f1d1d' : mismatch.severity === 'WARNING' ? '#78350f' : '#1e293b',
+                                  borderRadius: '4px',
+                                  border: `1px solid ${mismatch.severity === 'CRITICAL' ? '#991b1b' : mismatch.severity === 'WARNING' ? '#92400e' : '#334155'}`
+                                }}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                  <div style={{ fontWeight: '600', color: 'white' }}>
+                                    {mismatch.field_name} ({mismatch.field_code})
+                                  </div>
+                                  <div style={{
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    backgroundColor: mismatch.severity === 'CRITICAL' ? '#dc2626' : mismatch.severity === 'WARNING' ? '#f59e0b' : '#3b82f6',
+                                    color: 'white'
+                                  }}>
+                                    {mismatch.severity}
+                                  </div>
+                                </div>
+                                {mismatch.expected_value && (
+                                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '2px' }}>
+                                    Esperado: <span style={{ color: '#d1d5db' }}>{mismatch.expected_value}</span>
+                                  </div>
+                                )}
+                                <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                                  Actual: <span style={{ color: '#d1d5db' }}>{mismatch.actual_value || 'N/A'}</span>
+                                </div>
+                                {mismatch.accepted && (
+                                  <div style={{ marginTop: '8px', fontSize: '11px', color: '#10b981' }}>
+                                    ✓ Diferencia aceptada
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Basic Info */}
       <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
         <h2 style={{ marginTop: 0, color: 'white' }}>Información General</h2>
@@ -532,182 +724,6 @@ export default function BlueLineDetail() {
           </div>
         </div>
       )}
-
-      {/* Material Suppliers Section */}
-      <div className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginTop: '24px' }}>
-        <h2 style={{ marginTop: 0, color: 'white', marginBottom: '20px' }}>
-          Material-Proveedores Asociados ({materialSuppliers.length})
-        </h2>
-
-        {materialSuppliers.length === 0 ? (
-          <div style={{
-            padding: '24px',
-            textAlign: 'center',
-            color: '#9ca3af',
-            backgroundColor: '#111827',
-            borderRadius: '6px',
-            border: '1px solid #374151'
-          }}>
-            No hay proveedores asociados a esta Blue Line aún.
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {materialSuppliers.map((supplier) => {
-              const isExpanded = expandedSuppliers.has(supplier.id);
-              
-              return (
-                <div
-                  key={supplier.id}
-                  style={{
-                    backgroundColor: '#111827',
-                    borderRadius: '6px',
-                    border: '1px solid #374151',
-                    overflow: 'hidden'
-                  }}
-                >
-                  {/* Header - Always visible */}
-                  <div
-                    onClick={() => {
-                      setExpandedSuppliers(prev => {
-                        const newSet = new Set(prev);
-                        if (newSet.has(supplier.id)) {
-                          newSet.delete(supplier.id);
-                        } else {
-                          newSet.add(supplier.id);
-                        }
-                        return newSet;
-                      });
-                    }}
-                    style={{
-                      padding: '16px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      backgroundColor: isExpanded ? '#1a1f2e' : '#111827',
-                      transition: 'background-color 0.2s'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                      {isExpanded ? (
-                        <ChevronUp size={20} style={{ color: '#9ca3af' }} />
-                      ) : (
-                        <ChevronDown size={20} style={{ color: '#9ca3af' }} />
-                      )}
-                      <div>
-                        <div style={{ fontWeight: '600', color: 'white', marginBottom: '4px' }}>
-                          {supplier.supplier_name || supplier.supplier_code}
-                        </div>
-                        <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                          Código: {supplier.supplier_code}
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{
-                        padding: '4px 12px',
-                        borderRadius: '4px',
-                        backgroundColor: supplier.validation_score >= 80 ? '#065f46' : supplier.validation_score >= 50 ? '#92400e' : '#991b1b',
-                        color: 'white',
-                        fontWeight: '600',
-                        fontSize: '14px'
-                      }}>
-                        Score: {supplier.validation_score}%
-                      </div>
-                      <span style={{
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        backgroundColor: supplier.status === 'ACTIVE' ? '#059669' : '#6b7280',
-                        color: 'white'
-                      }}>
-                        {supplier.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Expanded Content */}
-                  {isExpanded && (
-                    <div style={{
-                      padding: '16px',
-                      borderTop: '1px solid #374151',
-                      backgroundColor: '#0f1419'
-                    }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                        <div>
-                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Cuestionario ID</div>
-                          <div style={{ fontWeight: '500', color: 'white' }}>
-                            <Link 
-                              to={`/questionnaires/${supplier.questionnaire_id}`}
-                              style={{ color: '#60a5fa', textDecoration: 'none' }}
-                            >
-                              #{supplier.questionnaire_id}
-                            </Link>
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Fecha Validación</div>
-                          <div style={{ fontWeight: '500', color: 'white' }}>
-                            {supplier.validated_at 
-                              ? new Date(supplier.validated_at).toLocaleDateString('es-ES', {
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })
-                              : 'N/A'}
-                          </div>
-                        </div>
-                      </div>
-
-                      {supplier.mismatch_fields && supplier.mismatch_fields.length > 0 && (
-                        <div style={{ marginTop: '16px' }}>
-                          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px' }}>
-                            Diferencias aceptadas ({supplier.accepted_mismatches?.length || 0} de {supplier.mismatch_fields.length})
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            {supplier.mismatch_fields.map((mismatch: any, idx: number) => (
-                              <div
-                                key={idx}
-                                style={{
-                                  padding: '8px 12px',
-                                  backgroundColor: mismatch.accepted ? '#065f46' : '#7f1d1d',
-                                  borderRadius: '4px',
-                                  fontSize: '12px',
-                                  display: 'flex',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'center'
-                                }}
-                              >
-                                <span style={{ color: 'white' }}>
-                                  {mismatch.field_name} ({mismatch.field_code})
-                                </span>
-                                {mismatch.accepted && (
-                                  <span style={{
-                                    padding: '2px 6px',
-                                    backgroundColor: '#10b981',
-                                    color: 'white',
-                                    borderRadius: '3px',
-                                    fontSize: '10px'
-                                  }}>
-                                    ACEPTADO
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
     </div>
   );
 }

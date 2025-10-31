@@ -19,6 +19,7 @@ from app.schemas.questionnaire import (
     QuestionnaireCreate,
     QuestionnaireUpdate,
     QuestionnaireResponse,
+    QuestionnaireImportResponse,
     QuestionnaireValidationResponse,
     QuestionnaireIncidentResponse,
     QuestionnaireIncidentCreate,
@@ -176,7 +177,7 @@ def delete_questionnaire(questionnaire_id: int, db: Session = Depends(get_db)):
 
 # ===== Questionnaire Import =====
 
-@router.post("/import/json", response_model=QuestionnaireResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/import/json", response_model=QuestionnaireImportResponse, status_code=status.HTTP_201_CREATED)
 async def import_questionnaire_from_json(
     file: UploadFile = File(...),
     material_id: Optional[int] = Form(None),
