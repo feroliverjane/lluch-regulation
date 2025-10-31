@@ -48,6 +48,13 @@ class Questionnaire(Base):
     ai_summary = Column(Text)
     ai_recommendation = Column(String(50))  # "APPROVE", "REVIEW", "REJECT"
     
+    # AI Coherence validation (field-level consistency check)
+    ai_coherence_score = Column(Integer)  # 0-100
+    ai_coherence_details = Column(JSON)  # [{field: str, issue: str, severity: str}]
+    
+    # Document attachments for composite extraction
+    attached_documents = Column(JSON)  # [{filename: str, path: str, upload_date: str, type: str}]
+    
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

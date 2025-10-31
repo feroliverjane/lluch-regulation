@@ -73,6 +73,9 @@ class QuestionnaireResponse(QuestionnaireBase):
     ai_risk_score: Optional[int] = None
     ai_summary: Optional[str] = None
     ai_recommendation: Optional[str] = None
+    ai_coherence_score: Optional[int] = None
+    ai_coherence_details: Optional[List[Dict[str, Any]]] = None
+    attached_documents: Optional[List[Dict[str, Any]]] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
     submitted_at: Optional[datetime] = None

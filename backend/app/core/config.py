@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     CRM_API_URL: str = ""
     CRM_API_KEY: str = ""
     
+    # OpenAI API (for document extraction)
+    OPENAI_API_KEY: str = ""
+    USE_OPENAI_FOR_EXTRACTION: bool = False  # Set to True to use OpenAI instead of OCR
+    
     # Composite Settings
     COMPOSITE_THRESHOLD_PERCENT: float = 5.0
     REVIEW_PERIOD_DAYS: int = 90

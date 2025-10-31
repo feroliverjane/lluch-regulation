@@ -290,3 +290,75 @@ def delete_composite(composite_id: int, db: Session = Depends(get_db)):
     
     return None
 
+
+# ===== NEW COMPOSITE COMPARISON AND AVERAGING =====
+
+@router.post("/average", response_model=CompositeResponse)
+def create_average_composite(
+    composite_a_id: int,
+    composite_b_id: int,
+    target_material_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Create average composite from two composites.
+    Used for Z1 composite updates.
+    """
+    from app.services.composite_comparison_service import CompositeComparisonService
+    
+    comparison_service = CompositeComparisonService(db)
+    
+    try:
+        averaged_composite = comparison_service.calculate_average_composite(
+            composite_a_id,
+            composite_b_id,
+            target_material_id
+        )
+        
+        db.add(averaged_composite)
+        db.commit()
+        db.refresh(averaged_composite)
+        
+        return averaged_composite
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Error creating average composite: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error creating average composite: {str(e)}"
+        )
+
+
+@router.post("/compare-detailed", response_model=dict)
+def compare_composites_detailed(
+    composite_a_id: int,
+    composite_b_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Compare two composites in detail.
+    Returns components added, removed, changed with match score.
+    """
+    from app.services.composite_comparison_service import CompositeComparisonService
+    
+    comparison_service = CompositeComparisonService(db)
+    
+    try:
+        comparison_result = comparison_service.compare_composites(
+            composite_a_id,
+            composite_b_id
+        )
+        
+        return comparison_result
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+

@@ -844,3 +844,278 @@ def resolve_incident(
     
     return incident
 
+
+# ===== NEW AI WORKFLOWS =====
+
+@router.post("/{questionnaire_id}/validate-coherence", response_model=dict)
+async def validate_coherence(
+    questionnaire_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Validate questionnaire coherence using AI.
+    Checks for logical contradictions between related fields.
+    """
+    from app.services.questionnaire_coherence_validator import QuestionnaireCoherenceValidator
+    
+    validator = QuestionnaireCoherenceValidator(db)
+    try:
+        score, issues = validator.validate_coherence(questionnaire_id)
+        
+        return {
+            "questionnaire_id": questionnaire_id,
+            "coherence_score": score,
+            "issues": issues,
+            "status": "validated"
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Error validating coherence: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error validating coherence: {str(e)}"
+        )
+
+
+@router.post("/{questionnaire_id}/upload-documents", response_model=dict)
+async def upload_documents(
+    questionnaire_id: int,
+    files: List[UploadFile] = File(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Upload documents (PDFs) for composite extraction.
+    Stores document metadata in questionnaire.
+    """
+    questionnaire = db.query(Questionnaire).filter(
+        Questionnaire.id == questionnaire_id
+    ).first()
+    
+    if not questionnaire:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Questionnaire {questionnaire_id} not found"
+        )
+    
+    # Create upload directory
+    upload_dir = Path(settings.UPLOAD_DIR) / "questionnaires" / str(questionnaire_id)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    uploaded_files = []
+    
+    for file in files:
+        # Validate file type
+        if not file.filename.lower().endswith('.pdf'):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Only PDF files are supported, got {file.filename}"
+            )
+        
+        # Save file
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_filename = f"{timestamp}_{file.filename}"
+        file_path = upload_dir / safe_filename
+        
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        uploaded_files.append({
+            "filename": file.filename,
+            "path": str(file_path),
+            "upload_date": datetime.utcnow().isoformat(),
+            "type": "pdf"
+        })
+    
+    # Update questionnaire
+    if questionnaire.attached_documents is None:
+        questionnaire.attached_documents = []
+    
+    questionnaire.attached_documents.extend(uploaded_files)
+    db.commit()
+    
+    return {
+        "questionnaire_id": questionnaire_id,
+        "uploaded_files": uploaded_files,
+        "total_documents": len(questionnaire.attached_documents)
+    }
+
+
+@router.post("/{questionnaire_id}/extract-composite", response_model=dict)
+async def extract_composite(
+    questionnaire_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Extract composite from uploaded documents using AI.
+    Creates a Z1 composite from PDFs.
+    """
+    from app.services.composite_extractor_ai import CompositeExtractorAI
+    from app.models.composite import Composite, CompositeComponent, CompositeOrigin, CompositeStatus, CompositeType
+    
+    questionnaire = db.query(Questionnaire).filter(
+        Questionnaire.id == questionnaire_id
+    ).first()
+    
+    if not questionnaire:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Questionnaire {questionnaire_id} not found"
+        )
+    
+    # Check if documents are attached
+    if questionnaire.attached_documents is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No documents attached to questionnaire. Please upload PDF documents first."
+        )
+    
+    if not isinstance(questionnaire.attached_documents, list) or len(questionnaire.attached_documents) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No documents attached to questionnaire. Please upload PDF documents first."
+        )
+    
+    # Extract PDF paths and validate they exist
+    pdf_paths = []
+    missing_files = []
+    
+    for doc in questionnaire.attached_documents:
+        if doc.get("type") == "pdf":
+            doc_path = Path(doc["path"])
+            # Resolve absolute path
+            if not doc_path.is_absolute():
+                # Try to resolve relative to UPLOAD_DIR
+                doc_path = Path(settings.UPLOAD_DIR) / doc["path"]
+            
+            if doc_path.exists():
+                pdf_paths.append(str(doc_path.resolve()))
+            else:
+                missing_files.append(doc["path"])
+                logger.warning(f"PDF file not found: {doc_path} (stored as: {doc['path']})")
+    
+    if not pdf_paths:
+        error_msg = "No PDF documents found"
+        if missing_files:
+            error_msg += f". Missing files: {', '.join(missing_files)}"
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=error_msg
+        )
+    
+    logger.info(f"Extracting composite from {len(pdf_paths)} PDF(s): {[Path(p).name for p in pdf_paths]}")
+    
+    # Extract composite - Use OpenAI if configured, otherwise use OCR
+    try:
+        if settings.USE_OPENAI_FOR_EXTRACTION and settings.OPENAI_API_KEY:
+            # Use OpenAI Vision API (more accurate)
+            from app.services.composite_extractor_openai import CompositeExtractorOpenAI
+            extractor = CompositeExtractorOpenAI(api_key=settings.OPENAI_API_KEY)
+            components, confidence = extractor.extract_from_pdfs(pdf_paths, use_vision=True)
+            extraction_method = "OPENAI_VISION"
+        else:
+            # Use OCR-based extraction (local, no API needed)
+            from app.services.composite_extractor_ai import CompositeExtractorAI
+            extractor = CompositeExtractorAI()
+            components, confidence = extractor.extract_from_pdfs(pdf_paths)
+            extraction_method = "AI_OCR"
+        
+        if not components:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="No components could be extracted from documents"
+            )
+        
+        # Create composite
+        composite = Composite(
+            material_id=questionnaire.material_id,
+            version=1,  # Will be updated if needed
+            origin=CompositeOrigin.CALCULATED,
+            composite_type=CompositeType.Z1,
+            status=CompositeStatus.DRAFT,
+            questionnaire_id=questionnaire_id,
+            source_documents=questionnaire.attached_documents,
+            extraction_confidence=confidence,
+            composite_metadata={
+                "extraction_method": extraction_method,
+                "extraction_date": datetime.utcnow().isoformat(),
+                "source_questionnaire": questionnaire_id
+            },
+            notes=f"Extracted from {len(pdf_paths)} document(s) with {confidence:.1f}% confidence"
+        )
+        
+        # Add components (validate required fields)
+        for comp_data in components:
+            # Validate required fields
+            if not comp_data.get('component_name'):
+                logger.warning(f"Skipping component without name: {comp_data}")
+                continue
+            
+            component = CompositeComponent(
+                cas_number=comp_data.get('cas_number') or None,
+                component_name=comp_data['component_name'],
+                percentage=comp_data.get('percentage', 0.0),
+                confidence_level=comp_data.get('confidence', confidence)
+            )
+            composite.components.append(component)
+        
+        db.add(composite)
+        db.commit()
+        db.refresh(composite)
+        
+        return {
+            "questionnaire_id": questionnaire_id,
+            "composite_id": composite.id,
+            "composite_type": "Z1",
+            "components_count": len(components),
+            "extraction_confidence": confidence,
+            "status": "extracted"
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        logger.error(f"Error extracting composite: {e}", exc_info=True)
+        import traceback
+        error_details = traceback.format_exc()
+        logger.debug(f"Full traceback: {error_details}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error extracting composite: {str(e)}"
+        )
+
+
+@router.get("/{questionnaire_id}/composite", response_model=dict)
+def get_questionnaire_composite(
+    questionnaire_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Get composite associated with questionnaire.
+    """
+    from app.models.composite import Composite
+    
+    composite = db.query(Composite).filter(
+        Composite.questionnaire_id == questionnaire_id
+    ).first()
+    
+    if not composite:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No composite found for questionnaire {questionnaire_id}"
+        )
+    
+    return {
+        "composite_id": composite.id,
+        "composite_type": composite.composite_type.value if composite.composite_type else None,
+        "version": composite.version,
+        "status": composite.status.value,
+        "extraction_confidence": composite.extraction_confidence,
+        "components_count": len(composite.components),
+        "created_at": composite.created_at.isoformat() if composite.created_at else None
+    }
+

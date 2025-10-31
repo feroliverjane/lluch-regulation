@@ -27,6 +27,12 @@ class ComponentType(str, enum.Enum):
     IMPURITY = "IMPURITY"  # Impurity
 
 
+class CompositeType(str, enum.Enum):
+    """Type of composite based on source"""
+    Z1 = "Z1"  # Generated from supplier documents (provisional)
+    Z2 = "Z2"  # From laboratory analysis (final, definitive)
+
+
 class Composite(Base):
     """Composite table describing material composition"""
     __tablename__ = "composites"
@@ -36,6 +42,18 @@ class Composite(Base):
     version = Column(Integer, nullable=False)
     origin = Column(Enum(CompositeOrigin), nullable=False)
     status = Column(Enum(CompositeStatus), default=CompositeStatus.DRAFT)
+    
+    # Composite type (Z1 from documents, Z2 from lab)
+    composite_type = Column(Enum(CompositeType), nullable=True, index=True)
+    
+    # Link to questionnaire for material-supplier specific composites
+    questionnaire_id = Column(Integer, ForeignKey("questionnaires.id"), nullable=True, index=True)
+    
+    # Document tracking for Z1 composites
+    source_documents = Column(JSON)  # [{filename: str, path: str, upload_date: str}]
+    
+    # AI extraction confidence for Z1 composites
+    extraction_confidence = Column(Float)  # 0-100 score
     
     # Metadata as JSON (renamed from metadata to avoid SQLAlchemy reserved word)
     composite_metadata = Column(JSON)  # {batches: [], suppliers: [], purchase_dates: [], analysis_ids: []}
@@ -52,6 +70,7 @@ class Composite(Base):
     material = relationship("Material", back_populates="composites")
     components = relationship("CompositeComponent", back_populates="composite", cascade="all, delete-orphan")
     workflow = relationship("ApprovalWorkflow", back_populates="composite", uselist=False, cascade="all, delete-orphan")
+    questionnaire = relationship("Questionnaire", foreign_keys=[questionnaire_id], backref="composites")
 
     def __repr__(self):
         return f"<Composite(id={self.id}, material_id={self.material_id}, version={self.version}, status={self.status})>"

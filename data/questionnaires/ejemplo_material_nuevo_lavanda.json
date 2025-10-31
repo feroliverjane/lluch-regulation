@@ -1,0 +1,210 @@
+{
+  "requestId": 2025,
+  "data": [
+    {
+      "fieldCode": "q3t1s2f15",
+      "fieldName": "Supplier Name",
+      "fieldType": "inputText",
+      "value": "ESSENTIAL OILS SUPPLIERS S.A."
+    },
+    {
+      "fieldCode": "q3t1s2f16",
+      "fieldName": "Product Name",
+      "fieldType": "inputText",
+      "value": "[LAVANDA9999] LAVENDER ESSENTIAL OIL PREMIUM"
+    },
+    {
+      "fieldCode": "q3t1s2f17",
+      "fieldName": "Supplier´s product code",
+      "fieldType": "inputText",
+      "value": "EOS-LAV-001"
+    },
+    {
+      "fieldCode": "q3t1s2f19",
+      "fieldName": "Type of supplier",
+      "fieldType": "lov",
+      "value": "M"
+    },
+    {
+      "fieldCode": "q3t1s2f21",
+      "fieldName": "Name of the facility where the product is manufactured",
+      "fieldType": "inputText",
+      "value": "Provence Lavender Distillery"
+    },
+    {
+      "fieldCode": "q3t1s2f22",
+      "fieldName": "Which type of material is your product?",
+      "fieldType": "lov",
+      "value": "B"
+    },
+    {
+      "fieldCode": "q3t1s2f23",
+      "fieldName": "CAS",
+      "fieldType": "inputText",
+      "value": "8000-28-0"
+    },
+    {
+      "fieldCode": "q3t1s2f24",
+      "fieldName": "EINECS",
+      "fieldType": "inputText",
+      "value": "290-212-2"
+    },
+    {
+      "fieldCode": "q3t1s2f25",
+      "fieldName": "FDA CFR 21",
+      "fieldType": "inputText",
+      "value": "182.20"
+    },
+    {
+      "fieldCode": "q3t1s3f27",
+      "fieldName": "KOSHER CERTIFICATE",
+      "fieldType": "checkComents",
+      "value": "true"
+    },
+    {
+      "fieldCode": "q3t1s3f28",
+      "fieldName": "HALAL CERTIFICATE",
+      "fieldType": "checkComents",
+      "value": "true"
+    },
+    {
+      "fieldCode": "q3t1s3f29",
+      "fieldName": "FOOD/FLAVOUR GRADE",
+      "fieldType": "checkComents",
+      "value": "true"
+    },
+    {
+      "fieldCode": "q3t1s3f30",
+      "fieldName": "FEED GRADE",
+      "fieldType": "checkComents",
+      "value": "false"
+    },
+    {
+      "fieldCode": "q3t1s4f33",
+      "fieldName": "Country of the botanical origin",
+      "fieldType": "selectManyMenu",
+      "value": "FR"
+    },
+    {
+      "fieldCode": "q3t1s4f34",
+      "fieldName": "Country of the manufacturing site",
+      "fieldType": "selectManyMenu",
+      "value": "FR"
+    },
+    {
+      "fieldCode": "q3t1s4f35",
+      "fieldName": "Country of the processing site",
+      "fieldType": "selectManyMenu",
+      "value": "FR"
+    },
+    {
+      "fieldCode": "q3t1s4f36",
+      "fieldName": "Source",
+      "fieldType": "lov",
+      "value": "V"
+    },
+    {
+      "fieldCode": "q3t1s4f38",
+      "fieldName": "Botanical name (plant or animal origin)",
+      "fieldType": "inputText",
+      "value": "Lavandula angustifolia Mill."
+    },
+    {
+      "fieldCode": "q3t1s4f39",
+      "fieldName": "Part of the pant (roots, leaves, etc)",
+      "fieldType": "inputText",
+      "value": "flowers"
+    },
+    {
+      "fieldCode": "q3t1s4f40",
+      "fieldName": "Cultivation mode (culture)",
+      "fieldType": "selectManyCheckbox",
+      "value": "Organic"
+    },
+    {
+      "fieldCode": "q3t1s4f41",
+      "fieldName": "Crop season",
+      "fieldType": "inputText",
+      "value": "July to August"
+    },
+    {
+      "fieldCode": "q3t1s4f42",
+      "fieldName": "Processing factor according to EC 396/2005 Art. 20 in combination with Annex I: How many Kg of basic material was used to produce 1 kg of the raw material?",
+      "fieldType": "inputText",
+      "value": "150 kg of lavender flowers makes 1 kg of essential oil"
+    },
+    {
+      "fieldCode": "q3t1s4f44",
+      "fieldName": "Is the product 100% Natural?",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f45",
+      "fieldName": "Can you guarantee the naturaless by providing a C14 analysis? If so, please, provide the last report performed",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f46",
+      "fieldName": "Is the product 100% Pure (if not, please indicate all the Botanical Names)?",
+      "fieldType": "yesNoComments",
+      "value": "YES|"
+    },
+    {
+      "fieldCode": "q3t1s4f47",
+      "fieldName": "Natural According European Directive 1334/2008/EC",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f48",
+      "fieldName": "Natural According American Directive (Code of Federal Regulations, Title 21, section 101.22a (3), Food & Drugs)",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f49",
+      "fieldName": "Natural According to UNE-EN ISO 9235:2014",
+      "fieldType": "yesNoNA",
+      "value": "YES"
+    },
+    {
+      "fieldCode": "q3t1s4f50",
+      "fieldName": "Does the product follow NaTrue?",
+      "fieldType": "yesNoNA",
+      "value": "NA"
+    },
+    {
+      "fieldCode": "q3t1s4f51",
+      "fieldName": "Classification according to UNE-EN ISO 9235:2021",
+      "fieldType": "lov",
+      "value": "11"
+    },
+    {
+      "fieldCode": "q3t1s2f342",
+      "fieldName": "FEMA",
+      "fieldType": "inputText",
+      "value": "2632"
+    },
+    {
+      "fieldCode": "q3t1s2f343",
+      "fieldName": "JECFA",
+      "fieldType": "inputText",
+      "value": "1426"
+    },
+    {
+      "fieldCode": "q3t1s2f344",
+      "fieldName": "CoE",
+      "fieldType": "inputText",
+      "value": "191"
+    },
+    {
+      "fieldCode": "q3t1s2f345",
+      "fieldName": "Flavis",
+      "fieldType": "inputText",
+      "value": "01.009"
+    }
+  ]
+}
+

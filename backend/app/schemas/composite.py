@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from app.models.composite import CompositeOrigin, CompositeStatus, ComponentType
+from app.models.composite import CompositeOrigin, CompositeStatus, ComponentType, CompositeType
 
 
 class CompositeComponentBase(BaseModel):
@@ -28,6 +28,10 @@ class CompositeBase(BaseModel):
     """Base composite schema"""
     material_id: int
     origin: CompositeOrigin
+    composite_type: Optional[CompositeType] = None
+    questionnaire_id: Optional[int] = None
+    source_documents: Optional[List[Dict[str, Any]]] = None
+    extraction_confidence: Optional[float] = Field(None, ge=0, le=100)
     composite_metadata: Optional[Dict[str, Any]] = None
     notes: Optional[str] = None
 
@@ -57,6 +61,9 @@ class CompositeResponse(CompositeBase):
     id: int
     version: int
     status: CompositeStatus
+    composite_type: Optional[CompositeType] = None
+    questionnaire_id: Optional[int] = None
+    extraction_confidence: Optional[float] = None
     created_at: datetime
     updated_at: Optional[datetime]
     approved_at: Optional[datetime]

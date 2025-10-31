@@ -15,6 +15,9 @@ interface Questionnaire {
   ai_risk_score?: number;
   ai_summary?: string;
   ai_recommendation?: string;
+  ai_coherence_score?: number;
+  ai_coherence_details?: Array<{ field: string; issue: string; severity: string }>;
+  attached_documents?: Array<{ filename: string; path: string; upload_date: string }>;
   created_at: string;
   submitted_at?: string;
   reviewed_at?: string;
@@ -82,6 +85,14 @@ export default function QuestionnaireDetail() {
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState<number>(1);
+  
+  // New AI features states
+  const [coherenceValidating, setCoherenceValidating] = useState(false);
+  const [uploadingDocs, setUploadingDocs] = useState(false);
+  const [extractingComposite, setExtractingComposite] = useState(false);
+  const [compositeInfo, setCompositeInfo] = useState<any>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [blueLine, setBlueLine] = useState<any>(null);
 
   useEffect(() => {
     loadData();
@@ -122,10 +133,123 @@ export default function QuestionnaireDetail() {
       const iResponse = await api.get(`/questionnaires/${id}/incidents`);
       setIncidents(iResponse.data);
       
+      // Try to load composite if exists
+      try {
+        const compResponse = await api.get(`/questionnaires/${id}/composite`);
+        setCompositeInfo(compResponse.data);
+      } catch (err) {
+        // No composite yet
+        setCompositeInfo(null);
+      }
+      
+      // Try to load blue line
+      try {
+        const blResponse = await api.get(`/blue-line/material/${qResponse.data.material_id}`);
+        setBlueLine(blResponse.data);
+      } catch (err: any) {
+        // No blue line yet - check if it's a 404 (expected) or another error
+        if (err.response?.status === 404) {
+          setBlueLine(null);
+        } else {
+          console.error('Error loading blue line:', err);
+          setBlueLine(null);
+        }
+      }
+      
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Error loading questionnaire');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleValidateCoherence = async () => {
+    try {
+      setCoherenceValidating(true);
+      const response = await api.post(`/questionnaires/${id}/validate-coherence`);
+      
+      // Reload questionnaire to get updated coherence data
+      const qResponse = await api.get(`/questionnaires/${id}`);
+      setQuestionnaire(qResponse.data);
+      
+      alert(`Validación completada. Score: ${response.data.coherence_score}/100`);
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Error al validar coherencia');
+    } finally {
+      setCoherenceValidating(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFiles(e.target.files);
+    }
+  };
+
+  const handleUploadDocuments = async () => {
+    if (!selectedFiles || selectedFiles.length === 0) {
+      alert('Por favor seleccione al menos un archivo PDF');
+      return;
+    }
+
+    try {
+      setUploadingDocs(true);
+      const formData = new FormData();
+      
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append('files', selectedFiles[i]);
+      }
+
+      await api.post(`/questionnaires/${id}/upload-documents`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      // Reload questionnaire
+      const qResponse = await api.get(`/questionnaires/${id}`);
+      setQuestionnaire(qResponse.data);
+      setSelectedFiles(null);
+      
+      alert('Documentos subidos exitosamente');
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Error al subir documentos');
+    } finally {
+      setUploadingDocs(false);
+    }
+  };
+
+  const handleExtractComposite = async () => {
+    try {
+      setExtractingComposite(true);
+      const response = await api.post(`/questionnaires/${id}/extract-composite`);
+      
+      setCompositeInfo(response.data);
+      alert(`Composite extraído: ${response.data.components_count} componentes con ${response.data.extraction_confidence.toFixed(1)}% confianza`);
+    } catch (err: any) {
+      console.error('Error extracting composite:', err);
+      const errorMessage = err.response?.data?.detail || err.message || 'Error al extraer composite';
+      alert(`Error al extraer composite: ${errorMessage}`);
+    } finally {
+      setExtractingComposite(false);
+    }
+  };
+
+  const handleCreateBlueLine = async () => {
+    if (!confirm('¿Crear línea azul desde este cuestionario?')) return;
+    
+    try {
+      setActionLoading(true);
+      await api.post(`/questionnaires/${id}/create-blue-line`);
+      
+      // Reload all data to ensure consistency
+      await loadData();
+      
+      alert('Línea azul creada exitosamente');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.detail || err.message || 'Error al crear línea azul';
+      alert(`Error: ${errorMsg}`);
+      console.error('Error creating blue line:', err);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -434,6 +558,265 @@ export default function QuestionnaireDetail() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* AI Coherence Validation */}
+      <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
+        <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'white' }}>
+          ✨ Validación de Coherencia AI
+        </h2>
+        
+        {questionnaire.ai_coherence_score !== null && questionnaire.ai_coherence_score !== undefined ? (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '16px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '4px' }}>Score de Coherencia</div>
+                <div style={{ 
+                  fontSize: '36px', 
+                  fontWeight: 'bold',
+                  color: questionnaire.ai_coherence_score >= 80 ? '#10b981' : 
+                         questionnaire.ai_coherence_score >= 60 ? '#f59e0b' : '#ef4444'
+                }}>
+                  {questionnaire.ai_coherence_score}
+                </div>
+                <div style={{ fontSize: '12px', color: '#d1d5db' }}>de 100</div>
+              </div>
+              <div style={{ flex: 1 }}>
+                {questionnaire.ai_coherence_details && questionnaire.ai_coherence_details.length > 0 ? (
+                  <div>
+                    <div style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '8px', fontWeight: '500' }}>
+                      Issues Detectados ({questionnaire.ai_coherence_details.length})
+                    </div>
+                    <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                      {questionnaire.ai_coherence_details.map((issue, idx) => (
+                        <div key={idx} style={{
+                          padding: '8px 12px',
+                          backgroundColor: '#111827',
+                          borderRadius: '4px',
+                          marginBottom: '8px',
+                          borderLeft: `3px solid ${
+                            issue.severity === 'critical' ? '#ef4444' :
+                            issue.severity === 'warning' ? '#f59e0b' : '#3b82f6'
+                          }`
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                            <span className={`badge ${
+                              issue.severity === 'critical' ? 'badge-danger' :
+                              issue.severity === 'warning' ? 'badge-warning' : 'badge-info'
+                            }`} style={{ fontSize: '10px' }}>
+                              {issue.severity.toUpperCase()}
+                            </span>
+                            <span style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9ca3af' }}>
+                              {issue.field}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '13px', color: '#d1d5db' }}>
+                            {issue.issue}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ 
+                    padding: '12px', 
+                    backgroundColor: '#064e3b',
+                    border: '1px solid #065f46',
+                    borderRadius: '6px',
+                    color: '#6ee7b7'
+                  }}>
+                    ✓ No se detectaron problemas de coherencia
+                  </div>
+                )}
+              </div>
+            </div>
+            <button 
+              onClick={handleValidateCoherence}
+              className="btn-secondary"
+              disabled={coherenceValidating}
+              style={{ marginTop: '8px' }}
+            >
+              {coherenceValidating ? 'Validando...' : 'Re-validar Coherencia'}
+            </button>
+          </div>
+        ) : (
+          <div>
+            <p style={{ color: '#d1d5db', marginBottom: '16px' }}>
+              Valida la coherencia lógica del cuestionario con IA. Detecta contradicciones como:
+              "100% natural" con "contiene aditivos", "vegano" con "origen animal", etc.
+            </p>
+            <button 
+              onClick={handleValidateCoherence}
+              className="btn-primary"
+              disabled={coherenceValidating}
+            >
+              {coherenceValidating ? 'Validando...' : '🤖 Validar Coherencia con IA'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Documents & Composite Extraction */}
+      <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
+        <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'white' }}>
+          📄 Documentos y Composite
+        </h2>
+
+        {/* Uploaded Documents */}
+        {questionnaire.attached_documents && questionnaire.attached_documents.length > 0 && (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '8px', fontWeight: '500' }}>
+              Documentos Subidos ({questionnaire.attached_documents.length})
+            </div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {questionnaire.attached_documents.map((doc, idx) => (
+                <div key={idx} style={{
+                  padding: '8px 12px',
+                  backgroundColor: '#111827',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span style={{ fontSize: '18px' }}>📑</span>
+                  <span style={{ fontSize: '13px', color: '#d1d5db' }}>{doc.filename}</span>
+                  <span style={{ fontSize: '11px', color: '#9ca3af', marginLeft: 'auto' }}>
+                    {new Date(doc.upload_date).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Upload Section */}
+        <div style={{ marginBottom: '16px' }}>
+          <div style={{ fontSize: '14px', color: '#d1d5db', marginBottom: '8px', fontWeight: '500' }}>
+            Subir Documentos (PDFs)
+          </div>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <input
+              type="file"
+              accept=".pdf"
+              multiple
+              onChange={handleFileSelect}
+              style={{
+                flex: 1,
+                padding: '8px',
+                backgroundColor: '#111827',
+                border: '1px solid #374151',
+                borderRadius: '4px',
+                color: 'white'
+              }}
+            />
+            <button 
+              onClick={handleUploadDocuments}
+              className="btn-primary"
+              disabled={uploadingDocs || !selectedFiles}
+            >
+              {uploadingDocs ? 'Subiendo...' : '📤 Subir'}
+            </button>
+          </div>
+        </div>
+
+        {/* Composite Info */}
+        {compositeInfo ? (
+          <div style={{
+            padding: '12px',
+            backgroundColor: '#064e3b',
+            border: '1px solid #065f46',
+            borderRadius: '6px',
+            marginBottom: '12px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '18px' }}>✓</span>
+              <span style={{ fontSize: '14px', fontWeight: '500', color: '#6ee7b7' }}>
+                Composite Extraído
+              </span>
+              <span className="badge badge-info" style={{ marginLeft: 'auto' }}>
+                {compositeInfo.composite_type}
+              </span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', fontSize: '13px', color: '#6ee7b7' }}>
+              <div>
+                <div style={{ color: '#9ca3af', fontSize: '11px' }}>ID Composite</div>
+                <div>#{compositeInfo.composite_id}</div>
+              </div>
+              <div>
+                <div style={{ color: '#9ca3af', fontSize: '11px' }}>Componentes</div>
+                <div>{compositeInfo.components_count}</div>
+              </div>
+              <div>
+                <div style={{ color: '#9ca3af', fontSize: '11px' }}>Confianza</div>
+                <div>{compositeInfo.extraction_confidence?.toFixed(1)}%</div>
+              </div>
+            </div>
+            <Link 
+              to={`/composites/${compositeInfo.composite_id}`}
+              className="btn-secondary"
+              style={{ marginTop: '12px', display: 'inline-block', fontSize: '12px' }}
+            >
+              Ver Composite Detallado
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <button 
+              onClick={handleExtractComposite}
+              className="btn-primary"
+              disabled={extractingComposite || !questionnaire.attached_documents || questionnaire.attached_documents.length === 0}
+              title={!questionnaire.attached_documents || questionnaire.attached_documents.length === 0 ? 'Sube documentos primero' : ''}
+            >
+              {extractingComposite ? 'Extrayendo...' : '🤖 Extraer Composite con IA'}
+            </button>
+            <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '8px' }}>
+              La IA extraerá automáticamente la composición química (CAS, nombres, porcentajes) de los PDFs subidos
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Blue Line Actions */}
+      {questionnaire && questionnaire.status === 'APPROVED' && !loading && (
+        <>
+          {!blueLine ? (
+            <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1e3a8a', border: '1px solid #1e40af' }}>
+              <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'white' }}>
+                📘 Crear Línea Azul
+              </h2>
+              <p style={{ color: '#bfdbfe', marginBottom: '16px' }}>
+                Este material no tiene línea azul. Puedes crearla desde este cuestionario aprobado.
+                Se aplicarán automáticamente las lógicas del CSV.
+              </p>
+              <button 
+                onClick={handleCreateBlueLine}
+                className="btn-primary"
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Creando...' : '✨ Crear Línea Azul desde Cuestionario'}
+              </button>
+            </div>
+          ) : (
+        <div className="card" style={{ marginBottom: '24px', backgroundColor: '#064e3b', border: '1px solid #065f46' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: '#6ee7b7' }}>
+                📘 Línea Azul Existente
+              </h2>
+              <p style={{ color: '#6ee7b7', fontSize: '14px', marginTop: '4px' }}>
+                Este material ya tiene línea azul (Tipo: {blueLine.material_type})
+              </p>
+            </div>
+            <Link 
+              to={`/blue-line/${blueLine.id}`}
+              className="btn-secondary"
+            >
+              Ver Línea Azul →
+            </Link>
+          </div>
+        </div>
+          )}
+        </>
       )}
 
       {/* Validations */}

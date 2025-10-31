@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
+from pathlib import Path
+import shutil
+import logging
 
 from app.core.database import get_db
 from app.models.blue_line import BlueLine
@@ -20,6 +23,9 @@ from app.schemas.blue_line import (
 )
 from app.services.blue_line_calculator import BlueLineCalculator
 from app.services.blue_line_sync_service import BlueLineSyncService
+from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/blue-line", tags=["blue-line"])
 
@@ -407,6 +413,249 @@ def bulk_import_field_logics(
         "total_processed": len(bulk_import.field_logics)
     }
 
+@router.post("/{blue_line_id}/upload-documents", response_model=dict)
+async def upload_documents_for_composite(
+    blue_line_id: int,
+    files: List[UploadFile] = File(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Upload PDF documents for composite extraction from Blue Line.
+    Stores documents temporarily for AI extraction.
+    """
+    from pathlib import Path
+    import shutil
+    from datetime import datetime
+    
+    blue_line = db.query(BlueLine).filter(BlueLine.id == blue_line_id).first()
+    if not blue_line:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Blue Line {blue_line_id} not found"
+        )
+    
+    # Create upload directory for blue line documents
+    upload_dir = Path(settings.UPLOAD_DIR) / "blue-lines" / str(blue_line_id)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    uploaded_files = []
+    
+    for file in files:
+        # Validate file type
+        if not file.filename.lower().endswith('.pdf'):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Only PDF files are supported, got {file.filename}"
+            )
+        
+        # Save file
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_filename = f"{timestamp}_{file.filename}"
+        file_path = upload_dir / safe_filename
+        
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        uploaded_files.append({
+            "filename": file.filename,
+            "path": str(file_path.resolve()),
+            "upload_date": datetime.utcnow().isoformat(),
+            "type": "pdf"
+        })
+    
+    # Store documents in blue line metadata temporarily
+    # Create a new dict to ensure SQLAlchemy detects the change
+    current_metadata = blue_line.calculation_metadata.copy() if blue_line.calculation_metadata else {}
+    
+    if "pending_documents" not in current_metadata:
+        current_metadata["pending_documents"] = []
+    
+    # Extend the list
+    current_metadata["pending_documents"].extend(uploaded_files)
+    
+    # Assign the new dict to trigger SQLAlchemy change detection
+    blue_line.calculation_metadata = current_metadata
+    
+    db.add(blue_line)  # Ensure the object is tracked
+    db.commit()
+    db.refresh(blue_line)  # Refresh to get the latest data
+    
+    # Verify the documents were saved
+    final_pending_docs = blue_line.calculation_metadata.get("pending_documents", []) if blue_line.calculation_metadata else []
+    
+    logger.info(f"Uploaded {len(uploaded_files)} file(s) for Blue Line {blue_line_id}")
+    logger.info(f"Total pending documents after save: {len(final_pending_docs)}")
+    
+    return {
+        "blue_line_id": blue_line_id,
+        "uploaded_files": uploaded_files,
+        "total_documents": len(final_pending_docs)
+    }
+
+
+@router.post("/{blue_line_id}/extract-composite", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def extract_composite_from_blue_line(
+    blue_line_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Extract composite Z1 from uploaded documents using AI.
+    Uses the same AI extraction logic as questionnaires.
+    """
+    from pathlib import Path
+    from app.models.composite import Composite, CompositeComponent, CompositeOrigin, CompositeStatus, CompositeType
+    from app.core.config import settings
+    
+    blue_line = db.query(BlueLine).filter(BlueLine.id == blue_line_id).first()
+    if not blue_line:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Blue Line {blue_line_id} not found"
+        )
+    
+    # Get pending documents from metadata
+    pending_docs = blue_line.calculation_metadata.get("pending_documents", []) if blue_line.calculation_metadata else []
+    
+    if not pending_docs:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No documents uploaded. Please upload PDF documents first using /upload-documents endpoint."
+        )
+    
+    # Extract PDF paths and validate they exist
+    pdf_paths = []
+    missing_files = []
+    
+    for doc in pending_docs:
+        if doc.get("type") == "pdf":
+            doc_path = Path(doc["path"])
+            if doc_path.exists():
+                pdf_paths.append(str(doc_path.resolve()))
+            else:
+                missing_files.append(doc["path"])
+                logger.warning(f"PDF file not found: {doc_path}")
+    
+    if not pdf_paths:
+        error_msg = "No PDF documents found"
+        if missing_files:
+            error_msg += f". Missing files: {', '.join(missing_files)}"
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=error_msg
+        )
+    
+    logger.info(f"Extracting composite from {len(pdf_paths)} PDF(s) for Blue Line {blue_line_id}")
+    
+    # Extract composite - Use OpenAI if configured, otherwise use OCR
+    try:
+        if settings.USE_OPENAI_FOR_EXTRACTION and settings.OPENAI_API_KEY:
+            # Use OpenAI Vision API (more accurate)
+            from app.services.composite_extractor_openai import CompositeExtractorOpenAI
+            extractor = CompositeExtractorOpenAI(api_key=settings.OPENAI_API_KEY)
+            components, confidence = extractor.extract_from_pdfs(pdf_paths, use_vision=True)
+            extraction_method = "OPENAI_VISION"
+        else:
+            # Use OCR-based extraction (local, no API needed)
+            from app.services.composite_extractor_ai import CompositeExtractorAI
+            extractor = CompositeExtractorAI()
+            components, confidence = extractor.extract_from_pdfs(pdf_paths)
+            extraction_method = "AI_OCR"
+        
+        if not components:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="No components could be extracted from documents"
+            )
+        
+        # Check if composite already exists
+        existing_composite = None
+        if blue_line.composite_id:
+            existing_composite = db.query(Composite).filter(Composite.id == blue_line.composite_id).first()
+        
+        # Create or update composite
+        if existing_composite and not existing_composite.components:
+            # Update existing empty composite
+            composite = existing_composite
+            composite.composite_type = CompositeType.Z1
+            composite.origin = CompositeOrigin.CALCULATED
+            composite.status = CompositeStatus.DRAFT
+            composite.source_documents = pending_docs
+            composite.extraction_confidence = confidence
+            composite.composite_metadata = {
+                "extraction_method": extraction_method,
+                "extraction_date": datetime.utcnow().isoformat(),
+                "source_blue_line": blue_line_id
+            }
+            composite.notes = f"Extracted from {len(pdf_paths)} document(s) with {confidence:.1f}% confidence"
+            # Clear existing empty components
+            for comp in composite.components:
+                db.delete(comp)
+        else:
+            # Create new composite
+            composite = Composite(
+                material_id=blue_line.material_id,
+                version=1,
+                origin=CompositeOrigin.CALCULATED,
+                composite_type=CompositeType.Z1,
+                status=CompositeStatus.DRAFT,
+                source_documents=pending_docs,
+                extraction_confidence=confidence,
+                composite_metadata={
+                    "extraction_method": extraction_method,
+                    "extraction_date": datetime.utcnow().isoformat(),
+                    "source_blue_line": blue_line_id
+                },
+                notes=f"Extracted from {len(pdf_paths)} document(s) with {confidence:.1f}% confidence"
+            )
+            db.add(composite)
+            db.flush()
+        
+        # Add components (validate required fields)
+        for comp_data in components:
+            # Validate required fields
+            if not comp_data.get('component_name'):
+                logger.warning(f"Skipping component without name: {comp_data}")
+                continue
+            
+            component = CompositeComponent(
+                cas_number=comp_data.get('cas_number') or None,
+                component_name=comp_data['component_name'],
+                percentage=comp_data.get('percentage', 0.0),
+                confidence_level=comp_data.get('confidence', confidence)
+            )
+            composite.components.append(component)
+        
+        # Update Blue Line to reference this composite
+        if not blue_line.composite_id:
+            blue_line.composite_id = composite.id
+        
+        # Clear pending documents from metadata
+        if blue_line.calculation_metadata:
+            blue_line.calculation_metadata.pop("pending_documents", None)
+        
+        db.commit()
+        db.refresh(composite)
+        
+        return {
+            "composite_id": composite.id,
+            "blue_line_id": blue_line_id,
+            "material_id": blue_line.material_id,
+            "components_count": len(components),
+            "extraction_confidence": confidence,
+            "extraction_method": extraction_method,
+            "status": "extracted"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error extracting composite from Blue Line: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error extracting composite: {str(e)}"
+        )
+
+
 @router.post("/{blue_line_id}/create-composite", response_model=dict, status_code=status.HTTP_201_CREATED)
 def create_composite_z1(
     blue_line_id: int,
@@ -415,8 +664,8 @@ def create_composite_z1(
     """
     Create a composite Z1 (mockup) for a Blue Line.
     
+    DEPRECATED: Use /extract-composite instead for AI extraction.
     This creates a mock composite with dummy data for testing purposes.
-    In the future, this will be generated using AI.
     """
     from app.models.composite import Composite, CompositeStatus, CompositeOrigin, CompositeComponent
     from app.models.blue_line import BlueLine
