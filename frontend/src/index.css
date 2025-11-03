@@ -180,6 +180,79 @@ input, select, textarea {
   color: #1e40af;
 }
 
+.badge-secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge-success {
+    background: #065f46;
+    color: #6ee7b7;
+  }
+  
+  .badge-warning {
+    background: #92400e;
+    color: #fcd34d;
+  }
+  
+  .badge-error {
+    background: #991b1b;
+    color: #fca5a5;
+  }
+  
+  .badge-info {
+    background: #1e3a8a;
+    color: #93c5fd;
+  }
+  
+  .badge-secondary {
+    background: #374151;
+    color: #d1d5db;
+  }
+}
+
+/* Table scroll container styles */
+.table-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #6b7280 #1f2937;
+}
+
+.table-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+@media (prefers-color-scheme: light) {
+  .table-scroll-container {
+    scrollbar-color: #9ca3af #f3f4f6;
+  }
+  
+  .table-scroll-container::-webkit-scrollbar-track {
+    background: #f3f4f6;
+  }
+  
+  .table-scroll-container::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+  }
+  
+  .table-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+}
 
 
 

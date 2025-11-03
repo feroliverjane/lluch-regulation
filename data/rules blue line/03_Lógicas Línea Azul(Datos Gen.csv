@@ -1,0 +1,990 @@
+Campo (literal columna);Lógicas Z001;Lógicas Z002;"Origen de los datos 
+<manual/automático>";Owner / SAP MM03 Clasificación;;;
+Material;SAP;SAP;Automático-SAP;;;;
+Texto breve de material;SAP;SAP;Automático-SAP;;*AÑADIR NOMBRE INCI;;
+Acreedor;103721;103721;Automático-SAP;;;;
+Nombre 1;LLUCH ESSENCE SLU;LLUCH ESSENCE SLU;Automático-SAP;;;;
+Datos Generales;;;;;;;
+@B_COLL@;;;;;;;
+Status Homologación;APR;APR;;;Debe ser modificable a cualquier estatus disponible;;
+Fecha inicio validez homologación;última modificacion de la línea;última modificacion de la línea;;;;;
+Fecha final validez homologación;bloquear;bloquear;;;;;
+Fecha caducidad homologación;bloquear;bloquear;;;;;
+Id última petición;bloquear;bloquear;;;Agregar bloqueo desde SAP: No se puede hacer una petición documental al proveedor LLUCH (103721);;
+Estado de la petición;bloquear;bloquear;;;;;
+Fecha Última Petición;bloquear;bloquear;;;;;
+Usuario Última Petición;bloquear;bloquear;;;;;
+Status homologación técnica;vacío;APR;;;;;
+Fecha de Homologación;vacío;fecha del la creación /última modificación de los datos para composite en los Z002;;;;;
+Responsable Homologación;vacío;Manual;;;;;
+Código CAS EU;SAP;SAP;Automático-SAP;CAS-EINECS;;;
+Código CAS USA;SAP;SAP;Automático-SAP;CAS;;;
+EINECS;SAP;SAP;Automático-SAP;EINECS / ELINCS;;;
+EINECS;SAP;SAP;Automático-SAP;;;;
+Partida arancelaria;SAP;SAP;Automático-SAP;Nº mcía./Nº cód.imp.;;;
+FEMA;SAP;SAP;Automático-SAP;FEMA;;;
+JECFA;Concatenar datos diferentes;Manual;Automático SAP para Z001 y manual para Z002;;;;
+CoE;Concatenar datos diferentes;Manual;Automático SAP para Z001 y manual para Z002;;;;
+FLAVIS;Concatenar datos diferentes;Manual;Automático SAP para Z001 y manual para Z002;;;;
+Nº material proveedor;SAP codigo madre;SAP codigo madre;;CODIGO MADRE;;;
+Distinguir fabricante/distribuidor;vacío;;;;;;
+Nombre fabricante;vacío;;;;;;
+Planta fabricación;vacío;;;;;;
+Tipo Producto;Grupo Artículo;Grupo Artículo;;Grupo artículos;;;
+Número de la FDA;Concatenar datos diferentes;Manual;;;;;
+Status FDA;Texto base de datos FDA;Texto base de datos FDA;;;;;
+Datos Seguridad prod;;;;;;;
+@B_COLL@;;;;;;;
+Peligrosidad;Advisor;Advisor;;;;;
+Fecha de la última revisión;Advisor;Advisor;;;;;
+Versión de la MSDS proveedor;Advisor;Advisor;;;;;
+Reglamento Aplicado;Manual;Manual;;;;;
+Escenario de exposición es aplicable;Manual;Manual;;;;;
+El proveedor dispone de EE;Manual;Manual;;;;;
+PC proveedor;Manual;Manual;;;;;
+Nuestro PC;Manual;Manual;;;;;
+Procesos;Manual;Manual;;;;;
+Estado;Manual;Manual;;;;;
+Punto de fusión;Manual;Manual;;;;;
+Unidad;Manual;Manual;;;;;
+Punto de ebullición;Manual;Manual;;;;;
+Unidad;Manual;Manual;;;;;
+Inflamabilidad;Manual;Manual;;;;;
+Punto de inflamación;Manual;Manual;;;;;
+Unidad;Manual;Manual;;;;;
+Punto de inflamación;Manual;Manual;;;duplicado??;;
+Unidad;Manual;Manual;;;;;
+Indice acidez pH;Manual;Manual;;;;;
+Temperatura indice pH;Manual;Manual;;;;;
+Unidad temperatura índice pH;Manual;Manual;;;;;
+Solubilidad en agua;Manual;Manual;;;;;
+Unidad;Manual;Manual;;;;;
+Temperatura de solubilidad en agua;Manual;Manual;;;;;
+Unidad temperatura solubilidad agua;Manual;Manual;;;;;
+Densidad I;Manual;Manual;;;;;
+Unidad;Manual;Manual;;;;;
+Temperatura densidad;Manual;Manual;;;;;
+Uindad temperatura densidad;Manual;Manual;;;;;
+Propiedades oxidantes;Manual;Manual;;;;;
+Propiedades explosivas;Manual;Manual;;;;;
+Límite inferior explosividad;Manual;Manual;;;;;
+Límite superior explosividad;Manual;Manual;;;;;
+Corrosión dérmica;Manual;Manual;;;;;
+Corrosión ocular;Manual;Manual;;;;;
+Sensibilidad cutánea;Manual;Manual;;;;;
+Sensibilidad respiratoria;Manual;Manual;;;;;
+Mutagenicidad;Manual;Manual;;;;;
+Tipo de carcirogenicidad oral;Manual;Manual;;;;;
+Carcirogenicidad oral;Manual;Manual;;;;;
+Unidad carcirogenicidad oral;Manual;Manual;;;;;
+Tipo de carcirogenicidad dérmica;Manual;Manual;;;;;
+Carcinogenicidad dérmica;Manual;Manual;;;;;
+Unidad carcinogenicidad dérmica;Manual;Manual;;;;;
+Tipo de carcinogenicidad por inhalación;Manual;Manual;;;;;
+Carcinogenicidad por inhalación;Manual;Manual;;;;;
+Unidad carcinogenicidad por inhalación;Manual;Manual;;;;;
+Toxicidad aguda oral;Manual;Manual;;;;;
+Unidad tóxicidad aguda oral;Manual;Manual;;;;;
+Unidad tóxicidad aguda cutánea;Manual;Manual;;;;;
+Toxicidad aguda inhalación (tipo);Manual;Manual;;;;;
+Toxicidad aguda por inhalación;Manual;Manual;;;;;
+;Manual;Manual;;Revisar DAVID en la ZMM113;vacío?;;
+Tiempo exposición tox. aguda inhalación;Manual;Manual;;;;;
+Unidad tiempo exposición;Manual;Manual;;;;;
+STOT: Exposición única;Manual;Manual;;;;;
+STOT: Exposición repetida;Manual;Manual;;;;;
+Toxicidad para la reproducción;Manual;Manual;;;;;
+Toxicidad por aspiración;Manual;Manual;;;;;
+Toxicidad aguda acuática en peces;Manual;Manual;;;;;
+Toxicidad aguda en peces;Manual;Manual;;;;;
+Unidad toxicidad aguda en peces;Manual;Manual;;;;;
+Tiempo exposición toxicidad aguda peces;Manual;Manual;;;;;
+Un.t. exposición toxicidad aguda algas;Manual;Manual;;;;;
+Toxicidad aguda acuática invertebrado;Manual;Manual;;;;;
+Toxicidad aguda en invertebrados;Manual;Manual;;;;;
+Unidad toxicidad aguda en invertebrados;Manual;Manual;;;;;
+Tiempo exposición toxicidad aguda invert;Manual;Manual;;;;;
+Un.t. exposición toxicidad aguda invert.;Manual;Manual;;;;;
+Toxicidad aguda acuática en algas;Manual;Manual;;;;;
+Toxicidad aguda en algas;Manual;Manual;;;;;
+Unidad toxicidad aguda en algas;Manual;Manual;;;;;
+Tiempo exposición toxicidad aguda algas;Manual;Manual;;;;;
+Un.t. exposición toxicidad aguda algas;Manual;Manual;;;;;
+Toxicidad crónica acuática;Manual;Manual;;;;;
+Toxicidad crónica acuática;Manual;Manual;;;;;
+Unidad toxicidad crónica acuática;Manual;Manual;;;;;
+Tiempo expos. toxicidad crónica acuática;Manual;Manual;;;;;
+Un.t. exposición toxicidad crónica acuát;Manual;Manual;;;;;
+Biodegradabilidad;Manual;Manual;;;;;
+Porcentage biodegradabilidad;Manual;Manual;;;;;
+Tiempo estudio biodegradabilidad;Manual;Manual;;;;;
+Unidad tiempo estudio biodegradabilidad;Manual;Manual;;;;;
+LogPow;Manual;Manual;;;;;
+Coeficiente de reparto n-octanol/agua;Manual;Manual;;;;;
+Temp.coef. de reparto n-octanol/agua;Manual;Manual;;;;;
+Unidad temp.coeficiente reparto n-octano;Manual;Manual;;;;;
+Constante de absorción;Manual;Manual;;;;;
+Indice de absorción;Manual;Manual;;;;;
+Temperatura recomendable vida útil;Manual;Manual;;;;;
+Unidad de temperatura recomendable vida;Manual;Manual;;;;;
+Temperatura de almacenaje;Manual;Manual;;;;;
+Unidad de temperatura de almacenaje;Manual;Manual;;;;;
+Condiciones especiales almacenaje;Manual;Manual;;;;;
+Temperatura recomendada transporte;Manual;Manual;;;;;
+Unidad de temperatura de transporte;Manual;Manual;;;;;
+Código envase homologado;Manual;Manual;;;;;
+Envase recomendado;Manual;Manual;;;;;
+Envase a prueba de manipulaciones;Manual;Manual;;;;;
+Condiones especiales de manipulación;Manual;Manual;;;;;
+Código UN del transporte;Manual;Manual;;;;;
+Clase;Manual;Manual;;;;;
+Subclase;Manual;Manual;;;;;
+Grupo de embalaje;Manual;Manual;;;;;
+Clv.separación;Manual;Manual;;;;;
+Datos Origen;;;;;;;
+@B_COLL@;;;;;;;
+Origen del producto (natural/sintético);;;;;;;
+País origen botánico;Concatenar datos diferentes;Manual;;ZMM014;;;
+País de fabricación;Concatenar datos diferentes;Manual;;;;;
+País de manipulación;Concatenar datos diferentes;Manual;;;;;
+Fuente del producto;Concatenar datos diferentes;Manual;;;;;
+Materia prima;Concatenar datos diferentes;Manual;;;;;
+Miembro RSPO;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Si el producto es ""RSPO"" = Yes
+Si el producto no es ""RSPO"" = NA";;;;;
+Producto certificado como RSPO?;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Si el producto es ""RSPO"" = Yes
+Si el producto no es ""RSPO"" = NA";;;;;
+Fabricante con RSPO;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Si el producto es ""RSPO"" = Yes
+Si el producto no es ""RSPO"" = NA";;;;;
+Modelo cadena proveedor;Manual;"si el producto es ""RSPO"" = MASS BALANCE
+Si el producto no es ""RSPO"" = NA";;;;;
+Microorganismo fermentación;Concatenar datos diferentes;Concatenar datos diferentes;;;;;
+Biocatalizador usado es GMO?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Nombre botánico;Concatenar datos diferentes;Manual;;Técnico ZMM014;;;
+Parte de planta usada;Concatenar datos diferentes;Manual;;Técnico ZMM014;;;
+Cultivo convencional;Marcar si algun proveedor lo ha marcado;Manual;;Técnico;;;
+Permacultura;Marcar si algun proveedor lo ha marcado;Manual;;Técnico;;;
+Cultivo tradicional;Marcar si algun proveedor lo ha marcado;Manual;;Técnico;;;
+Cosecha silvestre;Marcar si algun proveedor lo ha marcado;Manual;;Técnico;;;
+Proceso de cultivo manual;Marcar si algun proveedor lo ha marcado;Manual;;Técnico;;;
+Proceso de cultivo mecánico;Marcar si algun proveedor lo ha marcado;Manual;;Técnico;;;
+Temporada de cultivo;Concatenar datos diferentes;Manual;;Técnico;;;
+Cosechas;Concatenar datos diferentes;Manual;;Técnico;;;
+Producto refinado;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Técnico;;;
+Producto desterpenado;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Técnico;;;
+Secado de la planta;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Técnico;;;
+Sistema de secado;Concatenar datos diferentes;Manual;;Técnico;;;
+Tiempo de destilación;Concatenar datos diferentes;Manual;;Técnico;;;
+Material del recipiente de destilación;Concatenar datos diferentes;Manual;;Técnico;;;
+Factor de concentración de aceite;Concatenar datos diferentes;Manual;;Técnico ZMM014;;;
+Producto 100% natural;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Si en Clasificación de material (SAP), campo NATURAL = Si --> Yes
+Si en Clasificación de material (SAP), campo NATURAL = No --> No";;NATURAL=S;;;
+Producto 100% puro;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;;;;
+Producto natural Reg.1334/2008/EC;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Si en Clasificación de material (SAP), campo NATURAL = Si --> Yes
+Si en Clasificación de material (SAP), campo NATURAL = No --> No";;;;;
+Producto natural Directiva US;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Si en Clasificación de material (SAP), campo NATURAL = Si --> Yes
+Si en Clasificación de material (SAP), campo NATURAL = No --> No";;;;;
+Producto natrue;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;;;;
+Garantía producto natural por C14;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Vacío;;;;;
+Producto natural UNE-EN ISO 9235:2021;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;Técnico;"Z001, no debería ser worst case, si alguno indica NO y otros YES, debería estudiarse si se debe cambiar de código -- PF Forma parte de la homologacion pareja mat-prov, no deberían haber datos diferentes
+Z002, se carga de los datos que pasa Técnico.-- PF Ya no se pasarán datos, se cargarán directamente en la línea azul";;
+Clasificación prod.UNE-EN ISO 9235:2021;Concatenar datos diferentes;Manual;;Técnico;"Z001, si se indican clasificaciones diferentes debería estudiarse si se debe cambiar de código -- PF Forma parte de la homologacion pareja mat-prov, no deberían haber datos diferentes
+Z002, se carga de los datos que pasa Técnico -- PF Ya no se pasarán datos, se cargarán directamente en la línea azul";;
+Indice naturalidad;Concatenar datos diferentes;Manual;;Regulatory;;;
+Indice origen natural;Concatenar datos diferentes;Manual;;Regulatory;;;
+Indice orgánico;Concatenar datos diferentes;Manual;;Regulatory;;;
+Indice origen orgánico;Concatenar datos diferentes;Manual;;Regulatory;;;
+Datos Info. general;;;;;;;
+@B_COLL@;;;;;;;
+Contiene aditivos?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory ZMM014;;;
+Contiene solventes?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene disolventes residuales?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Producido con un GMO?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Requiere ser etiquetado como GMO?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene nanomateriales?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene PAH?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene VOC.S?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene VOC.C?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene CMR?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene PRC?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+El producto contiene dioxinas? (EU);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene pesticidas? (EC 396/2005);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene micotoxinas? (EC 1881/2006;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene metales pesados? (EC 1881/2006);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene dioxinas? (US);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene pesticidas? (EPA, USDA, FDA);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene micotoxinas? (US);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene metal.pesados? (EPA, USDA, FDA);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Uso de pesticidas o plaguicidas?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Informe análisis plaguicidas por lote?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Informe análisis de plaguicidas por año?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Prod. en lista EPA uso en plaguicidas?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Producto registrado en la EPA?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Se ha fumigado el producto o el envase?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Vegano;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Contiene Gluten?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Producto testado en animales?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Contiene alguna sustancia origen animal?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Contiene derivados de animales?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Contiene derivados de BSE/TSE;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Contiene derivados de CIVETS?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Tratado con radiaciones iónizantes?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Producto expuesto a radioactividad?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Contiene MOHS y/o MOAH?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Garantía continua del producto?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";vacío;;Regulatory;;;
+Datos Sostenibilidad;;;;;;;
+@B_COLL@;;;;;;;
+Se deriva de un material biológico?;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Origen botánico del producto;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Tipo biológico de obtención;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+100% de fuentes no renovables?;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;Sostenibilidad;;;
+Porcentaje de renovabilidad;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Deforestación 1115/2023;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;Sostenibilidad;;;
+Energía consumida para producir 1 Kg;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Unidad energía consumida;;Manual;;Sostenibilidad;;;
+Producción energía renovable implantada?;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+% de energía renovable producida;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Energía renovable consumida;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Unidad energía renovable;;Manual;;Sostenibilidad;;;
+Consumo de agua;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Unidad de consumo de agua;;Manual;;Sostenibilidad;;;
+Cálculo de la huella de carbono del prod;concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Realiza compensación de la huella carbon;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;Sostenibilidad;;;
+Cantidad CO2 emitido para producir 1 Kg;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Unidad de CO2 emitido;;Manual;;Sostenibilidad;;;
+Existe transporte para la materia prima;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Sostenibilidad;;;
+Distancia desde el origen a la planta;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Unidad para la distancia desde origen;;Manual;;Sostenibilidad;;;
+Compensa la huella carbono transporte?;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;Sostenibilidad;;;
+Cantidad biomasa producida por hectarea;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Unidad de cantidad biomasa producida;;Manual;;Sostenibilidad;;;
+Se utilizan insumos en la producción?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Sostenibilidad;;;
+Se obtiene mediante reacción química?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Sostenibilidad;;;
+Método de obtención;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Se emplea catalizador?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Sostenibilidad;;;
+Incluido en el protocolo Nagoya?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Sostenibilidad;;;
+El producto está regulado por CITES?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Sostenibilidad;;;
+E Factor;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+% Reciclabilidad;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+% Composición materias primas recicladas;Concatenar datos diferentes;Manual;;Sostenibilidad;;;
+Datos Fragancias;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;bloqueada;bloqueada;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+Subs. retringidas/prohibidas de la IFRA?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Reglamento (CE) 1223/2009;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;Regulatory;;;
+Sustancias Anexo II, III, IV, V, VI;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Normativa sobre cosméticos EEUU;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";Manual;;Regulatory;;;
+Contiene sustancias prohibidas?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Aditivo color sujeoto cert. 21CFR;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";No;;;;;
+Aditivo color exento cert. 21CFR;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";No;;;;;
+Contiene alergenos?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene furocumarinas?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Nitromusk/Almizcle poli o macrocíclico?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene ftalatos?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene nitrosaminas?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene dioxinas?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Menthol, eucalyptol y camphor?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Contiene PAHS, DAH,...;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;Regulatory;;;
+Cumple con CSTSC - China;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;Regulatory;;;
+Cumple con CSAR - China;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;Regulatory;;;
+Cumple con Cosmetic Act - Korea;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;Regulatory;;;
+Substancia regulada normativa Korea;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Cumple normas japonesas sobre cosméticos;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;Regulatory;;;
+Incluidas en las normas japonesas;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Cumple la Ley de cosméticos India;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;Regulatory;;;
+Iincluida en la norma BIS (India);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;Regulatory;;;
+Datos Food;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;bloqueada;bloqueada;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+Certifica. seguridad alimen. fabricante;vacío;vacío;;;;;
+Certifica. seguridad alimen. proveedor;FSSC22000 + ISO22000 + FAMI-QS;FSSC22000 + ISO22000 + FAMI-QS;;;;;
+Producto Food-EU;SAP (Clasificación de material);SAP (Clasificación de material);;USO;;;
+Clasificación Food-EU;SAP (Clasificación de material);SAP (Clasificación de material);;CLAS. REGLAMENTO 1334/2008/CE;;;
+Cumple las especificaciones (EC)231/2008;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+El producto cumple con CODEX;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+El producto cumple con JECFA;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Producto evaluado y seguro;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Existencia de impurezas significativas;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Certifcado mínimo impurezas inevitables;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+El producto cumple con un programa HARPC;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+El producto cumple con FDA (21CFR)?;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+El producto cumple con GRAS;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Contiene sustancias listadas en la DEA;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+El producto cumple con FDA (21CFR)?;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Aditivo alimetario sujeto certificación;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Aditivo alimetario excento certificación;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Cumple con la normativa colombiana;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Cumple con la normativa mexicana;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Está listado en el Anexo XI;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Clasificación acuerdo con la normativa m;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Contiene alergenos?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+substancias limitativas (LMT);"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;;;;
+Contiene sustancias prohibidas?;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";Manual;;;;;
+Envase cumple con la norma UE 10/2011;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Envase cumple con la norma EC 1935/2004;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Envase cumple con la norma EC 2023/2006;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Envase cumple con la norma 21CFR 174;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Datos Feed;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;bloqueada;bloqueada;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+Aditivos Feed Norma EC 1831/2003;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Higiene Feed - Norma EC 183/2005;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Cumple Normas higiene específicas alimen;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Subtsacias indeseadas norma EC 2002/32;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+El producto cumple con JECFA;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Prov. verificado según criterios FAMI-QS;vacio;vacio;;;;;
+Tipo de producto FEED;SAP;SAP;;;;;
+Categoría de producto FEED;SAP;SAP;;;;;
+Grupo funcional FEED;SAP;SAP;;;;;
+Aditivo;SAP;SAP;;;;;
+Referencia Reglamento autorización adit.;SAP;SAP;;;;;
+Substancia;SAP;SAP;;;;;
+Especies;SAP;SAP;;;;;
+Dosificación;SAP;SAP;;;;;
+Método de obtención según EC 1831/2003;SAP;SAP;;;;;
+% Mínima pureza según EC 1831/2003;SAP;SAP;;;;;
+% Mínima pureza según TDS;SAP;SAP;;;;;
+% Mínima pureza según proveedor;SAP;SAP;;;;;
+Otras disposiciones;SAP;SAP;;;;;
+Otras disposiciones;SAP;SAP;;;;;
+Datos Pharma;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;bloqueada;bloqueada;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+EP (European Pharmacopeia);Marcar si algun proveedor lo ha marcado;Marcar si algun proveedor lo ha marcado;;;;;
+USP (USA Pharmacopeia);Marcar si algun proveedor lo ha marcado;Marcar si algun proveedor lo ha marcado;;;;;
+BP (British Pharmacopeia);Marcar si algun proveedor lo ha marcado;Marcar si algun proveedor lo ha marcado;;;;;
+DAP (Deutschland Pharmacopeia);Marcar si algun proveedor lo ha marcado;Marcar si algun proveedor lo ha marcado;;;;;
+Cumplimiento con otra farmacopea;Marcar si algun proveedor lo ha marcado;Marcar si algun proveedor lo ha marcado;;;;;
+Otra farmacopea descripción;Marcar si algun proveedor lo ha marcado;Marcar si algun proveedor lo ha marcado;;;;;
+Datos Kosher;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;bloqueada;bloqueada;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+Proveedor posee certificación;vacio;vacio;;;;;
+Cuerpo de certificación;KLBD;KLBD;;;;;
+Adjunta certificado;CERT_KOSHER;CERT_KOSHER;;CERT_KOSHER;;;
+Fecha caducidad certificación proveedor;FECHA_KOSHER_LLUCH;FECHA_KOSHER_LLUCH;;FECHA_KOSHER_LLUCH;;;
+Kosher ID;vacio;vacio;;;;;
+Declaración proveedor homologación;vacio;vacio;;;;;
+Clasificación Kosher;SAP;SAP;;;;;
+Status Kosher;SAP;SAP;;;;;
+Certificado Kosher;SAP;SAP;;;;;
+KLBD Id;SAP;SAP;;;;;
+Link KLBD;SAP;SAP;;;;;
+Datos Halal;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;bloqueada;bloqueada;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+Proveedor posee certificación;VACIO;VACIO;;;;;
+Cuerpo de certificación;VACIO;VACIO;;;;;
+Adjunta certificado;VACIO;VACIO;;;;;
+Fecha caducidad certificación proveedor;VACIO;VACIO;;;;;
+Declaración proveedor homologación;VACIO;VACIO;;;;;
+Cumplimentado cuestionario;VACIO;VACIO;;;;;
+Status Halal;SAP;SAP;;HALAL;;;
+PDF Halal;SAP;SAP;;CERTIFICADO HALAL;;;
+Contiene ingrediente de origen animal;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+No presencia sustancias de origen animal;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+No se ha utilizado método de fermetación;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Producto final no contiene etanol;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Materias primas sin etanol;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Uso de etanol para limpieza de equipos;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Cumple con las pautas HALAL;"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";"Jerarquia de datos:
+1.No(worst case)
+2.NA
+3.Yes";;;;;
+Comentarios;Vacio;Vacio;;;;;
+Datos Reach;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;bloqueada;bloqueada;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+Producto regitrado en REACH EU;ZMM064;ZMM064;;ZMM064/103721;;;
+Causa excención del producto en REACH EU;ZMM064;ZMM064;;ZMM064/103721;;;
+Código de registro Reach;ZMM064;ZMM064;;ZMM064/103721;;;
+Banda de peso nominal REACH;ZMM064;ZMM064;;ZMM064/103721;;;
+Nombre del OR de Proveedor;VACIO;VACIO;;;;;
+Referencia OR;VACIO;VACIO;;;;;
+Producto preregistrado REACH  KKDIK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Producto registrado KKDIK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Causa excención producto en REACH KKDIK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Código de registro Reach KKDIK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Banda de peso nominal REACH;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Nombre del OR de Proveedor KKDIK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Referencia OR KKDIK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Producto preregistrado REACH Korea;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Producto registrado Korea;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Causa excención producto en REACH KR;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Código de registro Reach KR;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Banda de peso nominal REACH;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Nombre del OR de Proveedor KR;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Referencia OR KR;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Producto preregistrado REACH UK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Producto registrado UK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Causa excención producto en REACH UK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Código de registro Reach UK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Banda de peso nominal REACH;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Nombre del OR de Proveedor UK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Referencia OR UK;ZMM064W;ZMM064W;;ZMM064W/103721;;;
+Contiene sustan. altamente preocupantes;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Sustancias autorizadas anexo XIV REACH;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Sustancias restringidas anexo XVII REACH;"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";"Jerarquia de datos:
+1.Yes(worst case)
+2.NA
+3.No";;;;;
+Datos ECOCERT;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;SAP;SAP;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;
+Datos CCPAE;;;;;;;
+@B_COLL@;;;;;;;
+Resultado homologación;SAP;SAP;;;;;
+Fecha inicio validez homologación;fecha última modificacion;fecha última modificacion;;;;;
+Fecha final validez homologación;bloqueada;bloqueada;;;;;
+Fecha caducidad homologación;bloqueada;bloqueada;;;;;

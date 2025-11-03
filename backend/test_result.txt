@@ -1,0 +1,35 @@
+Error converting PDF to images: Unable to get page count. Is poppler installed and in PATH?
+Total percentage is 0%, expected ~100%. Adjusting confidence score.
+================================================================================
+  🧪 TEST DE EXTRACCIÓN DE PDF
+================================================================================
+
+📄 PDF: ESMA_100049500_IFR_101074_EN.pdf
+   Path: /Users/alonahubarenko/Documents/Marc/Mafer AI/Lluch Regulation Línia Azul/data/pdfs/ESMA_100049500_IFR_101074_EN.pdf
+
+🤖 Método: OpenAI Vision API
+   API Key: sk-proj-Mm...
+
+================================================================================
+  EXTRAYENDO COMPOSICIÓN...
+================================================================================
+
+🔄 Iniciando extracción con OpenAI Vision API...
+   (Esto puede tomar 10-30 segundos...)
+
+================================================================================
+  ✅ RESULTADOS
+================================================================================
+
+📊 Componentes encontrados: 0
+🎯 Confianza: 51.0%
+
+⚠️  No se encontraron componentes en el PDF
+
+Posibles razones:
+  - El PDF no contiene tabla de composición
+  - El formato no es reconocible
+  - El PDF está protegido o corrupto
+
+💡 Intenta con OpenAI para mejor precisión:
+   Cambia USE_OPENAI_FOR_EXTRACTION=true en .env

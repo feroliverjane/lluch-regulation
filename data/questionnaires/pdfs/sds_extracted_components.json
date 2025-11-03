@@ -1,0 +1,42 @@
+{
+  "source_pdf": "../data/pdfs/ESMA_100049500_SDS_101074_EN.pdf",
+  "components": [
+    {
+      "component_name": "Estragole",
+      "cas_number": "140-67-0",
+      "percentage": 50.0
+    },
+    {
+      "component_name": "Linalool",
+      "cas_number": "78-70-6",
+      "percentage": 17.5
+    },
+    {
+      "component_name": "Eucalyptol",
+      "cas_number": "470-82-6",
+      "percentage": 0.5
+    },
+    {
+      "component_name": "alpha-Pinene",
+      "cas_number": "80-56-8",
+      "percentage": 0.5
+    },
+    {
+      "component_name": "beta-Pinene",
+      "cas_number": "127-91-3",
+      "percentage": 0.5
+    },
+    {
+      "component_name": "cis béta Ocimene",
+      "cas_number": "3338-55-4",
+      "percentage": 0.5
+    },
+    {
+      "component_name": "d-Limonene",
+      "cas_number": "5989-27-5",
+      "percentage": 0.5
+    }
+  ],
+  "total_percentage": 70.0,
+  "extraction_method": "OpenAI GPT-4o"
+}

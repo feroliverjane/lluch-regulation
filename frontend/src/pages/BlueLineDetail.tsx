@@ -236,7 +236,14 @@ export default function BlueLineDetail() {
       return;
     }
 
-    if (!confirm('¿Actualizar composite Z1 a Z2? Esta acción es irreversible.')) {
+    // Validate file type - accept Excel/CSV for Z2 import
+    const fileExt = selectedZ2File.name.toLowerCase().split('.').pop();
+    if (!fileExt || !['xlsx', 'xls', 'csv'].includes(fileExt)) {
+      alert('Por favor selecciona un archivo Excel (.xlsx, .xls) o CSV (.csv)');
+      return;
+    }
+
+    if (!confirm('¿Importar composite Z2 desde archivo Excel/CSV? Esta acción actualizará el composite a Z2 con los datos del archivo.')) {
       return;
     }
 
@@ -244,20 +251,20 @@ export default function BlueLineDetail() {
     try {
       const formData = new FormData();
       formData.append('file', selectedZ2File);
-      formData.append('composite_id', composite.id.toString());
 
-      // Call backend endpoint to update Z1 to Z2
-      const response = await api.post(`/composites/${composite.id}/update-to-z2`, formData, {
+      // Use the new endpoint for importing Z2 from Excel
+      await api.post(`/composites/${composite.id}/import-z2-from-excel`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      alert('Composite actualizado a Z2 exitosamente');
+      alert('✅ Composite Z2 importado exitosamente desde Excel/CSV');
       setShowUploadZ2(false);
       setSelectedZ2File(null);
       fetchBlueLineDetail(); // Refresh data
     } catch (error: any) {
-      console.error('Error updating to Z2:', error);
-      alert(error.response?.data?.detail || 'Error al actualizar a Z2');
+      console.error('Error importing Z2:', error);
+      const errorMsg = error.response?.data?.detail || error.message || 'Error al importar Z2';
+      alert(`Error al importar Z2: ${errorMsg}`);
     } finally {
       setUpdatingToZ2(false);
     }
@@ -373,7 +380,14 @@ export default function BlueLineDetail() {
       return;
     }
 
-    if (!confirm('¿Importar composite Z2 desde archivo? Esta acción creará un composite Z2 definitivo.')) {
+    // Validate file type
+    const fileExt = fileToUse.name.toLowerCase().split('.').pop();
+    if (!['xlsx', 'xls', 'csv'].includes(fileExt)) {
+      alert('Por favor selecciona un archivo Excel (.xlsx, .xls) o CSV (.csv)');
+      return;
+    }
+
+    if (!confirm('¿Importar composite Z2 desde archivo Excel/CSV? Esta acción actualizará el composite a Z2 con los datos del archivo.')) {
       return;
     }
 
@@ -382,30 +396,30 @@ export default function BlueLineDetail() {
       const formData = new FormData();
       formData.append('file', fileToUse);
       
-      // Use the same endpoint as updating Z1 to Z2
+      // Use the new endpoint for importing Z2 from Excel
       const compositeId = composite?.id || blueLine.composite_id;
       if (compositeId) {
-        // Update existing composite to Z2
-        formData.append('composite_id', compositeId.toString());
-        await api.post(`/composites/${compositeId}/update-to-z2`, formData, {
+        // Update existing composite to Z2 from Excel
+        await api.post(`/composites/${compositeId}/import-z2-from-excel`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        alert('✅ Composite Z2 importado exitosamente');
+        alert('✅ Composite Z2 importado exitosamente desde Excel/CSV');
       } else {
         // If no composite exists, create Z1 first then update to Z2
         const z1Response = await api.post(`/blue-line/${blueLine.id}/create-composite`);
-        formData.append('composite_id', z1Response.data.composite_id.toString());
-        await api.post(`/composites/${z1Response.data.composite_id}/update-to-z2`, formData, {
+        await api.post(`/composites/${z1Response.data.composite_id}/import-z2-from-excel`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        alert('✅ Composite Z2 importado exitosamente');
+        alert('✅ Composite Z2 importado exitosamente desde Excel/CSV');
       }
 
       setSelectedZ2ImportFile(null);
+      setShowUploadZ2(false);
       fetchBlueLineDetail(); // Refresh data
     } catch (error: any) {
       console.error('Error importing Z2:', error);
-      alert(error.response?.data?.detail || 'Error al importar Z2');
+      const errorMsg = error.response?.data?.detail || error.message || 'Error al importar Z2';
+      alert(`Error al importar Z2: ${errorMsg}`);
     } finally {
       setImportingZ2(false);
     }
@@ -914,15 +928,17 @@ export default function BlueLineDetail() {
               marginBottom: '16px'
             }}>
               <h3 style={{ marginTop: 0, fontSize: '14px', fontWeight: '600', color: 'white', marginBottom: '12px' }}>
-                Actualizar Composite a Z2 (Laboratorio)
+                Importar Composite Z2 desde Excel/CSV
               </h3>
               <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '12px' }}>
-                Sube el análisis de laboratorio definitivo. Esta acción es irreversible y el composite no podrá modificarse después.
+                Sube un archivo Excel (.xlsx, .xls) o CSV con el formato SAP que contiene los componentes del composite. 
+                El archivo debe tener columnas: Espec./compon. (CAS), Nombre del producto, Cl.Componente (COMPONENT), 
+                Valor Lím.inf., Valor Lím.sup., y Unidad.
               </p>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <input
                   type="file"
-                  accept=".pdf,.xlsx,.csv"
+                  accept=".xlsx,.xls,.csv"
                   onChange={(e) => setSelectedZ2File(e.target.files?.[0] || null)}
                   style={{
                     flex: 1,

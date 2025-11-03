@@ -120,3 +120,6 @@ Después de importar `test_validation_with_mismatches.json`, deberías ver:
 - [ ] Botón "Ver Cuestionario Importado" navega correctamente
 - [ ] No hay navegación automática (usuario controla)
 
+
+
+

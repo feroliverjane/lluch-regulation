@@ -820,60 +820,90 @@ export default function QuestionnaireDetail() {
       )}
 
       {/* Validations */}
-      {validations.length > 0 && (
-        <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
-          <h2 style={{ marginTop: 0, color: 'white' }}>Validaciones ({validations.length})</h2>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Campo</th>
-                <th>Tipo</th>
-                <th>Esperado</th>
-                <th>Actual</th>
-                <th>Desviación</th>
-                <th>Severidad</th>
-                <th>Mensaje</th>
-              </tr>
-            </thead>
-            <tbody>
-              {validations.map((validation) => (
-                <tr key={validation.id}>
-                  <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{validation.field_name}</td>
-                  <td>
-                    <span className="badge badge-secondary" style={{ fontSize: '11px' }}>
-                      {validation.validation_type.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td>{validation.expected_value || '-'}</td>
-                  <td>{validation.actual_value || '-'}</td>
-                  <td>
-                    {validation.deviation_percentage !== null && validation.deviation_percentage !== undefined ? (
-                      <span style={{ 
-                        fontWeight: '500',
-                        color: validation.deviation_percentage >= 10 ? '#ef4444' : 
-                               validation.deviation_percentage >= 5 ? '#f59e0b' : '#6b7280'
-                      }}>
-                        {validation.deviation_percentage.toFixed(1)}%
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td>
-                    <span className={`badge ${getSeverityBadge(validation.severity)}`}>
-                      {validation.severity}
-                    </span>
-                  </td>
-                  <td style={{ fontSize: '13px', maxWidth: '300px' }}>{validation.message}</td>
+      {(() => {
+        // Filter out CRITICAL validations that already have an incident
+        // This avoids duplication since incidents are created from CRITICAL validations
+        // Both validations and incidents use format "fieldCode:fieldName" or just "fieldCode"
+        const incidentFieldNames = new Set(incidents.map(i => {
+          // Extract fieldCode (before colon) or use full name
+          return i.field_name.includes(':') ? i.field_name.split(':')[0] : i.field_name;
+        }));
+        const filteredValidations = validations.filter(v => {
+          // Keep INFO and WARNING validations (they never have incidents)
+          if (v.severity !== 'CRITICAL') return true;
+          // For CRITICAL: only show if no incident exists for this field
+          const validationFieldCode = v.field_name.includes(':') ? v.field_name.split(':')[0] : v.field_name;
+          return !incidentFieldNames.has(validationFieldCode);
+        });
+        
+        return filteredValidations.length > 0 && (
+          <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
+            <h2 style={{ marginTop: 0, color: 'white' }}>
+              Validaciones ({filteredValidations.length})
+              {validations.length > filteredValidations.length && (
+                <span style={{ fontSize: '12px', fontWeight: 'normal', color: '#9ca3af', marginLeft: '8px' }}>
+                  ({validations.length - filteredValidations.length} críticas con incidente)
+                </span>
+              )}
+            </h2>
+            <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '16px', fontStyle: 'italic' }}>
+              Vista técnica de comparaciones. Los problemas críticos aparecen en la sección de Incidentes para su gestión.
+            </p>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>Tipo</th>
+                  <th>Esperado</th>
+                  <th>Actual</th>
+                  <th>Desviación</th>
+                  <th>Severidad</th>
+                  <th>Mensaje</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {filteredValidations.map((validation) => (
+                  <tr key={validation.id}>
+                    <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{validation.field_name}</td>
+                    <td>
+                      <span className="badge badge-secondary" style={{ fontSize: '11px' }}>
+                        {validation.validation_type.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td>{validation.expected_value || '-'}</td>
+                    <td>{validation.actual_value || '-'}</td>
+                    <td>
+                      {validation.deviation_percentage !== null && validation.deviation_percentage !== undefined ? (
+                        <span style={{ 
+                          fontWeight: '500',
+                          color: validation.deviation_percentage >= 10 ? '#ef4444' : 
+                                 validation.deviation_percentage >= 5 ? '#f59e0b' : '#6b7280'
+                        }}>
+                          {validation.deviation_percentage.toFixed(1)}%
+                        </span>
+                      ) : '-'}
+                    </td>
+                    <td>
+                      <span className={`badge ${getSeverityBadge(validation.severity)}`}>
+                        {validation.severity}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '13px', maxWidth: '300px' }}>{validation.message}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      })()}
 
       {/* Incidents */}
       {incidents.length > 0 && (
         <div className="card" style={{ marginBottom: '24px', backgroundColor: '#1f2937', color: 'white' }}>
           <h2 style={{ marginTop: 0, color: 'white' }}>Incidentes ({incidents.length})</h2>
+          <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '16px', fontStyle: 'italic' }}>
+            Problemas críticos que requieren acción. Se generan automáticamente desde validaciones críticas.
+          </p>
           <table className="table">
             <thead>
               <tr>
@@ -990,8 +1020,19 @@ export default function QuestionnaireDetail() {
                 <div style={{ display: 'grid', gap: '20px' }}>
                   {sectionFields.map((field) => {
                     const responseValue = questionnaire.responses[field.fieldCode];
-                    const hasValidation = validations.some(v => v.field_name.includes(field.fieldCode));
-                    const hasIncident = incidents.some(i => i.field_name === field.fieldCode);
+                    // Check for incidents first (priority) - match by fieldCode
+                    const hasIncident = incidents.some(i => {
+                      const incidentFieldCode = i.field_name.includes(':') ? i.field_name.split(':')[0] : i.field_name;
+                      return incidentFieldCode === field.fieldCode;
+                    });
+                    // Only show validation badge if there's no incident (to avoid duplication)
+                    const incidentFieldCodes = new Set(incidents.map(i => {
+                      return i.field_name.includes(':') ? i.field_name.split(':')[0] : i.field_name;
+                    }));
+                    const hasValidation = !hasIncident && validations.some(v => {
+                      const validationFieldCode = v.field_name.includes(':') ? v.field_name.split(':')[0] : v.field_name;
+                      return validationFieldCode === field.fieldCode && !incidentFieldCodes.has(validationFieldCode);
+                    });
                     
                     return (
                       <div key={field.fieldCode}>
@@ -1011,18 +1052,6 @@ export default function QuestionnaireDetail() {
                                 CRITICAL
                               </span>
                             )}
-                            {hasValidation && (
-                              <span style={{ 
-                                marginLeft: '8px', 
-                                fontSize: '11px', 
-                                padding: '2px 6px', 
-                                backgroundColor: '#7f1d1d',
-                                color: '#fca5a5',
-                                borderRadius: '4px'
-                              }}>
-                                VALIDATION
-                              </span>
-                            )}
                             {hasIncident && (
                               <span style={{ 
                                 marginLeft: '8px', 
@@ -1033,6 +1062,18 @@ export default function QuestionnaireDetail() {
                                 borderRadius: '4px'
                               }}>
                                 INCIDENT
+                              </span>
+                            )}
+                            {hasValidation && (
+                              <span style={{ 
+                                marginLeft: '8px', 
+                                fontSize: '11px', 
+                                padding: '2px 6px', 
+                                backgroundColor: '#7f1d1d',
+                                color: '#fca5a5',
+                                borderRadius: '4px'
+                              }}>
+                                VALIDATION
                               </span>
                             )}
                           </span>

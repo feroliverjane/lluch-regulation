@@ -1,10 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
+from pathlib import Path
+import shutil
+import logging
 
 from app.core.database import get_db
-from app.models.composite import Composite, CompositeStatus
+from app.core.config import settings
+from app.models.composite import Composite, CompositeStatus, CompositeType, CompositeComponent, CompositeOrigin
 from app.models.approval_workflow import ApprovalWorkflow, WorkflowStatus
 from app.schemas.composite import (
     CompositeCreate,
@@ -14,6 +18,9 @@ from app.schemas.composite import (
 )
 from app.services.composite_calculator import CompositeCalculator
 from app.services.composite_comparator import CompositeComparator
+from app.parsers.composite_excel_parser import CompositeExcelParser
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/composites", tags=["composites"])
 
@@ -361,4 +368,126 @@ def compare_composites_detailed(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e)
         )
+
+
+@router.post("/{composite_id}/import-z2-from-excel", response_model=CompositeResponse)
+async def import_z2_from_excel(
+    composite_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Import composite Z2 from Excel/CSV file (SAP format).
+    Updates an existing Z1 composite to Z2 with data from the Excel file.
+    
+    The Excel/CSV should have columns:
+    - Espec./compon. or CAS: CAS number
+    - Nombre del producto: Component name
+    - Cl.Componente: Must be 'COMPONENT' for main components
+    - Valor Lím.inf. and Valor Lím.sup.: Percentage range
+    - Unidad: Unit (usually '%')
+    """
+    composite = db.query(Composite).filter(Composite.id == composite_id).first()
+    
+    if not composite:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Composite {composite_id} not found"
+        )
+    
+    # Validate file type
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ['.xlsx', '.xls', '.csv']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Formato de archivo no soportado: {file_ext}. Use .xlsx, .xls o .csv"
+        )
+    
+    # Save file temporarily
+    upload_dir = Path(settings.UPLOAD_DIR)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"composite_z2_{timestamp}_{file.filename}"
+    file_path = upload_dir / filename
+    
+    try:
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # Parse Excel/CSV
+        parser = CompositeExcelParser()
+        parse_result = parser.parse_file(str(file_path))
+        
+        if not parse_result["success"]:
+            errors = parse_result.get("errors", [])
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Error parseando archivo: {'; '.join(errors)}"
+            )
+        
+        components_data = parse_result["components"]
+        
+        if not components_data:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="No se encontraron componentes en el archivo"
+            )
+        
+        logger.info(f"Importando {len(components_data)} componentes desde Excel para composite {composite_id}")
+        
+        # Delete existing components
+        for comp in composite.components:
+            db.delete(comp)
+        
+        # Add new components from Excel
+        for comp_data in components_data:
+            component = CompositeComponent(
+                composite_id=composite_id,
+                cas_number=comp_data.get("cas_number"),
+                component_name=comp_data["component_name"],
+                percentage=comp_data["percentage"],
+                component_type=comp_data.get("component_type", "COMPONENT"),
+                notes=f"Importado desde Excel: {comp_data.get('percentage_min', 0)}-{comp_data.get('percentage_max', 0)}%"
+            )
+            composite.components.append(component)
+        
+        # Update composite to Z2
+        composite.composite_type = CompositeType.Z2
+        composite.origin = CompositeOrigin.MANUAL  # Z2 imported manually
+        
+        # Update metadata
+        existing_metadata = composite.composite_metadata or {}
+        existing_metadata.update({
+            "import_source": "excel",
+            "import_filename": file.filename,
+            "import_date": datetime.utcnow().isoformat(),
+            "total_percentage": parse_result.get("total_percentage", 0)
+        })
+        composite.composite_metadata = existing_metadata
+        composite.notes = f"Composite Z2 importado desde {file.filename} con {len(components_data)} componentes"
+        
+        db.commit()
+        db.refresh(composite)
+        
+        logger.info(f"Composite {composite_id} actualizado a Z2 con {len(components_data)} componentes")
+        
+        return composite
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error importando Z2 desde Excel: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error importando composite Z2: {str(e)}"
+        )
+    finally:
+        # Clean up temporary file
+        if file_path.exists():
+            try:
+                file_path.unlink()
+            except Exception as e:
+                logger.warning(f"No se pudo eliminar archivo temporal {file_path}: {e}")
 

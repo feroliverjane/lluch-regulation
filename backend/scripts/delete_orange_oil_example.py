@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script para eliminar el ejemplo de lavanda de la base de datos
+Script para eliminar el ejemplo de naranja (Orange Oil) de la base de datos
 Elimina: Material, Blue Line, Questionnaires, Composites, MaterialSuppliers relacionados
+Busca por código OLA001 o nombre que contenga "C.P.ORANGE OIL ALD.1,20% MIN"
 """
 
 import sys
@@ -11,7 +12,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 from app.core.database import Base
 from app.core.config import settings
@@ -28,22 +29,45 @@ print(f"📁 Conectando a base de datos: {DB_URL}")
 engine = create_engine(DB_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine)
 
-def delete_lavanda_example():
-    """Eliminar todos los datos relacionados con LAVANDA9999"""
+def delete_orange_oil_example():
+    """Eliminar todos los datos relacionados con Orange Oil (OLA001)"""
     db = SessionLocal()
     
     try:
-        # 1. Buscar el material
+        # 1. Buscar el material por código OLA001 o nombre específico
         material = db.query(Material).filter(
-            Material.reference_code == "LAVANDA9999"
+            or_(
+                Material.reference_code == "OLA001",
+                Material.reference_code.ilike("%OLA001%"),
+                Material.name.ilike("%C.P.ORANGE OIL ALD.1,20% MIN%"),
+                Material.name.ilike("%C.P.ORANGE OIL%"),
+                Material.name.ilike("%ORANGE OIL%"),
+                Material.name.ilike("%NARANJA%")
+            )
         ).first()
         
         if not material:
-            print("✅ No se encontró material LAVANDA9999. Ya está limpio.")
+            print("✅ No se encontró material de naranja con código OLA001.")
+            print("   Buscado por: OLA001, C.P.ORANGE OIL ALD.1,20% MIN")
+            
+            # Mostrar todos los materiales que contengan "orange" o "naranja" para referencia
+            all_materials = db.query(Material).filter(
+                or_(
+                    Material.reference_code.ilike("%ORANGE%"),
+                    Material.name.ilike("%ORANGE%"),
+                    Material.name.ilike("%NARANJA%")
+                )
+            ).all()
+            
+            if all_materials:
+                print("\n📋 Materiales relacionados encontrados:")
+                for m in all_materials:
+                    print(f"   - {m.reference_code}: {m.name} (ID: {m.id})")
             return
         
         material_id = material.id
-        print(f"\n🔍 Material encontrado: {material.reference_code} (ID: {material_id})")
+        material_code = material.reference_code
+        print(f"\n🔍 Material encontrado: {material_code} - {material.name} (ID: {material_id})")
         
         # 2. Eliminar MaterialSuppliers relacionados
         suppliers = db.query(MaterialSupplier).filter(
@@ -55,12 +79,16 @@ def delete_lavanda_example():
                 db.delete(supplier)
         
         # 3. Eliminar Blue Line si existe
-        blue_line = db.query(BlueLine).filter(
+        blue_lines = db.query(BlueLine).filter(
             BlueLine.material_id == material_id
-        ).first()
-        if blue_line:
-            print(f"   🗑️  Eliminando Blue Line (ID: {blue_line.id})...")
-            db.delete(blue_line)
+        ).all()
+        if blue_lines:
+            print(f"   🗑️  Eliminando {len(blue_lines)} Blue Line(s)...")
+            for bl in blue_lines:
+                print(f"      - Blue Line ID: {bl.id}, Tipo: {bl.material_type}")
+                db.delete(bl)
+        else:
+            print("   ℹ️  No se encontró Blue Line asociada")
         
         # 4. Eliminar Questionnaires relacionados
         questionnaires = db.query(Questionnaire).filter(
@@ -87,7 +115,7 @@ def delete_lavanda_example():
         # Commit todos los cambios
         db.commit()
         
-        print("\n✅ Ejemplo de lavanda eliminado exitosamente!")
+        print("\n✅ Ejemplo de naranja (OLA001) eliminado exitosamente!")
         print("   Puedes volver a importar el cuestionario JSON para probar.")
         
     except Exception as e:
@@ -100,14 +128,11 @@ def delete_lavanda_example():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  🧹 Limpieza: Eliminar Ejemplo Lavanda (LAVANDA9999)")
+    print("  🧹 Limpieza: Eliminar Ejemplo Orange Oil (OLA001)")
     print("=" * 60)
     
-    confirm = input("\n⚠️  ¿Estás seguro de que quieres eliminar LAVANDA9999? (s/N): ")
+    confirm = input("\n⚠️  ¿Estás seguro de que quieres eliminar el material OLA001 y su línea azul? (s/N): ")
     if confirm.lower() in ['s', 'si', 'sí', 'y', 'yes']:
-        delete_lavanda_example()
+        delete_orange_oil_example()
     else:
         print("❌ Operación cancelada.")
-
-
-

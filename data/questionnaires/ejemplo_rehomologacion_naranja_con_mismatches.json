@@ -1,0 +1,705 @@
+{
+  "requestId" : 171134,
+  "data" : [ {
+    "fieldCode" : "q3t1s2f15",
+    "fieldName" : "Supplier Name",
+    "fieldType" : "inputText",
+    "value" : "CITROFLAVOR BRASIL LTDA"
+  }, {
+    "fieldCode" : "q3t1s2f16",
+    "fieldName" : "Product Name",
+    "fieldType" : "inputText",
+    "value" : "C.P.ORANGE OIL ALD.1,20% MIN"
+  }, {
+    "fieldCode" : "q3t1s2f17",
+    "fieldName" : "Supplier´s product code",
+    "fieldType" : "inputText",
+    "value" : "OLA001"
+  }, {
+    "fieldCode" : "q3t1s2f19",
+    "fieldName" : "Type of supplier",
+    "fieldType" : "lov",
+    "value" : "M"
+  }, {
+    "fieldCode" : "q3t1s2f21",
+    "fieldName" : "Name of the facility where the product is manufactured",
+    "fieldType" : "inputText",
+    "value" : "Citroflavor Processing Plant São Paulo"
+  }, {
+    "fieldCode" : "q3t1s2f22",
+    "fieldName" : "Which type of material is your product?",
+    "fieldType" : "lov",
+    "value" : "B"
+  }, {
+    "fieldCode" : "q3t1s2f23",
+    "fieldName" : "CAS",
+    "fieldType" : "inputText",
+    "value" : "8028-48-6"
+  }, {
+    "fieldCode" : "q3t1s2f24",
+    "fieldName" : "EINECS",
+    "fieldType" : "inputText",
+    "value" : "232-433-8"
+  }, {
+    "fieldCode" : "q3t1s2f25",
+    "fieldName" : "FDA CFR 21",
+    "fieldType" : "inputText",
+    "value" : "21 CFR 182-20"
+  }, {
+    "fieldCode" : "q3t1s3f27",
+    "fieldName" : "KOSHER CERTIFICATE",
+    "fieldType" : "checkComents",
+    "value" : "false"
+  }, {
+    "fieldCode" : "q3t1s3f28",
+    "fieldName" : "HALAL CERTIFICATE",
+    "fieldType" : "checkComents",
+    "value" : "true"
+  }, {
+    "fieldCode" : "q3t1s3f29",
+    "fieldName" : "FOOD/FLAVOUR GRADE",
+    "fieldType" : "checkComents",
+    "value" : "true"
+  }, {
+    "fieldCode" : "q3t1s4f33",
+    "fieldName" : "Country of the botanical origin",
+    "fieldType" : "selectManyMenu",
+    "value" : "US"
+  }, {
+    "fieldCode" : "q3t1s4f34",
+    "fieldName" : "Country of the manufacturing site",
+    "fieldType" : "selectManyMenu",
+    "value" : "BR"
+  }, {
+    "fieldCode" : "q3t1s4f35",
+    "fieldName" : "Country of the processing site",
+    "fieldType" : "selectManyMenu",
+    "value" : "BR"
+  }, {
+    "fieldCode" : "q3t1s4f36",
+    "fieldName" : "Source",
+    "fieldType" : "lov",
+    "value" : "V"
+  }, {
+    "fieldCode" : "q3t1s4f38",
+    "fieldName" : "Botanical name (plant or animal origin)",
+    "fieldType" : "inputText",
+    "value" : "Citrus sinensis L. Osbeck"
+  }, {
+    "fieldCode" : "q3t1s4f39",
+    "fieldName" : "Part of the pant (roots, leaves, etc)",
+    "fieldType" : "inputText",
+    "value" : "Peel"
+  }, {
+    "fieldCode" : "q3t1s4f40",
+    "fieldName" : "Cultivation mode (culture)",
+    "fieldType" : "selectManyCheckbox",
+    "value" : "Conventional"
+  }, {
+    "fieldCode" : "q3t1s4f41",
+    "fieldName" : "Crop season",
+    "fieldType" : "inputText",
+    "value" : "December to June"
+  }, {
+    "fieldCode" : "q3t1s4f42",
+    "fieldName" : "Processing factor according to EC 396/2005 Art. 20 in combination with Annex I: How many Kg of basic material was used to produce 1 kg of the raw material?",
+    "fieldType" : "inputText",
+    "value" : "12000"
+  }, {
+    "fieldCode" : "q3t1s4f44",
+    "fieldName" : "Is the product 100% Natural?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t1s4f45",
+    "fieldName" : "Can you guarantee the naturaless by providing a C14 analysis? If so, please, provide the last report performed",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t1s4f46",
+    "fieldName" : "Is the product 100% Pure (if not, please indicate all the Botanical Names)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t1s4f47",
+    "fieldName" : "Natural According European Directive 1334/2008/EC",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t1s4f48",
+    "fieldName" : "Natural According American Directive (Code of Federal Regulations, Title 21, section 101.22a (3), Food & Drugs)",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t1s4f49",
+    "fieldName" : "Natural According to UNE-EN ISO 9235:2014",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t1s4f50",
+    "fieldName" : "Does the product follow NaTrue?",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t1s4f51",
+    "fieldName" : "Classification according to UNE-EN ISO 9235:2021",
+    "fieldType" : "lov",
+    "value" : "05"
+  }, {
+    "fieldCode" : "q3t3s6f172",
+    "fieldName" : "Is the product registered under REACH EU?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t3s14f176",
+    "fieldName" : "Does the EE apply to the product? If no, please, advise in the Comments section the reason.",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t3s14f177",
+    "fieldName" : "Are you sharing with Lluch Essence the following information: MSDS, Exposure Scenarios and Chemical Safety Report (CSR)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t3s15f179",
+    "fieldName" : "Is the product pre-registered under KKDIK? If yes provided the number",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t3s15f180",
+    "fieldName" : "Is the product pre-registered under Korea-REACH? If yes provided the number",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t3s15f181",
+    "fieldName" : "Is the product notificated under UK-REACH? If yes provided the number",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t3s20f188",
+    "fieldName" : "Is the product in compliance with the Cosmetics Regulation (EU) N° 1223/2009 in its latest version in force?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t3s22f194",
+    "fieldName" : "Is the raw material fully compliant with US cosmetic regulation?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t3s22f198",
+    "fieldName" : "Is the product a color additive or contain color additives subjected to certification according to 21 CFR (Parts 70-80)? If so, please specify the Lot Batch Certify number. Have you verified its validity with FDA? Please send proof for it.",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t3s22f199",
+    "fieldName" : "Is the product a color additive or contain color additives exempt from certification according to 21 CFR (Parts 70-80)?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t3s24f215",
+    "fieldName" : "Is this material or any of its components in compliance with the China Safety and Technical Standards for Cosmetics\" issued in 2015 and its subsequent amendments?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t3s24f216",
+    "fieldName" : "Has the product been registered into CSAR? If so, please, provide the registration number.",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t3s24f218",
+    "fieldName" : "Is this material or any of its components in compliance with the  \"Cosmetic Act \"  by MFDS No. 2015-43, July 10, 2015 in its latest version?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t3s24f219",
+    "fieldName" : "Are substances contained which are listed in the Negative Ingredient Cosmetic List (Appendix 1), the Restricted Cosmetic Ingredient List (Appendix 2) under the Korea Cosmetic Safety Standard, KFDA No. 2013-2 or in the Cosmetic Color Additive list?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t3s24f221",
+    "fieldName" : "Is this material or any of its components in compliance with the Japan Standards for Cosmetics (Ministry of Health and Welfare Notification No.331 of 2000)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t3s24f222",
+    "fieldName" : "Are substances contained which are identified in the Japan Standards for Cosmetics List?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t3s24f224",
+    "fieldName" : "Is this material or any of its components in compliance with the Drug and Cosmetic Act 1940 & Rules 1945 (amended up to Dec. 31st 2016) by Central Drug Standard Control Organization (CDSCO)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t3s24f225",
+    "fieldName" : "Does the product contain any ingredients listed in the BIS standards IS 4707 Part 1 (colourants), IS 4707 Part 2 Annex  A (prohibited substances), Annex B (restricted substances), Annex C (preservatives) and/or Annex D (UV-filters)?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t4s25f226",
+    "fieldName" : "IFS (International Food Standard)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s25f227",
+    "fieldName" : "BRC (British Retail Consortium) ",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s25f228",
+    "fieldName" : "HACCP CERTIFICATE (Hazard analysis and critical control points)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s25f229",
+    "fieldName" : "ISO 22000",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s25f230",
+    "fieldName" : "FSSC 22000",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s25f231",
+    "fieldName" : "HACCP internal (Hazard analysis and critical control points)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s25f232",
+    "fieldName" : "Authorization issued by the Administration ",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s25f233",
+    "fieldName" : "OTHERS, please specify if yes",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|SQF"
+  }, {
+    "fieldCode" : "q3t4s26f234",
+    "fieldName" : "IFS (International Food Standard)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s26f235",
+    "fieldName" : "BRC (British Retail Consortium) ",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s26f236",
+    "fieldName" : "HACCP CERTIFICATE(Hazard analysis and critical control points)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s26f237",
+    "fieldName" : "ISO 22000",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s26f238",
+    "fieldName" : "FSSC 22000",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s26f239",
+    "fieldName" : "HACCP internal (Hazard analysis and critical control points)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s26f240",
+    "fieldName" : "Authorization issued by the Administration ",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s26f241",
+    "fieldName" : "OTHERS, please specify if yes",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s27f242",
+    "fieldName" : "Is the raw material fully compliant with EU regulations?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s27f243",
+    "fieldName" : "Type of product (according to Regulation (EC) 1334/2008):",
+    "fieldType" : "lov",
+    "value" : "P"
+  }, {
+    "fieldCode" : "q3t4s27f244",
+    "fieldName" : "Is the raw material fully compliant with CODEX Alimentarius?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s27f245",
+    "fieldName" : "Is the raw material fully compliant with JECFA?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s27f246",
+    "fieldName" : "Has the product being evaluated and considered as safe according to Article 4 (EC) 1334/2008?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s27f247",
+    "fieldName" : "Is there any significant impurity in the product? If so, please, advise its content in \"Comments\".",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s28f249",
+    "fieldName" : "Is the material in compliance with a HARPC program for food at your facility (per 21 CFR 117)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s28f250",
+    "fieldName" : "Is this material and its components  approved for use in food by FDA regulations (21 CFR)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s28f251",
+    "fieldName" : "Is the material and its components listed as being Generally Recognized as Safe (GRAS) by the FEMA Expert Panel?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s28f253",
+    "fieldName" : "Is the raw material produced according to US FDA Good Manufacturing Practices, 21 CFR 110, 21 CFR 117 and/or Food Grade in accordance with the Food Chemicals Codes (FCC)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s28f254",
+    "fieldName" : "Is the product a Food color additive or contain color additives subjected to certification according to 21 CFR (Parts 70-80)? If so, please specify the Lot Batch Certify number. ",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s28f255",
+    "fieldName" : "Is the product a Food color additive or contain color additives exempt from certification according to 21 CFR (Parts 70-80)? https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfcfr/CFRSearch.cfm?CFRPart=73",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s29f256",
+    "fieldName" : "Is the raw material fully compliant with Colombian regulations (INVIMA)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s30f257",
+    "fieldName" : "Is the raw material fully compliant with Mexican regulations (COFEPRIS, www.gob.mx/cofepris)?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s30f258",
+    "fieldName" : "Is the raw material listed on Annex XI (Saborizantes, https://www.gob.mx/cofepris/documentos/anexo-xi)?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t4s31f259",
+    "fieldName" : "Is the packaging used fully compliant with: (UE) 10/2011 and modifications on plastic materials and articles intended to come into contact with food",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s31f260",
+    "fieldName" : "Is the packaging used fully compliant with: (EC) 1935/2004 and modifications on materials and articles  intended to come into contact with food",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s31f261",
+    "fieldName" : "Is the packaging used fully compliant with: (EC) 2023/2006 and modification about production good practices and food contact objects",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s31f262",
+    "fieldName" : "Is all direct-contact packaging material compliant with the following US FDA 21 CFR 174 and/or 21 CFR 175?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t4s32f265",
+    "fieldName" : "Have you implemented a food allergen control plan?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t4s32f266",
+    "fieldName" : "Please describe your measures to avoid cross-contamination during production and transport.  (If, necessary, please, add your own documentation thorugh the button)",
+    "fieldType" : "inputTextarea",
+    "value" : "No allergens presence into our plants"
+  }, {
+    "fieldCode" : "q3t4s32f267",
+    "fieldName" : "Do you recommend a labelling \"may contain traces of...\"?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t6s36f292",
+    "fieldName" : "Does the product contain any ingredient from animal origin?",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t6s36f293",
+    "fieldName" : "Could you confirm there is no substance from animal origin in the premises where the product is manufactured?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t6s36f294",
+    "fieldName" : "Could you confirm neither the product nor its starting materials are obtained by fermentation or with the aid of enzymes, bacteria or yeasts?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t6s36f295",
+    "fieldName" : "Does the final product contain ethanol? If so, please, specify its content.",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t6s36f296",
+    "fieldName" : "Could you confirm none of its raw materials is obtained from ethanol?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t6s36f297",
+    "fieldName" : "Is ethanol used as a cleaning agent? In the cleaning process of equipment and tools ethanol can be used, among other cleaning agents, and just a small technical residual quantity (maximum 0.005%) might remain. ",
+    "fieldType" : "yesNoComments",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t6s36f298",
+    "fieldName" : "Is the product in compliance with HALAL guidelines?",
+    "fieldType" : "yesNoComments",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t8s38f306",
+    "fieldName" : "Following Lluch Essence Renewable ingredients definition, is the product partly or fully derived from biological material (animal, plant, others) including chemicals derived from biological material e.g. pine, palm, rapeseed oil, clove etc.?",
+    "fieldType" : "lov",
+    "value" : "F"
+  }, {
+    "fieldCode" : "q3t8s38f307",
+    "fieldName" : "If so, please advise the botanical origin.",
+    "fieldType" : "inputText",
+    "value" : "Plant"
+  }, {
+    "fieldCode" : "q3t8s38f308",
+    "fieldName" : "If so, please advise the percentage of renewability.",
+    "fieldType" : "inputText",
+    "value" : "100%"
+  }, {
+    "fieldCode" : "q3t8s38f309",
+    "fieldName" : "Does the biological material originate from cultivation, wild collection or biotechnology? ",
+    "fieldType" : "lov",
+    "value" : "C"
+  }, {
+    "fieldCode" : "q3t8s38f310",
+    "fieldName" : "Is the product 100% derived from non-renewable sources i.e. petrochemicals or inorganics?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t8s38f311",
+    "fieldName" : "Is the product fully compliant with 2023/1115/EC?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t8s38f313",
+    "fieldName" : "Is your product derived using reaction chemistry?",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t8s38f315",
+    "fieldName" : "Do you use a catalyst?",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t8s38f317",
+    "fieldName" : "Is the product included on the Nagoya Protocol? Detail information with respect Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization (ABS) to the Convention on Biological Diversity. https://www.cbd.int/abs/about/default.shtml",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t8s38f318",
+    "fieldName" : "Is the product regulated by CITES? Detail information with respect to Regulation (EC) 338/97 (CITES) as amended concerning the protection of species of wild fauna and flora. http://checklist.cites.org/#/en",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t8s39f321",
+    "fieldName" : "Is there any renewable energy production implemented in your facilities? (solar panels, hydropower, windmills…)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t8s39f331",
+    "fieldName" : "Is there a transportation of raw material from collection/harvest to process?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t8s39f332",
+    "fieldName" : "If there is a transportation, how many km are between collection / harvest to the processing site? (Km)",
+    "fieldType" : "inputText",
+    "value" : "average 150 km"
+  }, {
+    "fieldCode" : "q3t8s39f333",
+    "fieldName" : "Do you perform the calculation and offsetting of the transport carbon footprint?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t1s2f342",
+    "fieldName" : "FEMA",
+    "fieldType" : "inputText",
+    "value" : "2825"
+  }, {
+    "fieldCode" : "q3t1s40f346",
+    "fieldName" : "Does the product present a tamper-resistant package?",
+    "fieldType" : "yesNoNA",
+    "value" : "YES"
+  }, {
+    "fieldCode" : "q3t1s40f347",
+    "fieldName" : "Recommended shelf life (days)\t",
+    "fieldType" : "inputText",
+    "value" : "730"
+  }, {
+    "fieldCode" : "q3t1s40f348",
+    "fieldName" : "Recommended storage temperature (ºC)\t",
+    "fieldType" : "inputText",
+    "value" : "room temperature"
+  }, {
+    "fieldCode" : "q3t1s40f349",
+    "fieldName" : "Recommended transport temperature (ºC)",
+    "fieldType" : "inputText",
+    "value" : "room temperature"
+  }, {
+    "fieldCode" : "q3t1s40f350",
+    "fieldName" : "UN number\t",
+    "fieldType" : "inputText",
+    "value" : "2319"
+  }, {
+    "fieldCode" : "q3t1s40f351",
+    "fieldName" : "Special storage conditions\t",
+    "fieldType" : "inputText",
+    "value" : "Keep the packaging in a well ventilated place duly closed and avoiding sun and heat and external contaminations exposure sources."
+  }, {
+    "fieldCode" : "q3t1s40f353",
+    "fieldName" : "Recommended packaging (plastic, metal, etc.)\t",
+    "fieldType" : "inputText",
+    "value" : "METALLIC"
+  }, {
+    "fieldCode" : "q3t1s4f359",
+    "fieldName" : "Does your company own a RSPO certificate for this product?",
+    "fieldType" : "yesNoNA",
+    "value" : "NA"
+  }, {
+    "fieldCode" : "q3t1s4f360",
+    "fieldName" : "Does the manufacturer own a RSPO certificate for this product?",
+    "fieldType" : "yesNoNA",
+    "value" : "NA"
+  }, {
+    "fieldCode" : "q3t1s4f361",
+    "fieldName" : "What is the Supply Chain model of certification of your product ?",
+    "fieldType" : "lov",
+    "value" : "-"
+  }, {
+    "fieldCode" : "q3t1s4f363",
+    "fieldName" : "If fermentation, please advise the microorganisms used ",
+    "fieldType" : "inputText",
+    "value" : "N/A"
+  }, {
+    "fieldCode" : "q3t1s4f364",
+    "fieldName" : "Are the biocatalyst used genetically modify or produced from GMO?",
+    "fieldType" : "yesNoNA",
+    "value" : "NA"
+  }, {
+    "fieldCode" : "q3t3s14f365",
+    "fieldName" : "Are all Lluch Essence (and IFRA) uses covered by your registration: PC 3, 28, 35 and 39? ",
+    "fieldType" : "yesNoComments",
+    "value" : "YES|"
+  }, {
+    "fieldCode" : "q3t1s41f366",
+    "fieldName" : "The supplier hereby guarantee that, as of the date of shipment or delivery, the articles comprising each shipment of delivery hereafter are on such date not adulterated or misbranded within the meaning of Federal Food, Drug & Cosmetics Act as amended; the Food Additives Amendment  (together, the \"FD&C Act\")or (2) not an article which may not under the provisions of Sections 404 or 505 said Act, as amended, be introduced into interstate commerce and not adulterated  or  misbranded  within  the  meaning of the  food laws  or ordinance (then in effect) of the state or city to which such  articles are shipped, the provisions of which are identical or substantially the same as those found in the Federal Food and Drug & Cosmetic Act. That the food products, ingredients and components are of merchantable quality, fit for the ordinary purposes for which such food products are normally used and wholesome and fit for human consumption. Non-Irradiated/No-Sludge Guarantee 7 CFR 205.105  are not grown or handled with the use of sewer sludge and ionizing radiation, as described in Food and Drug Administration regulation, 21 CFR 179.26 . Lot Code have been assigned a unique lot code to ensure complete traceability down to each raw material and packaging material used. BSE / TSE are NOT of animal origin. Furthermore, as a FDA (Food and Drug Administration) regulated facility, and in accordance with the FDA proposed rules and approved guidelines, we have taken appropriate steps to minimize the risk of contamination of our products with Bovine Spongiform Encephalopathy (BSE) or Transmissible Spongiform Encephalopathy (TSE).  Animal By-Products, Human-Derived Products, BPA, Melamine are free of animal by-products, human-derived products, BPA, or Melamine. Our products have not been tested on animals. 1.13 Food Contact Packaging Safely NOP 7 CFR 205.272(b)(1)  have not been allowed to come in contact with synthetic fungicide, preservative, or fumigant. All food contact packaging materials are free of prohibited synthetic fungicide, preservative, or fumigant. 1.14 Heavy Metals, California Toxics in Packaging Prevention Act (AB2021), and Ethical Standards / California Transparency in Supply Chains Act of 2010 and applicable US Federal regulations were produced without the use of forced labor such as child labor, slavery, prison labor. We strive to comply with all applicable laws and regulations regarding employment, occupational health and safety, and immigration. Our suppliers are also required to meet our ethical standards. ",
+    "fieldType" : "lov",
+    "value" : "S"
+  }, {
+    "fieldCode" : "q3t4s27f367",
+    "fieldName" : "Is the raw material a food additive as laid down and listed in EU 1333/2008 on food additives?\t",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t1s40f370",
+    "fieldName" : "Container approval (1B1, 3H1, etc.)",
+    "fieldType" : "lov",
+    "value" : "1A1"
+  }, {
+    "fieldCode" : "q3t4s32f372",
+    "fieldName" : "Is there a potential risk of cross-contamination? (If yes, please specify which)",
+    "fieldType" : "yesNoComments",
+    "value" : "NO|"
+  }, {
+    "fieldCode" : "q3t1s4f378",
+    "fieldName" : "Please specify raw material",
+    "fieldType" : "inputText",
+    "value" : "Oranges of the species Citrus sinensis L. Osbeck"
+  }, {
+    "fieldCode" : "q3t1s4f383",
+    "fieldName" : "Drying of the plant before distillation",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t1s4f385",
+    "fieldName" : "Is the product deterpenated?",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t1s4f389",
+    "fieldName" : "Number of crops per year",
+    "fieldType" : "inputText",
+    "value" : "1"
+  }, {
+    "fieldCode" : "q3t1s4f390",
+    "fieldName" : "Harvesting process",
+    "fieldType" : "selectManyCheckbox",
+    "value" : "Manual"
+  }, {
+    "fieldCode" : "q3t1s4f427",
+    "fieldName" : "Refined product",
+    "fieldType" : "yesNoNA",
+    "value" : "NO"
+  }, {
+    "fieldCode" : "q3t1s4f430",
+    "fieldName" : "Are you a RSPO Member? If so, please, provide the RSPO registration number",
+    "fieldType" : "yesNoComments",
+    "value" : "NA|"
+  }, {
+    "fieldCode" : "q3t1s4f432",
+    "fieldName" : "Natural",
+    "fieldType" : "inputNumber",
+    "value" : "1"
+  }, {
+    "fieldCode" : "q3t1s4f433",
+    "fieldName" : "Natural origin",
+    "fieldType" : "inputNumber",
+    "value" : "1"
+  }, {
+    "fieldCode" : "q3t1s4f472",
+    "fieldName" : "Manufacturing process description:",
+    "fieldType" : "inputTextarea",
+    "value" : "The peel oil, or essential oil, is located at the pericarp of the fruit, in small bags. The extraction of this oil is made by a cold process, so the product is also called Cold Pressed Oil. The extraction is made using the same machinery for juice extraction JBT extractors. The oil is taken using a water spray that produces an emulsion of 1 to 3% oil. This emulsion water/oil is pumped to a first centrifuge that concentrates the oil mixture to 70 to 80% of oil. This one goes to a second centrifuge that will polish the product resulting 100% oil. This product is kept at low temperature for a time necessary to separate the wax that may be present."
+  }, {
+    "fieldCode" : "q3t1s2f479",
+    "fieldName" : "HS Code",
+    "fieldType" : "inputText",
+    "value" : "3301.12.10"
+  }, {
+    "fieldCode" : "q3t14s43f482",
+    "fieldName" : "Completed by:",
+    "fieldType" : "inputText",
+    "value" : "Maria Silva"
+  }, {
+    "fieldCode" : "q3t14s43f483",
+    "fieldName" : "Position:",
+    "fieldType" : "inputText",
+    "value" : "Quality Assurance Manager"
+  }, {
+    "fieldCode" : "q3t14s43f484",
+    "fieldName" : "E-mail adress:",
+    "fieldType" : "inputText",
+    "value" : "quality@citroflavor.com.br"
+  }, {
+    "fieldCode" : "q3t1s4f510",
+    "fieldName" : "Product' status: natural or synthetic",
+    "fieldType" : "lov",
+    "value" : "N"
+  }, {
+    "fieldCode" : "q3t1s2f511",
+    "fieldName" : "Recommended application (savory, pastry, lipstick, vanilla flavour, meat flavours...)",
+    "fieldType" : "inputText",
+    "value" : "Used for flavoring, restore the aroma of orange juice concentrate, and used in the composition of various products such as aromas, perfumes and fragrances"
+  } ]
+}
+

@@ -413,6 +413,13 @@ export default function QuestionnaireImport() {
         </h2>
 
         <div style={{ marginBottom: '24px' }}>
+          <input
+            id="file-input"
+            type="file"
+            accept=".json,.txt"
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+          />
           <label
             htmlFor="file-input"
             style={{
@@ -423,21 +430,22 @@ export default function QuestionnaireImport() {
               borderRadius: '6px',
               cursor: 'pointer',
               border: '1px solid #4b5563',
-              transition: 'background-color 0.2s'
+              transition: 'background-color 0.2s',
+              userSelect: 'none'
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4b5563'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#374151'}
+            onClick={(e) => {
+              // Asegurar que el input se active al hacer clic en el label
+              const input = document.getElementById('file-input') as HTMLInputElement;
+              if (input) {
+                input.click();
+              }
+            }}
           >
             <Upload size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
             {selectedFile ? selectedFile.name : 'Seleccionar archivo JSON'}
           </label>
-          <input
-            id="file-input"
-            type="file"
-            accept=".json,.txt"
-            onChange={handleFileSelect}
-            style={{ display: 'none' }}
-          />
         </div>
 
         {selectedFile && (

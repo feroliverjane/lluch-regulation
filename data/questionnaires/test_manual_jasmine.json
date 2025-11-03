@@ -1,23 +1,23 @@
 {
-  "requestId": 2025,
+  "requestId": 2001,
   "data": [
     {
       "fieldCode": "q3t1s2f15",
       "fieldName": "Supplier Name",
       "fieldType": "inputText",
-      "value": "ESSENTIAL OILS SUPPLIERS S.A."
+      "value": "PROVEEDOR TEST MANUAL"
     },
     {
       "fieldCode": "q3t1s2f16",
       "fieldName": "Product Name",
       "fieldType": "inputText",
-      "value": "[LAVANDA9999] LAVENDER ESSENTIAL OIL PREMIUM"
+      "value": "[JASMINE001] Jasmine Essential Oil"
     },
     {
       "fieldCode": "q3t1s2f17",
       "fieldName": "Supplier´s product code",
       "fieldType": "inputText",
-      "value": "EOS-LAV-001"
+      "value": "JASMINE001"
     },
     {
       "fieldCode": "q3t1s2f19",
@@ -29,7 +29,7 @@
       "fieldCode": "q3t1s2f21",
       "fieldName": "Name of the facility where the product is manufactured",
       "fieldType": "inputText",
-      "value": "Provence Lavender Distillery"
+      "value": "Jasmine Production Facility"
     },
     {
       "fieldCode": "q3t1s2f22",
@@ -41,13 +41,13 @@
       "fieldCode": "q3t1s2f23",
       "fieldName": "CAS",
       "fieldType": "inputText",
-      "value": "8000-28-0"
+      "value": "8024-08-6"
     },
     {
       "fieldCode": "q3t1s2f24",
       "fieldName": "EINECS",
       "fieldType": "inputText",
-      "value": "290-212-2"
+      "value": "232-474-1"
     },
     {
       "fieldCode": "q3t1s2f25",
@@ -83,19 +83,19 @@
       "fieldCode": "q3t1s4f33",
       "fieldName": "Country of the botanical origin",
       "fieldType": "selectManyMenu",
-      "value": "FR"
+      "value": "IN"
     },
     {
       "fieldCode": "q3t1s4f34",
       "fieldName": "Country of the manufacturing site",
       "fieldType": "selectManyMenu",
-      "value": "FR"
+      "value": "IN"
     },
     {
       "fieldCode": "q3t1s4f35",
       "fieldName": "Country of the processing site",
       "fieldType": "selectManyMenu",
-      "value": "FR"
+      "value": "IN"
     },
     {
       "fieldCode": "q3t1s4f36",
@@ -107,7 +107,7 @@
       "fieldCode": "q3t1s4f38",
       "fieldName": "Botanical name (plant or animal origin)",
       "fieldType": "inputText",
-      "value": "Lavandula angustifolia Mill."
+      "value": "Jasminum grandiflorum L."
     },
     {
       "fieldCode": "q3t1s4f39",
@@ -119,19 +119,19 @@
       "fieldCode": "q3t1s4f40",
       "fieldName": "Cultivation mode (culture)",
       "fieldType": "selectManyCheckbox",
-      "value": "Organic"
+      "value": "Conventional"
     },
     {
       "fieldCode": "q3t1s4f41",
       "fieldName": "Crop season",
       "fieldType": "inputText",
-      "value": "July to August"
+      "value": "Year round"
     },
     {
       "fieldCode": "q3t1s4f42",
       "fieldName": "Processing factor according to EC 396/2005 Art. 20 in combination with Annex I: How many Kg of basic material was used to produce 1 kg of the raw material?",
       "fieldType": "inputText",
-      "value": "150 kg of lavender flowers makes 1 kg of essential oil"
+      "value": "800 kg of jasmine flowers makes 1 kg of essential oil"
     },
     {
       "fieldCode": "q3t1s4f44",
@@ -185,28 +185,29 @@
       "fieldCode": "q3t1s2f342",
       "fieldName": "FEMA",
       "fieldType": "inputText",
-      "value": "2632"
+      "value": "2598"
     },
     {
       "fieldCode": "q3t1s2f343",
       "fieldName": "JECFA",
       "fieldType": "inputText",
-      "value": "1426"
+      "value": "1200"
     },
     {
       "fieldCode": "q3t1s2f344",
       "fieldName": "CoE",
       "fieldType": "inputText",
-      "value": "191"
+      "value": "258"
     },
     {
       "fieldCode": "q3t1s2f345",
       "fieldName": "Flavis",
       "fieldType": "inputText",
-      "value": "01.009"
+      "value": "09.120"
     }
   ]
 }
+
 
 
 

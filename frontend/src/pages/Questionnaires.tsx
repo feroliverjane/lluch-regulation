@@ -80,17 +80,12 @@ export default function Questionnaires() {
     return 'badge-success';
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleString();
-  };
-
   if (loading) return <div className="loading">Loading questionnaires...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
-    <div>
-      <div className="page-header">
+    <div style={{ width: '100%', maxWidth: '100%' }}>
+      <div className="page-header" style={{ marginBottom: '2rem' }}>
         <h1>Cuestionarios de Homologación</h1>
         <div style={{ display: 'flex', gap: '8px' }}>
           <Link to="/questionnaires/new" className="btn-primary">
@@ -103,7 +98,12 @@ export default function Questionnaires() {
       </div>
 
       {/* Summary Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+        gap: '16px', 
+        marginBottom: '24px' 
+      }}>
         <div className="card" style={{ padding: '16px' }}>
           <div style={{ fontSize: '14px', color: '#6b7280' }}>Total</div>
           <div style={{ fontSize: '24px', fontWeight: 'bold', marginTop: '4px' }}>{questionnaires.length}</div>
@@ -150,20 +150,20 @@ export default function Questionnaires() {
       </div>
 
       {/* Questionnaires Table */}
-      <div className="card">
-        <table className="table">
+      <div className="card" style={{ padding: '1rem', width: '100%', overflow: 'visible' }}>
+        <table className="table" style={{ tableLayout: 'fixed', width: '100%', margin: 0 }}>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Material</th>
-              <th>Proveedor</th>
-              <th>Tipo</th>
-              <th>Versión</th>
-              <th>Estado</th>
-              <th>Riesgo IA</th>
-              <th>Recomendación IA</th>
-              <th>Fecha Creación</th>
-              <th>Acciones</th>
+              <th style={{ width: '5%', padding: '8px', fontSize: '0.75rem' }}>ID</th>
+              <th style={{ width: '18%', padding: '8px', fontSize: '0.75rem' }}>Material</th>
+              <th style={{ width: '10%', padding: '8px', fontSize: '0.75rem' }}>Proveedor</th>
+              <th style={{ width: '10%', padding: '8px', fontSize: '0.75rem' }}>Tipo</th>
+              <th style={{ width: '6%', padding: '8px', fontSize: '0.75rem' }}>Versión</th>
+              <th style={{ width: '10%', padding: '8px', fontSize: '0.75rem' }}>Estado</th>
+              <th style={{ width: '8%', padding: '8px', fontSize: '0.75rem' }}>Riesgo IA</th>
+              <th style={{ width: '12%', padding: '8px', fontSize: '0.75rem' }}>Recomendación IA</th>
+              <th style={{ width: '13%', padding: '8px', fontSize: '0.75rem' }}>Fecha Creación</th>
+              <th style={{ width: '8%', padding: '8px', fontSize: '0.75rem' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -176,59 +176,67 @@ export default function Questionnaires() {
             ) : (
               questionnaires.map((questionnaire) => (
                 <tr key={questionnaire.id}>
-                  <td>{questionnaire.id}</td>
-                  <td>
+                  <td style={{ padding: '8px', fontSize: '0.75rem' }}>{questionnaire.id}</td>
+                  <td style={{ padding: '8px' }}>
                     {materials[questionnaire.material_id] ? (
                       <div>
-                        <div style={{ fontWeight: '500' }}>
+                        <div style={{ fontWeight: '500', fontSize: '0.75rem', wordBreak: 'break-word', lineHeight: '1.3' }}>
                           {materials[questionnaire.material_id].reference_code}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#6b7280' }}>
-                          {materials[questionnaire.material_id].name}
+                        <div style={{ fontSize: '0.7rem', color: '#6b7280', wordBreak: 'break-word', lineHeight: '1.2', marginTop: '2px' }}>
+                          {materials[questionnaire.material_id].name.length > 30 
+                            ? materials[questionnaire.material_id].name.substring(0, 30) + '...'
+                            : materials[questionnaire.material_id].name}
                         </div>
                       </div>
                     ) : (
-                      `Material #${questionnaire.material_id}`
+                      <span style={{ fontSize: '0.75rem' }}>#{questionnaire.material_id}</span>
                     )}
                   </td>
-                  <td>{questionnaire.supplier_code}</td>
-                  <td>
-                    <span className={`badge ${questionnaire.questionnaire_type === 'INITIAL_HOMOLOGATION' ? 'badge-info' : 'badge-secondary'}`}>
+                  <td style={{ padding: '8px', fontSize: '0.75rem', wordBreak: 'break-word' }}>
+                    {questionnaire.supplier_code.length > 12 
+                      ? questionnaire.supplier_code.substring(0, 12) + '...'
+                      : questionnaire.supplier_code}
+                  </td>
+                  <td style={{ padding: '8px' }}>
+                    <span className={`badge ${questionnaire.questionnaire_type === 'INITIAL_HOMOLOGATION' ? 'badge-info' : 'badge-secondary'}`} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
                       {questionnaire.questionnaire_type === 'INITIAL_HOMOLOGATION' ? 'Inicial' : 'Rehomologación'}
                     </span>
                   </td>
-                  <td>v{questionnaire.version}</td>
-                  <td>
-                    <span className={`badge ${getStatusBadge(questionnaire.status)}`}>
+                  <td style={{ padding: '8px', fontSize: '0.75rem' }}>v{questionnaire.version}</td>
+                  <td style={{ padding: '8px' }}>
+                    <span className={`badge ${getStatusBadge(questionnaire.status)}`} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
                       {questionnaire.status}
                     </span>
                   </td>
-                  <td>
+                  <td style={{ padding: '8px' }}>
                     {questionnaire.ai_risk_score !== null && questionnaire.ai_risk_score !== undefined ? (
-                      <span className={`badge ${getRiskBadge(questionnaire.ai_risk_score)}`}>
-                        {questionnaire.ai_risk_score}/100
+                      <span className={`badge ${getRiskBadge(questionnaire.ai_risk_score)}`} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
+                        {questionnaire.ai_risk_score}
                       </span>
                     ) : (
-                      '-'
+                      <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>-</span>
                     )}
                   </td>
-                  <td>
+                  <td style={{ padding: '8px' }}>
                     {questionnaire.ai_recommendation ? (
                       <span className={`badge ${
                         questionnaire.ai_recommendation === 'APPROVE' ? 'badge-success' :
                         questionnaire.ai_recommendation === 'REJECT' ? 'badge-danger' :
                         'badge-warning'
-                      }`}>
+                      }`} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
                         {questionnaire.ai_recommendation}
                       </span>
                     ) : (
-                      '-'
+                      <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>-</span>
                     )}
                   </td>
-                  <td>{formatDate(questionnaire.created_at)}</td>
-                  <td>
-                    <Link to={`/questionnaires/${questionnaire.id}`} className="link">
-                      Ver Detalles
+                  <td style={{ padding: '8px', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {new Date(questionnaire.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                  </td>
+                  <td style={{ padding: '8px' }}>
+                    <Link to={`/questionnaires/${questionnaire.id}`} className="link" style={{ fontSize: '0.75rem' }}>
+                      Ver
                     </Link>
                   </td>
                 </tr>

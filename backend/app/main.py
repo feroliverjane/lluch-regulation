@@ -4,6 +4,14 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.api import materials, chromatographic_analyses, composites, workflows, blue_line, questionnaires, questionnaire_templates, material_supplier
 
+# Import all models to ensure relationships are properly configured
+from app.models import (
+    Material, Composite, CompositeComponent, ChromatographicAnalysis,
+    ApprovalWorkflow, User, BlueLine, BlueLineFieldLogic,
+    Questionnaire, QuestionnaireValidation, QuestionnaireIncident,
+    QuestionnaireTemplate, MaterialSupplier
+)
+
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
