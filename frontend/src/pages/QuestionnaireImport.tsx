@@ -49,6 +49,9 @@ export default function QuestionnaireImport() {
   const [creatingComposite, setCreatingComposite] = useState(false);
   const [acceptingQuestionnaire, setAcceptingQuestionnaire] = useState(false);
   const [newMaterialDetected, setNewMaterialDetected] = useState<{ code: string; productName?: string } | null>(null);
+  const [similarMaterials, setSimilarMaterials] = useState<Array<{ code: string; name: string; cas?: string; casWarning?: boolean; einecs?: string; einecsMatch?: boolean }> | null>(null);
+  const [detectedCAS, setDetectedCAS] = useState<string | null>(null);
+  const [detectedEINECS, setDetectedEINECS] = useState<string | null>(null);
   const [showCreateMaterialModal, setShowCreateMaterialModal] = useState(false);
   const [creatingMaterial, setCreatingMaterial] = useState(false);
   const [newMaterial, setNewMaterial] = useState({
@@ -169,6 +172,125 @@ export default function QuestionnaireImport() {
         
         console.log('Import error:', errorMessage); // Debug log
         
+        // Check if similar materials were found
+        if (errorMessage.includes('SIMILAR_MATERIALS_FOUND:')) {
+          console.log('Similar materials found!'); // Debug log
+          
+          // Extract material code from error message
+          const match = errorMessage.match(/material '([^']+)'/);
+          const detectedCode = match ? match[1] : materialCode || 'UNKNOWN';
+          
+          // Extract similar materials from error message
+          // Format: "SIMILAR_MATERIALS_FOUND: ... BASC005 (BASIL INDIA OIL) - EINECS: 283-900-8✅ - CAS: 84775-71-3 ⚠️ (CAS diferente) | ..."
+          const similarMatch = errorMessage.match(/materiales similares: (.+?)\./);
+          let similarMaterialsList: Array<{ code: string; name: string; cas?: string; casWarning?: boolean; einecs?: string; einecsMatch?: boolean }> = [];
+          
+          if (similarMatch) {
+            const similarText = similarMatch[1];
+            // Parse format: "BASC005 (BASIL INDIA OIL) - EINECS: 283-900-8✅ - CAS: 84775-71-3 ⚠️ (CAS diferente) | BASIL0003 (H.E. BASILIC INDES) - EINECS: N/A - CAS: 8015-73-4"
+            const materials = similarText.split('|').map((m: string) => m.trim());
+            similarMaterialsList = materials.map((m: string) => {
+              // Extract code and name: "BASC005 (BASIL INDIA OIL)" or "BASIL0003 (H.E. BASILIC INDES)"
+              // Improved regex: match code (letters/numbers) followed by optional space and parentheses with name
+              // Use non-greedy match to handle names with parentheses
+              const codeNameMatch = m.match(/^([A-Z0-9]+)\s*\(([^)]+(?:\([^)]*\)[^)]*)*)\)/);
+              if (codeNameMatch) {
+                const code = codeNameMatch[1].trim();
+                const name = codeNameMatch[2].trim();
+                
+                // Validate code: should only contain letters and numbers, no spaces or special chars
+                if (!/^[A-Z0-9]+$/.test(code)) {
+                  console.warn(`Invalid material code extracted: "${code}" from "${m}"`);
+                  // Try to extract just the first word as code
+                  const firstWord = m.split(/\s+/)[0];
+                  if (/^[A-Z0-9]+$/.test(firstWord)) {
+                    return { code: firstWord, name: m.replace(firstWord, '').trim(), cas: undefined, casWarning: false };
+                  }
+                }
+                
+                // Extract EINECS: "EINECS: 283-900-8✅" or "EINECS: N/A"
+                const einecsMatch = m.match(/EINECS:\s*([\d-]+|N\/A)/);
+                const einecs = einecsMatch && einecsMatch[1] !== 'N/A' ? einecsMatch[1] : undefined;
+                const einecsMatchIndicator = m.includes('✅') && einecs !== undefined;
+                
+                // Extract CAS: "CAS: 84775-71-3"
+                const casMatch = m.match(/CAS:\s*([\d-]+)/);
+                const cas = casMatch ? casMatch[1] : undefined;
+                
+                // Check if there's a CAS warning
+                const casWarning = m.includes('⚠️') || m.includes('CAS diferente');
+                
+                return { code, name, cas, casWarning, einecs, einecsMatch: einecsMatchIndicator };
+              }
+              
+              // Fallback: try to extract code as first word (before any space or parenthesis)
+              const firstPart = m.split(/\s|\(/)[0];
+              if (/^[A-Z0-9]+$/.test(firstPart)) {
+                return { code: firstPart, name: m.replace(firstPart, '').trim(), cas: undefined, casWarning: false };
+              }
+              
+              // Last fallback: use whole string as code (shouldn't happen)
+              console.warn(`Could not parse material code from: "${m}"`);
+              return { code: m.split(/\s/)[0] || m, name: m };
+            });
+          }
+          
+          // Try to extract product name, CAS and EINECS from JSON
+          let productName = '';
+          let casNumber = '';
+          let einecsNumber = '';
+          try {
+            const jsonContent = filePreview || (selectedFile ? await selectedFile.text() : '');
+            if (jsonContent) {
+              const json = JSON.parse(jsonContent);
+              const productNameField = json.data?.find((item: any) => 
+                item.fieldCode === 'q3t1s2f16' || 
+                (item.fieldName && item.fieldName.toLowerCase().includes('product name'))
+              );
+              if (productNameField?.value) {
+                productName = productNameField.value;
+              }
+              
+              const casField = json.data?.find((item: any) => 
+                item.fieldCode === 'q3t1s2f23' || 
+                (item.fieldName && item.fieldName.toLowerCase().includes('cas'))
+              );
+              if (casField?.value) {
+                casNumber = casField.value;
+              }
+              
+              const einecsField = json.data?.find((item: any) => 
+                item.fieldCode === 'q3t1s2f24' || 
+                (item.fieldName && item.fieldName.toLowerCase().includes('einecs'))
+              );
+              if (einecsField?.value) {
+                einecsNumber = einecsField.value;
+              }
+            }
+          } catch (e) {
+            console.error('Error parsing JSON for product info:', e);
+          }
+          
+          // Set state to show similar materials UI
+          setSimilarMaterials(similarMaterialsList);
+          setDetectedCAS(casNumber || null);
+          setDetectedEINECS(einecsNumber || null);
+          setNewMaterialDetected({ code: detectedCode, productName });
+          
+          // Show toast notification
+          toast.info(`🔍 Se encontraron ${similarMaterialsList.length} material(es) similar(es). ¿Es uno de estos?`);
+          
+          // Scroll to the similar materials section after a short delay
+          setTimeout(() => {
+            const similarSection = document.getElementById('similar-materials-section');
+            if (similarSection) {
+              similarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 300);
+          
+          return; // Don't throw error, show UI instead
+        }
+        
         // Check if this is a new material detection
         if (errorMessage.includes('NEW_MATERIAL_DETECTED:')) {
           console.log('New material detected!'); // Debug log
@@ -228,6 +350,9 @@ export default function QuestionnaireImport() {
             console.error('Error extracting material info:', e);
           }
           
+          // Clear similar materials if any
+          setSimilarMaterials(null);
+          
           // Set state to show new material UI
           setNewMaterialDetected({ code: detectedCode, productName });
           
@@ -269,7 +394,15 @@ export default function QuestionnaireImport() {
       console.log('Import result:', result);
       console.log('Comparison:', result.comparison);
       
-      toast.success(`✅ Cuestionario importado exitosamente! ID: ${result.id}`);
+      // Check if this is a duplicate (same questionnaire already imported)
+      // The backend will return the existing questionnaire if request_id matches
+      const isDuplicate = importResult !== null && importResult.id === result.id;
+      
+      if (isDuplicate) {
+        toast.info(`ℹ️ Este cuestionario ya fue importado anteriormente (ID: ${result.id}). Mostrando cuestionario existente.`);
+      } else {
+        toast.success(`✅ Cuestionario importado exitosamente! ID: ${result.id}`);
+      }
       
       // Store result to show comparison
       setImportResult(result);
@@ -359,6 +492,19 @@ export default function QuestionnaireImport() {
       const result = await response.json();
       toast.success(`✅ Blue Line creada exitosamente! ID: ${result.blue_line_id}`);
       
+      // Update importResult to reflect that Blue Line now exists
+      // This allows the UI to show the success state and enable continuation
+      setImportResult({
+        ...importResult,
+        comparison: {
+          blue_line_exists: true,
+          matches: 0,
+          mismatches: [],
+          score: 100,
+          message: "Blue Line creada exitosamente desde este cuestionario. El MaterialSupplier ha sido creado automáticamente."
+        }
+      });
+      
       // Ask if user wants to create composite
       const createComposite = window.confirm('¿Crear composite Z1 ahora?');
       if (createComposite) {
@@ -435,13 +581,6 @@ export default function QuestionnaireImport() {
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4b5563'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#374151'}
-            onClick={(e) => {
-              // Asegurar que el input se active al hacer clic en el label
-              const input = document.getElementById('file-input') as HTMLInputElement;
-              if (input) {
-                input.click();
-              }
-            }}
           >
             <Upload size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
             {selectedFile ? selectedFile.name : 'Seleccionar archivo JSON'}
@@ -554,7 +693,221 @@ export default function QuestionnaireImport() {
         </div>
       )}
 
-      {newMaterialDetected && (
+      {similarMaterials && similarMaterials.length > 0 && (
+        <div id="similar-materials-section" className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px', border: '2px solid #3b82f6' }}>
+          <h2 style={{ marginTop: 0, color: '#3b82f6', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={24} style={{ color: '#3b82f6' }} />
+            Materiales Similares Encontrados
+          </h2>
+          
+          <div style={{
+            padding: '16px',
+            backgroundColor: '#111827',
+            borderRadius: '6px',
+            border: '1px solid #374151',
+            marginBottom: '16px'
+          }}>
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>Código detectado:</div>
+              <div style={{ fontSize: '18px', fontWeight: '600', color: '#3b82f6' }}>{newMaterialDetected?.code || 'N/A'}</div>
+              {detectedEINECS && (
+                <div style={{ marginTop: '8px' }}>
+                  <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>EINECS del cuestionario:</div>
+                  <div style={{ fontSize: '16px', fontWeight: '500', color: '#10b981' }}>{detectedEINECS} ✅</div>
+                  <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px', fontStyle: 'italic' }}>
+                    Si coincide exactamente con otro material, es muy probable que sea el mismo (incluso si el CAS es diferente)
+                  </div>
+                </div>
+              )}
+              {detectedCAS && (
+                <div style={{ marginTop: '8px' }}>
+                  <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>CAS del cuestionario:</div>
+                  <div style={{ fontSize: '16px', fontWeight: '500', color: '#d1d5db' }}>{detectedCAS}</div>
+                </div>
+              )}
+            </div>
+            
+            <div style={{
+              padding: '12px',
+              backgroundColor: '#1e3a5f',
+              borderRadius: '6px',
+              border: '1px solid #3b82f6',
+              marginTop: '16px',
+              marginBottom: '16px'
+            }}>
+              <AlertCircle size={18} style={{ color: '#3b82f6', marginRight: '8px', verticalAlign: 'middle' }} />
+              <span style={{ color: '#d1d5db', fontSize: '14px' }}>
+                El sistema encontró materiales similares en la base de datos. ¿Es uno de estos el material correcto?
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+              {similarMaterials.map((mat, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '16px',
+                    backgroundColor: '#1e3a5f',
+                    borderRadius: '6px',
+                    border: '2px solid #3b82f6',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#2563eb';
+                    e.currentTarget.style.borderColor = '#60a5fa';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#1e3a5f';
+                    e.currentTarget.style.borderColor = '#3b82f6';
+                  }}
+                  onClick={async () => {
+                    // Use this material for import
+                    let selectedMaterialCode = mat.code.trim();
+                    
+                    // Validate and clean the material code
+                    // Remove any spaces, parentheses, or special characters that might have been included
+                    selectedMaterialCode = selectedMaterialCode.split(/\s|\(/)[0].trim();
+                    
+                    // Final validation: code should only contain letters and numbers
+                    if (!/^[A-Z0-9]+$/.test(selectedMaterialCode)) {
+                      console.error(`Invalid material code: "${selectedMaterialCode}" (original: "${mat.code}")`);
+                      toast.error(`❌ Código de material inválido: ${selectedMaterialCode}. Por favor, intenta de nuevo.`);
+                      return;
+                    }
+                    
+                    console.log(`Selected material code: "${selectedMaterialCode}" (from "${mat.code}")`);
+                    
+                    setMaterialCode(selectedMaterialCode);
+                    setSimilarMaterials(null);
+                    setNewMaterialDetected(null);
+                    toast.success(`✅ Material seleccionado: ${selectedMaterialCode} - ${mat.name}`);
+                    
+                    // Retry import with selected material code
+                    if (selectedFile) {
+                      setUploading(true);
+                      try {
+                        const formData = new FormData();
+                        formData.append('file', selectedFile);
+                        formData.append('material_code', selectedMaterialCode);
+
+                        const response = await fetch(`${API_URL}${API_PREFIX}/questionnaires/import/json`, {
+                          method: 'POST',
+                          body: formData,
+                        });
+
+                        if (!response.ok) {
+                          const errorData = await response.json();
+                          const errorMessage = errorData.detail || 'Error al importar cuestionario';
+                          toast.error(`❌ Error al importar: ${errorMessage}`);
+                          setUploading(false);
+                          return;
+                        }
+
+                        const result: ImportResult = await response.json();
+                        toast.success(`✅ Cuestionario importado exitosamente! ID: ${result.id}`);
+                        setImportResult(result);
+                        
+                        setTimeout(() => {
+                          const comparisonSection = document.getElementById('comparison-section');
+                          if (comparisonSection) {
+                            comparisonSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }
+                        }, 300);
+                      } catch (error: any) {
+                        toast.error(`❌ Error al importar: ${error.message || 'Error desconocido'}`);
+                      } finally {
+                        setUploading(false);
+                      }
+                    }
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div 
+                      style={{ 
+                        fontSize: '16px', 
+                        fontWeight: '600', 
+                        color: 'white', 
+                        marginBottom: '4px',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word'
+                      }}
+                      title={mat.code}
+                    >
+                      {mat.code}
+                    </div>
+                    <div style={{ 
+                      fontSize: '14px', 
+                      color: '#9ca3af', 
+                      marginBottom: '4px',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word'
+                    }}>
+                      {mat.name}
+                    </div>
+                    {mat.einecs && (
+                      <div style={{ fontSize: '12px', color: mat.einecsMatch ? '#10b981' : '#6b7280', marginTop: '4px', fontWeight: mat.einecsMatch ? '600' : 'normal' }}>
+                        EINECS: {mat.einecs}
+                        {mat.einecsMatch && (
+                          <span style={{ marginLeft: '6px' }}>✅ Coincide exactamente</span>
+                        )}
+                      </div>
+                    )}
+                    {mat.cas && (
+                      <div style={{ fontSize: '12px', color: mat.casWarning ? '#f59e0b' : '#6b7280', marginTop: '4px' }}>
+                        CAS: {mat.cas}
+                        {mat.casWarning && (
+                          <span style={{ marginLeft: '6px', fontWeight: '600' }}>⚠️ Diferente al cuestionario</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: '600'
+                  }}>
+                    Usar este
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => {
+                setSimilarMaterials(null);
+                setNewMaterialDetected(null);
+                setMaterialCode('');
+              }}
+              className="btn-secondary"
+              style={{ backgroundColor: '#374151', color: 'white', border: '1px solid #4b5563' }}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => {
+                // Show new material creation UI
+                setSimilarMaterials(null);
+                // Keep newMaterialDetected to show creation form
+              }}
+              className="btn-primary"
+              style={{ backgroundColor: '#f59e0b', color: 'white', border: 'none' }}
+            >
+              Crear Material Nuevo
+            </button>
+          </div>
+        </div>
+      )}
+
+      {newMaterialDetected && !similarMaterials && (
         <div id="new-material-section" className="card" style={{ backgroundColor: '#1f2937', color: 'white', marginBottom: '24px', border: '2px solid #f59e0b' }}>
           <h2 style={{ marginTop: 0, color: '#f59e0b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertCircle size={24} style={{ color: '#f59e0b' }} />
@@ -639,11 +992,12 @@ export default function QuestionnaireImport() {
               <CheckCircle size={24} style={{ color: '#10b981', flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
                 <div style={{ color: 'white', fontWeight: '600', marginBottom: '4px' }}>
-                  ✅ Cuestionario validado con Blue Line
+                  ✅ {importResult.comparison.message || 'Cuestionario validado con Blue Line'}
                 </div>
                 <div style={{ color: '#d1d5db', fontSize: '14px' }}>
-                  El cuestionario ha sido importado exitosamente y comparado con la Blue Line existente.
-                  Puedes revisar los detalles de la comparación a continuación.
+                  {importResult.comparison.message 
+                    ? importResult.comparison.message
+                    : 'El cuestionario ha sido importado exitosamente y comparado con la Blue Line existente. Puedes revisar los detalles de la comparación a continuación.'}
                 </div>
               </div>
             </div>
@@ -805,7 +1159,9 @@ export default function QuestionnaireImport() {
                     }}>
                       <CheckCircle size={20} style={{ color: '#10b981', marginRight: '8px', verticalAlign: 'middle' }} />
                       <span style={{ color: 'white', fontWeight: '500' }}>
-                        ¡Perfecto! Todos los campos coinciden con la Blue Line.
+                        {importResult.comparison.message?.includes('creada exitosamente') 
+                          ? '✅ Blue Line creada exitosamente. El MaterialSupplier ha sido creado automáticamente.'
+                          : '¡Perfecto! Todos los campos coinciden con la Blue Line.'}
                       </span>
                       <div style={{ marginTop: '12px' }}>
                         <button
@@ -829,29 +1185,32 @@ export default function QuestionnaireImport() {
                 </div>
                 
                 <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap' }}>
-                  <button
-                    onClick={handleAcceptQuestionnaire}
-                    disabled={acceptingQuestionnaire}
-                    className="btn-primary"
-                    style={{
-                      backgroundColor: '#059669',
-                      color: 'white',
-                      border: 'none',
-                      opacity: acceptingQuestionnaire ? 0.5 : 1
-                    }}
-                  >
-                    {acceptingQuestionnaire ? (
-                      <>
-                        <Loader2 size={18} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
-                        Aceptando...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle size={18} style={{ marginRight: '8px' }} />
-                        Aceptar Cuestionario y Crear MaterialSupplier
-                      </>
-                    )}
-                  </button>
+                  {/* Only show "Accept Questionnaire" button if MaterialSupplier hasn't been created yet */}
+                  {!importResult.comparison.message?.includes('MaterialSupplier ha sido creado') && (
+                    <button
+                      onClick={handleAcceptQuestionnaire}
+                      disabled={acceptingQuestionnaire}
+                      className="btn-primary"
+                      style={{
+                        backgroundColor: '#059669',
+                        color: 'white',
+                        border: 'none',
+                        opacity: acceptingQuestionnaire ? 0.5 : 1
+                      }}
+                    >
+                      {acceptingQuestionnaire ? (
+                        <>
+                          <Loader2 size={18} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+                          Aceptando...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle size={18} style={{ marginRight: '8px' }} />
+                          Aceptar Cuestionario y Crear MaterialSupplier
+                        </>
+                      )}
+                    </button>
+                  )}
                   <button
                     onClick={() => navigate(`/questionnaires/${importResult.id}`)}
                     className="btn-secondary"
@@ -939,11 +1298,11 @@ export default function QuestionnaireImport() {
         </button>
         <button
           onClick={handleImport}
-          disabled={!selectedFile || uploading}
+          disabled={!selectedFile || uploading || (importResult !== null && !newMaterialDetected && !similarMaterials)}
           className="btn-primary"
           style={{
-            opacity: !selectedFile ? 0.5 : 1,
-            cursor: !selectedFile ? 'not-allowed' : 'pointer',
+            opacity: (!selectedFile || (importResult !== null && !newMaterialDetected && !similarMaterials)) ? 0.5 : 1,
+            cursor: (!selectedFile || (importResult !== null && !newMaterialDetected && !similarMaterials)) ? 'not-allowed' : 'pointer',
             backgroundColor: materialCode ? '#3b82f6' : '#059669'
           }}
         >
@@ -954,7 +1313,12 @@ export default function QuestionnaireImport() {
             </>
           ) : (
             <>
-              {materialCode ? (
+              {importResult !== null && !newMaterialDetected && !similarMaterials ? (
+                <>
+                  <CheckCircle size={18} style={{ marginRight: '8px' }} />
+                  Ya Importado
+                </>
+              ) : materialCode ? (
                 <>
                   <CheckCircle size={18} style={{ marginRight: '8px' }} />
                   Validar Cuestionario

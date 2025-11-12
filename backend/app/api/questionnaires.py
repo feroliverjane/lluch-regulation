@@ -7,6 +7,7 @@ import shutil
 import tempfile
 import json
 import logging
+import re
 
 from app.core.database import get_db
 from app.core.config import settings
@@ -15,6 +16,7 @@ from app.models.questionnaire_validation import QuestionnaireValidation
 from app.models.questionnaire_incident import QuestionnaireIncident, IncidentStatus
 from app.models.material import Material
 from app.parsers.questionnaire_json_parser import QuestionnaireJSONParser
+from sqlalchemy import or_, func
 from app.schemas.questionnaire import (
     QuestionnaireCreate,
     QuestionnaireUpdate,
@@ -177,6 +179,157 @@ def delete_questionnaire(questionnaire_id: int, db: Session = Depends(get_db)):
 
 # ===== Questionnaire Import =====
 
+def find_similar_materials(
+    db: Session,
+    product_name: str = None,
+    product_code: str = None,
+    cas_number: str = None,
+    einecs_number: str = None,
+    botanical_name: str = None,
+    country_origin: str = None,
+    limit: int = 5
+) -> List[Material]:
+    """
+    Find materials similar to the given product information.
+    Priority order:
+    1. EINECS number (if available - most reliable for EU materials, exact match)
+    2. CAS number (exact match - most reliable)
+    3. Botanical name + Country origin (if both match, very likely same material)
+    4. Name keywords (less specific but useful)
+    5. Botanical name only (if available)
+    
+    Returns materials ordered by match quality (EINECS matches first, then CAS, then botanical matches).
+    """
+    from app.models.blue_line import BlueLine
+    
+    query = db.query(Material).filter(Material.is_active == True)
+    einecs_matches = []
+    cas_matches = []
+    botanical_matches = []
+    keyword_matches = []
+    
+    # PRIORITY 1: Search by EINECS number first (if available - most reliable for EU materials)
+    if einecs_number and einecs_number.strip():
+        einecs_clean = einecs_number.strip()
+        
+        # Search EINECS in BlueLine.responses (fieldCode q3t1s2f24)
+        # Get all active materials and check their blue lines
+        all_materials = query.all()
+        
+        for mat in all_materials:
+            # Check if material has blue lines
+            if mat.blue_lines:
+                blue_line = mat.blue_lines[0]
+                if blue_line and blue_line.responses:
+                    # Check if EINECS field exists in BlueLine responses
+                    einecs_field = blue_line.responses.get("q3t1s2f24")
+                    if einecs_field:
+                        # Extract value (could be dict with "value" key or direct string)
+                        einecs_value = einecs_field.get("value") if isinstance(einecs_field, dict) else einecs_field
+                        if einecs_value and str(einecs_value).strip() == einecs_clean:
+                            einecs_matches.append(mat)
+                            if len(einecs_matches) >= limit:
+                                break
+        
+        # If we found exact EINECS matches, return them immediately (highest priority)
+        if einecs_matches:
+            return einecs_matches[:limit]
+    
+    # PRIORITY 2: Search by CAS number (exact match - most reliable)
+    if cas_number and cas_number.strip():
+        cas_clean = cas_number.strip()
+        cas_matches = query.filter(Material.cas_number == cas_clean).limit(limit).all()
+        # If we found exact CAS matches, return them immediately
+        if cas_matches:
+            return cas_matches[:limit]
+    
+    # PRIORITY 2: Search by botanical name (in description field)
+    # Botanical name is often stored in description like "Basil essential oil - Ocimum basilicum L."
+    if botanical_name and botanical_name.strip():
+        botanical_clean = botanical_name.strip().upper()
+        # Extract genus and species (e.g., "Ocimum basilicum" from "Ocimum basilicum L.")
+        botanical_parts = botanical_clean.split()
+        if len(botanical_parts) >= 2:
+            genus_species = f"{botanical_parts[0]} {botanical_parts[1]}"
+            # Search in description field (where botanical name is often stored)
+            botanical_conditions = [
+                func.upper(Material.description).contains(botanical_clean),
+                func.upper(Material.description).contains(genus_species)
+            ]
+            # Also search in name field (sometimes botanical name is in the name)
+            botanical_conditions.append(
+                func.upper(Material.name).contains(genus_species)
+            )
+            
+            botanical_query = query.filter(or_(*botanical_conditions))
+            
+            # If country_origin is also provided, prioritize matches that mention the country
+            if country_origin:
+                # Country codes are usually 2 letters (e.g., "IN" for India)
+                country_upper = country_origin.strip().upper()
+                if len(country_upper) == 2:
+                    # Search for country in description or name
+                    country_conditions = [
+                        func.upper(Material.description).contains(country_upper),
+                        func.upper(Material.name).contains(country_upper)
+                    ]
+                    botanical_query = botanical_query.filter(or_(*country_conditions))
+            
+            botanical_matches = botanical_query.limit(limit * 2).all()
+    
+    # PRIORITY 3: Search by name keywords (if no botanical match found or to supplement)
+    keywords = []
+    if product_name:
+        # Remove brackets and codes, extract meaningful words
+        clean_name = product_name.upper()
+        # Remove patterns like [CODE]
+        clean_name = re.sub(r'\[.*?\]', '', clean_name)
+        # Extract words (3+ characters, excluding common words)
+        words = [w for w in clean_name.split() if len(w) >= 3 and w not in ['THE', 'AND', 'OIL', 'ESSENTIAL', 'H.E.', 'E.', 'INDES', 'INDIA']]
+        keywords.extend(words)
+    
+    # Also use product code as keyword if it contains letters
+    if product_code:
+        # Extract letters from code (e.g., "BASIL" from "BASIL0003")
+        code_letters = ''.join([c for c in product_code.upper() if c.isalpha()])
+        if len(code_letters) >= 3:
+            keywords.append(code_letters)
+    
+    # Search by keywords in name and reference_code
+    if keywords:
+        keyword_conditions = []
+        for keyword in keywords:
+            keyword_upper = keyword.upper()
+            keyword_conditions.append(
+                func.upper(Material.name).contains(keyword_upper)
+            )
+            keyword_conditions.append(
+                func.upper(Material.reference_code).contains(keyword_upper)
+            )
+        
+        if keyword_conditions:
+            keyword_matches = query.filter(or_(*keyword_conditions)).limit(limit * 2).all()
+    
+    # Combine results: botanical matches first (if found), then keyword matches
+    # Remove duplicates while preserving order
+    seen_ids = set()
+    unique_materials = []
+    
+    # Add botanical matches first (higher priority)
+    for mat in botanical_matches:
+        if mat.id not in seen_ids:
+            seen_ids.add(mat.id)
+            unique_materials.append(mat)
+    
+    # Add keyword matches
+    for mat in keyword_matches:
+        if mat.id not in seen_ids:
+            seen_ids.add(mat.id)
+            unique_materials.append(mat)
+    
+    return unique_materials[:limit]
+
+
 @router.post("/import/json", response_model=QuestionnaireImportResponse, status_code=status.HTTP_201_CREATED)
 async def import_questionnaire_from_json(
     file: UploadFile = File(...),
@@ -232,6 +385,9 @@ async def import_questionnaire_from_json(
         metadata = parsed_data.get("metadata", {})
         responses = parsed_data.get("responses", {})
         
+        # Get critical fields for better material detection
+        critical_fields = parser.get_critical_fields()
+        
         # Determine material
         material = None
         detected_material_code = None  # Track if we detected a code from JSON
@@ -277,13 +433,82 @@ async def import_questionnaire_from_json(
                     Material.reference_code == detected_material_code
                 ).first()
         
-        # If material not found but we detected a code from JSON, return special error
+        # If material not found but we detected a code from JSON, try to find similar materials
         if not material and detected_material_code:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"NEW_MATERIAL_DETECTED: El material '{detected_material_code}' fue detectado del JSON pero no existe en el sistema. "
-                       f"Por favor, crea primero el material '{detected_material_code}' antes de importar el cuestionario."
+            # Extract additional info for similarity search from critical fields
+            cas_field = critical_fields.get("cas_number", {})
+            einecs_field = critical_fields.get("einecs_number", {})
+            botanical_field = critical_fields.get("botanical_name", {})
+            country_field = critical_fields.get("country_origin", {})
+            
+            cas_number = cas_field.get("value", "") if cas_field else ""
+            einecs_number = einecs_field.get("value", "") if einecs_field else ""
+            botanical_name = botanical_field.get("value", "") if botanical_field else ""
+            country_origin = country_field.get("value", "") if country_field else ""
+            
+            # Try to find similar materials
+            similar_materials = find_similar_materials(
+                db=db,
+                product_name=product_name,
+                product_code=detected_material_code,
+                cas_number=cas_number,
+                einecs_number=einecs_number,
+                botanical_name=botanical_name,
+                country_origin=country_origin
             )
+            
+            if similar_materials:
+                # Found similar materials - return them as suggestions with CAS and EINECS info
+                from app.models.blue_line import BlueLine
+                similar_info = []
+                for m in similar_materials:
+                    # Get EINECS from BlueLine if available
+                    einecs_value = None
+                    if m.blue_lines:
+                        blue_line = m.blue_lines[0]
+                        if blue_line and blue_line.responses:
+                            einecs_field = blue_line.responses.get("q3t1s2f24")
+                            if einecs_field:
+                                einecs_value = einecs_field.get("value") if isinstance(einecs_field, dict) else einecs_field
+                    
+                    # Build info string
+                    info_parts = [f"{m.reference_code} ({m.name})"]
+                    
+                    # Add EINECS info
+                    if einecs_value:
+                        einecs_match = "✅" if einecs_number and str(einecs_value).strip() == einecs_number.strip() else ""
+                        info_parts.append(f"EINECS: {einecs_value}{einecs_match}")
+                    elif einecs_number:
+                        info_parts.append("EINECS: N/A")
+                    
+                    # Add CAS info
+                    cas_info = f"CAS: {m.cas_number}" if m.cas_number else "CAS: N/A"
+                    cas_warning = ""
+                    if cas_number and m.cas_number and cas_number.strip() != m.cas_number.strip():
+                        cas_warning = " ⚠️ (CAS diferente)"
+                    info_parts.append(f"{cas_info}{cas_warning}")
+                    
+                    similar_info.append(" - ".join(info_parts))
+                
+                warning_msg = ""
+                if einecs_number:
+                    warning_msg = "Si el EINECS coincide exactamente, es muy probable que sea el mismo material (incluso si el CAS es diferente). "
+                warning_msg += "Si los CAS son diferentes, pueden ser materiales distintos aunque tengan nombres similares."
+                
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"SIMILAR_MATERIALS_FOUND: El material '{detected_material_code}' no existe, pero se encontraron materiales similares: "
+                           f"{' | '.join(similar_info)}. "
+                           f"⚠️ {warning_msg} "
+                           f"¿Deseas usar uno de estos materiales o crear uno nuevo?"
+                )
+            else:
+                # No similar materials found - return new material error
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"NEW_MATERIAL_DETECTED: El material '{detected_material_code}' fue detectado del JSON pero no existe en el sistema. "
+                           f"Por favor, crea primero el material '{detected_material_code}' antes de importar el cuestionario."
+                )
         
         # If no material found and no code detected
         if not material:
@@ -298,54 +523,84 @@ async def import_questionnaire_from_json(
         if len(supplier_code) > 100:
             supplier_code = supplier_code[:100]
         
-        # Determine questionnaire type and version
-        from app.models.questionnaire import QuestionnaireType
-        questionnaire_type = QuestionnaireType.INITIAL_HOMOLOGATION
-        existing_count = db.query(Questionnaire).filter(
-            Questionnaire.material_id == material.id,
-            Questionnaire.supplier_code == supplier_code
-        ).count()
+        # Extract request_id from parsed data
+        request_id = parsed_data.get("request_id")
         
-        version = existing_count + 1
-        previous_version_id = None
+        # Check if questionnaire with same request_id already exists
+        # This prevents duplicate imports of the same questionnaire file
+        existing_questionnaire = None
+        if request_id:
+            # Query all questionnaires for this material and check request_id in Python
+            # This is more compatible with SQLite JSON handling
+            all_questionnaires = db.query(Questionnaire).filter(
+                Questionnaire.material_id == material.id
+            ).all()
+            
+            for q in all_questionnaires:
+                if q.responses and isinstance(q.responses, dict):
+                    stored_request_id = q.responses.get("_request_id")
+                    if stored_request_id == request_id:
+                        existing_questionnaire = q
+                        break
         
-        if version > 1:
-            questionnaire_type = QuestionnaireType.REHOMOLOGATION
-            previous = db.query(Questionnaire).filter(
+        if existing_questionnaire:
+            # Questionnaire already imported - return existing one
+            logger.info(
+                f"Questionnaire with request_id {request_id} already exists (ID: {existing_questionnaire.id}). "
+                f"Returning existing questionnaire instead of creating duplicate."
+            )
+            questionnaire = existing_questionnaire
+            # Still need to perform comparison if Blue Line exists
+            # (comparison will be done after this if block)
+        else:
+            # Determine questionnaire type and version
+            from app.models.questionnaire import QuestionnaireType
+            questionnaire_type = QuestionnaireType.INITIAL_HOMOLOGATION
+            existing_count = db.query(Questionnaire).filter(
                 Questionnaire.material_id == material.id,
                 Questionnaire.supplier_code == supplier_code
-            ).order_by(Questionnaire.version.desc()).first()
+            ).count()
             
-            if previous:
-                previous_version_id = previous.id
-        
-        # Get default template if available
-        from app.models.questionnaire_template import QuestionnaireTemplate, TemplateType
-        default_template = db.query(QuestionnaireTemplate).filter(
-            QuestionnaireTemplate.is_default == True,
-            QuestionnaireTemplate.template_type == TemplateType.INITIAL_HOMOLOGATION
-        ).first()
-        
-        # Create questionnaire
-        questionnaire = Questionnaire(
-            material_id=material.id,
-            supplier_code=supplier_code,
-            questionnaire_type=questionnaire_type,
-            version=version,
-            previous_version_id=previous_version_id,
-            template_id=default_template.id if default_template else None,
-            responses={
-                **responses,
-                "_metadata": metadata,
-                "_request_id": parsed_data.get("request_id"),
-                "_imported_from": filename
-            },
-            status=QuestionnaireStatus.DRAFT
-        )
-        
-        db.add(questionnaire)
-        db.commit()
-        db.refresh(questionnaire)
+            version = existing_count + 1
+            previous_version_id = None
+            
+            if version > 1:
+                questionnaire_type = QuestionnaireType.REHOMOLOGATION
+                previous = db.query(Questionnaire).filter(
+                    Questionnaire.material_id == material.id,
+                    Questionnaire.supplier_code == supplier_code
+                ).order_by(Questionnaire.version.desc()).first()
+                
+                if previous:
+                    previous_version_id = previous.id
+            
+            # Get default template if available
+            from app.models.questionnaire_template import QuestionnaireTemplate, TemplateType
+            default_template = db.query(QuestionnaireTemplate).filter(
+                QuestionnaireTemplate.is_default == True,
+                QuestionnaireTemplate.template_type == TemplateType.INITIAL_HOMOLOGATION
+            ).first()
+            
+            # Create questionnaire
+            questionnaire = Questionnaire(
+                material_id=material.id,
+                supplier_code=supplier_code,
+                questionnaire_type=questionnaire_type,
+                version=version,
+                previous_version_id=previous_version_id,
+                template_id=default_template.id if default_template else None,
+                responses={
+                    **responses,
+                    "_metadata": metadata,
+                    "_request_id": request_id,
+                    "_imported_from": filename
+                },
+                status=QuestionnaireStatus.DRAFT
+            )
+            
+            db.add(questionnaire)
+            db.commit()
+            db.refresh(questionnaire)
         
         # Automatically validate against Blue Line
         try:
@@ -503,21 +758,64 @@ def create_blue_line_from_questionnaire(
             else:
                 supplier_name = str(supplier_field)
     
-    # Create MaterialSupplier automatically
-    material_supplier = MaterialSupplier(
-        material_id=material.id,
-        questionnaire_id=questionnaire.id,
-        blue_line_id=blue_line.id,
-        supplier_code=questionnaire.supplier_code,
-        supplier_name=supplier_name,
-        status="ACTIVE",
-        validation_score=100,  # Perfect match since Blue Line created from this questionnaire
-        mismatch_fields=[],
-        accepted_mismatches=[],
-        validated_at=datetime.utcnow()
-    )
+    # Check if MaterialSupplier already exists for this material + supplier_code
+    # This prevents duplicates when creating Blue Line from multiple questionnaires
+    existing_material_supplier = db.query(MaterialSupplier).filter(
+        MaterialSupplier.material_id == material.id,
+        MaterialSupplier.supplier_code == questionnaire.supplier_code,
+        MaterialSupplier.status == "ACTIVE"
+    ).first()
     
-    db.add(material_supplier)
+    # Check if MaterialSupplier already exists for this questionnaire
+    existing_for_questionnaire = db.query(MaterialSupplier).filter(
+        MaterialSupplier.questionnaire_id == questionnaire.id
+    ).first()
+    
+    if existing_for_questionnaire:
+        # MaterialSupplier already exists for this questionnaire - use it
+        logger.info(
+            f"MaterialSupplier already exists for questionnaire {questionnaire_id} (ID: {existing_for_questionnaire.id}). "
+            f"Updating with new blue_line {blue_line.id}."
+        )
+        existing_for_questionnaire.blue_line_id = blue_line.id
+        existing_for_questionnaire.supplier_name = supplier_name
+        existing_for_questionnaire.validation_score = 100
+        existing_for_questionnaire.mismatch_fields = []
+        existing_for_questionnaire.accepted_mismatches = []
+        existing_for_questionnaire.validated_at = datetime.utcnow()
+        material_supplier = existing_for_questionnaire
+    elif existing_material_supplier:
+        # MaterialSupplier exists for this material + supplier but different questionnaire
+        # This means we're creating a Blue Line from a new questionnaire version
+        # We should NOT create a duplicate - just use the existing one
+        logger.warning(
+            f"MaterialSupplier already exists for material {material.reference_code} "
+            f"and supplier {questionnaire.supplier_code} (ID: {existing_material_supplier.id}, "
+            f"questionnaire_id: {existing_material_supplier.questionnaire_id}). "
+            f"Not creating duplicate for questionnaire {questionnaire_id}. "
+            f"Using existing MaterialSupplier."
+        )
+        # Update the existing MaterialSupplier to reference the new blue_line
+        existing_material_supplier.blue_line_id = blue_line.id
+        existing_material_supplier.supplier_name = supplier_name
+        existing_material_supplier.validation_score = 100
+        existing_material_supplier.validated_at = datetime.utcnow()
+        material_supplier = existing_material_supplier
+    else:
+        # Create new MaterialSupplier
+        material_supplier = MaterialSupplier(
+            material_id=material.id,
+            questionnaire_id=questionnaire.id,
+            blue_line_id=blue_line.id,
+            supplier_code=questionnaire.supplier_code,
+            supplier_name=supplier_name,
+            status="ACTIVE",
+            validation_score=100,  # Perfect match since Blue Line created from this questionnaire
+            mismatch_fields=[],
+            accepted_mismatches=[],
+            validated_at=datetime.utcnow()
+        )
+        db.add(material_supplier)
     
     # Update questionnaire status
     questionnaire.status = QuestionnaireStatus.APPROVED
