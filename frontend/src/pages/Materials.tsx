@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Plus, Package, X } from 'lucide-react'
+import { Plus, Package, X, Search } from 'lucide-react'
 import { materialsApi } from '../services/api'
 
 const Materials = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [newMaterial, setNewMaterial] = useState({
     name: '',
     reference_code: '',
@@ -21,6 +22,20 @@ const Materials = () => {
     queryKey: ['materials'],
     queryFn: () => materialsApi.getAll(),
   })
+
+  // Filtrar materiales según la búsqueda
+  const filteredMaterials = useMemo(() => {
+    if (!materials) return []
+    if (!searchQuery.trim()) return materials
+    
+    const query = searchQuery.toLowerCase()
+    return materials.filter(material => 
+      material.reference_code?.toLowerCase().includes(query) ||
+      material.name?.toLowerCase().includes(query) ||
+      material.supplier?.toLowerCase().includes(query) ||
+      material.cas_number?.toLowerCase().includes(query)
+    )
+  }, [materials, searchQuery])
 
   const createMutation = useMutation({
     mutationFn: async (material: any) => {
@@ -74,7 +89,43 @@ const Materials = () => {
       </div>
 
       <div className="card">
-        {materials && materials.length > 0 ? (
+        {/* Barra de búsqueda */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ position: 'relative' }}>
+            <Search 
+              size={18} 
+              style={{ 
+                position: 'absolute', 
+                left: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)',
+                color: '#6b7280'
+              }} 
+            />
+            <input
+              type="text"
+              placeholder="Buscar por código, nombre, proveedor o CAS..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 0.75rem 0.75rem 2.5rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                fontSize: '0.9rem',
+                backgroundColor: 'white',
+                transition: 'border-color 0.2s ease'
+              }}
+            />
+          </div>
+          {searchQuery && (
+            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+              {filteredMaterials.length} material{filteredMaterials.length !== 1 ? 'es' : ''} encontrado{filteredMaterials.length !== 1 ? 's' : ''}
+            </div>
+          )}
+        </div>
+
+        {filteredMaterials && filteredMaterials.length > 0 ? (
           <table className="table">
             <thead>
               <tr>
@@ -88,7 +139,7 @@ const Materials = () => {
               </tr>
             </thead>
             <tbody>
-              {materials.map((material) => (
+              {filteredMaterials.map((material) => (
                 <tr key={material.id}>
                   <td>
                     <Link to={`/materials/${material.id}`} className="link">
@@ -120,8 +171,8 @@ const Materials = () => {
         ) : (
           <div className="empty-state">
             <Package size={48} />
-            <h3>No hay materiales</h3>
-            <p>Crea tu primer material para comenzar</p>
+            <h3>{searchQuery ? 'No se encontraron materiales' : 'No hay materiales'}</h3>
+            <p>{searchQuery ? 'Intenta con otros términos de búsqueda' : 'Crea tu primer material para comenzar'}</p>
             <button
               className="btn btn-primary"
               onClick={() => setShowCreateModal(true)}

@@ -349,3 +349,12 @@ class CompositeExtractorAI:
 
 
 
+
+
+
+
+
+
+
+
+

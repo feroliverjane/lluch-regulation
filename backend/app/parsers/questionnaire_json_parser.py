@@ -141,6 +141,7 @@ class QuestionnaireJSONParser:
             "product_name": ["Product Name"],
             "product_code": ["product code", "Supplier´s product code"],
             "cas_number": ["CAS"],
+            "einecs_number": ["EINECS"],  # Optional but important for EU materials
             "botanical_name": ["Botanical name"],
             "country_origin": ["Country of the botanical origin"],
             "natural_product": ["Is the product 100% Natural"],

@@ -395,6 +395,9 @@ async def import_z2_from_excel(
             detail=f"Composite {composite_id} not found"
         )
     
+    # Log current composite state for debugging
+    logger.info(f"🔍 Composite actual: ID={composite.id}, Tipo={composite.composite_type}, Componentes={len(composite.components)}")
+    
     # Validate file type
     file_ext = Path(file.filename).suffix.lower()
     if file_ext not in ['.xlsx', '.xls', '.csv']:
@@ -436,6 +439,37 @@ async def import_z2_from_excel(
         
         logger.info(f"Importando {len(components_data)} componentes desde Excel para composite {composite_id}")
         
+        # Save Z1 state before updating (for comparison)
+        z1_composite = None
+        z1_components_snapshot = None
+        
+        # Check if composite is Z1 - treat None as Z1 (new composites might not have type set)
+        # Only skip comparison if it's explicitly Z2
+        is_z1 = composite.composite_type != CompositeType.Z2
+        
+        logger.info(f"🔍 Verificando tipo de composite: tipo={composite.composite_type}, is_z1={is_z1}, tiene_componentes={len(composite.components) > 0}")
+        
+        if is_z1 and composite.components:
+            # Create a snapshot of Z1 components before deletion
+            z1_components_snapshot = [
+                {
+                    "cas_number": c.cas_number,
+                    "component_name": c.component_name,
+                    "percentage": c.percentage,
+                    "component_type": c.component_type.value if c.component_type else "COMPONENT"
+                }
+                for c in composite.components
+            ]
+            z1_composite = composite  # Reference to original composite
+            logger.info(f"✅ Snapshot de Z1 capturado: {len(z1_components_snapshot)} componentes para comparación")
+        else:
+            if composite.composite_type == CompositeType.Z2:
+                logger.warning(f"⚠️  Composite ya es Z2 (tipo: {composite.composite_type}), no se puede generar comparación")
+            elif not composite.components:
+                logger.warning(f"⚠️  Composite no tiene componentes, no se generará comparación")
+            else:
+                logger.warning(f"⚠️  Composite no es Z1 (tipo: {composite.composite_type}), no se generará comparación")
+        
         # Delete existing components
         for comp in composite.components:
             db.delete(comp)
@@ -462,7 +496,8 @@ async def import_z2_from_excel(
             "import_source": "excel",
             "import_filename": file.filename,
             "import_date": datetime.utcnow().isoformat(),
-            "total_percentage": parse_result.get("total_percentage", 0)
+            "total_percentage": parse_result.get("total_percentage", 0),
+            "z1_snapshot": z1_components_snapshot if z1_composite else None
         })
         composite.composite_metadata = existing_metadata
         composite.notes = f"Composite Z2 importado desde {file.filename} con {len(components_data)} componentes"
@@ -472,7 +507,168 @@ async def import_z2_from_excel(
         
         logger.info(f"Composite {composite_id} actualizado a Z2 con {len(components_data)} componentes")
         
-        return composite
+        # Perform comparison if we had a Z1 composite
+        comparison_result = None
+        ai_analysis = None
+        
+        logger.info(f"🔍 Verificando comparación: z1_composite={z1_composite is not None}, snapshot={z1_components_snapshot is not None}")
+        
+        if z1_composite and z1_components_snapshot:
+            logger.info(f"✅ Iniciando comparación Z1 → Z2 con {len(z1_components_snapshot)} componentes Z1 y {len(composite.components)} componentes Z2")
+            try:
+                # Create temporary Z1 composite for comparison
+                from app.services.composite_comparison_service import CompositeComparisonService
+                from app.services.composite_ai_analyzer import CompositeAIAnalyzer
+                
+                comparison_service = CompositeComparisonService(db)
+                
+                # Create a temporary composite object with Z1 data for comparison
+                # We'll compare using the snapshot data
+                # Use CAS number as primary key, but fallback to component_name if CAS is None
+                z1_temp_components = {}
+                for c in z1_components_snapshot:
+                    key = c.get("cas_number") or c.get("component_name", "").upper()
+                    z1_temp_components[key] = c
+                
+                z2_components = {}
+                for c in composite.components:
+                    key = c.cas_number or c.component_name.upper()
+                    z2_components[key] = c
+                
+                # Build comparison manually since we can't query Z1 anymore
+                added = []
+                removed = []
+                changed = []
+                
+                # Check for new components in Z2
+                for cas, comp_z2 in z2_components.items():
+                    if cas not in z1_temp_components:
+                        added.append({
+                            "component_name": comp_z2.component_name,
+                            "cas_number": cas,
+                            "old_percentage": None,
+                            "new_percentage": comp_z2.percentage,
+                            "change": comp_z2.percentage,
+                            "change_percent": None
+                        })
+                
+                # Check for removed components
+                for cas, comp_z1 in z1_temp_components.items():
+                    if cas not in z2_components:
+                        removed.append({
+                            "component_name": comp_z1["component_name"],
+                            "cas_number": cas,
+                            "old_percentage": comp_z1["percentage"],
+                            "new_percentage": None,
+                            "change": -comp_z1["percentage"],
+                            "change_percent": None
+                        })
+                
+                # Check for changed components
+                for cas, comp_z1 in z1_temp_components.items():
+                    if cas in z2_components:
+                        comp_z2 = z2_components[cas]
+                        change = comp_z2.percentage - comp_z1["percentage"]
+                        change_percent = (change / comp_z1["percentage"] * 100) if comp_z1["percentage"] > 0 else 0
+                        
+                        if abs(change) > 0.01:
+                            changed.append({
+                                "component_name": comp_z1["component_name"],
+                                "cas_number": cas,
+                                "old_percentage": comp_z1["percentage"],
+                                "new_percentage": comp_z2.percentage,
+                                "change": change,
+                                "change_percent": change_percent
+                            })
+                
+                # Calculate match score
+                total_change_score = sum(abs(c["change"]) for c in changed)
+                total_change_score += sum(c["change"] for c in added)
+                total_change_score += sum(abs(c["change"]) for c in removed)
+                match_score = max(0, 100 - total_change_score)
+                
+                comparison_result = {
+                    "z1_composite_id": composite_id,  # Same ID, but was Z1
+                    "z2_composite_id": composite_id,
+                    "components_added": added,
+                    "components_removed": removed,
+                    "components_changed": changed,
+                    "total_change_score": total_change_score,
+                    "match_score": match_score,
+                    "significant_changes": any(abs(c.get("change", 0)) >= 5.0 for c in changed)
+                }
+                logger.info(f"✅ Comparación generada: {len(added)} agregados, {len(removed)} eliminados, {len(changed)} modificados, match_score={match_score:.1f}%")
+                
+                # Perform AI analysis
+                try:
+                    ai_analyzer = CompositeAIAnalyzer(db)
+                    # Create temporary composite objects for AI analysis
+                    z1_for_ai = type('obj', (object,), {
+                        'components': [
+                            type('comp', (object,), {
+                                'component_name': c["component_name"],
+                                'cas_number': c["cas_number"],
+                                'percentage': c["percentage"]
+                            })() for c in z1_components_snapshot
+                        ]
+                    })()
+                    
+                    ai_analysis = ai_analyzer.analyze_z1_to_z2_changes(
+                        z1_for_ai,
+                        composite,
+                        comparison_result
+                    )
+                except Exception as e:
+                    logger.warning(f"AI analysis failed: {e}", exc_info=True)
+                    ai_analysis = {
+                        "ai_analysis_available": False,
+                        "error": str(e)
+                    }
+                
+            except Exception as e:
+                logger.warning(f"Comparison failed: {e}", exc_info=True)
+                comparison_result = {
+                    "error": str(e),
+                    "message": "Could not perform comparison"
+                }
+        
+        # Return composite with comparison data
+        response_data = {
+            "composite": composite,
+            "comparison": comparison_result,
+            "ai_analysis": ai_analysis
+        }
+        
+        # Return as dict since we're adding extra fields
+        from fastapi.responses import JSONResponse
+        return JSONResponse(content={
+            "id": composite.id,
+            "material_id": composite.material_id,
+            "version": composite.version,
+            "composite_type": composite.composite_type.value,
+            "status": composite.status.value,
+            "origin": composite.origin.value,
+            "components": [
+                {
+                    "id": c.id,
+                    "cas_number": c.cas_number,
+                    "component_name": c.component_name,
+                    "percentage": c.percentage,
+                    "component_type": c.component_type.value if c.component_type else "COMPONENT"
+                }
+                for c in composite.components
+            ],
+            "comparison": comparison_result,
+            "ai_analysis": ai_analysis
+        })
+        
+        logger.info(f"📤 Retornando respuesta: comparison={comparison_result is not None}, ai_analysis={ai_analysis is not None}")
+        if comparison_result:
+            logger.info(f"   - Comparación: {len(comparison_result.get('components_added', []))} agregados, "
+                       f"{len(comparison_result.get('components_removed', []))} eliminados, "
+                       f"{len(comparison_result.get('components_changed', []))} modificados")
+        else:
+            logger.warning(f"   ⚠️  No se generó comparación. z1_composite={z1_composite is not None}, snapshot={z1_components_snapshot is not None}")
         
     except HTTPException:
         raise

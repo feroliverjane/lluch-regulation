@@ -625,9 +625,8 @@ async def extract_composite_from_blue_line(
             )
             composite.components.append(component)
         
-        # Update Blue Line to reference this composite
-        if not blue_line.composite_id:
-            blue_line.composite_id = composite.id
+        # Update Blue Line to reference this composite (always update, even if composite_id exists)
+        blue_line.composite_id = composite.id
         
         # Clear pending documents from metadata
         if blue_line.calculation_metadata:
@@ -635,6 +634,7 @@ async def extract_composite_from_blue_line(
         
         db.commit()
         db.refresh(composite)
+        db.refresh(blue_line)  # Refresh blue_line to ensure composite_id is persisted
         
         return {
             "composite_id": composite.id,

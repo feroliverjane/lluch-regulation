@@ -92,6 +92,8 @@ export default function BlueLineDetail() {
   const [showUploadDocs, setShowUploadDocs] = useState(false);
   const [importingZ2, setImportingZ2] = useState(false);
   const [selectedZ2ImportFile, setSelectedZ2ImportFile] = useState<File | null>(null);
+  const [z1ToZ2Comparison, setZ1ToZ2Comparison] = useState<any>(null);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
 
   useEffect(() => {
     fetchBlueLineDetail();
@@ -355,8 +357,23 @@ export default function BlueLineDetail() {
       setExtractingComposite(true);
       const response = await api.post(`/blue-line/${blueLine.id}/extract-composite`);
       
+      const compositeId = response.data.composite_id;
+      
+      // Load the composite immediately if we have the ID
+      if (compositeId) {
+        try {
+          const compositeRes = await api.get(`/composites/${compositeId}`);
+          setComposite(compositeRes.data);
+          console.log('✅ Composite cargado:', compositeRes.data);
+        } catch (err) {
+          console.warn('Could not load composite immediately:', err);
+        }
+      }
+      
+      // Refresh all data to ensure consistency
+      await fetchBlueLineDetail();
+      
       alert(`✅ Composite Z1 extraído exitosamente: ${response.data.components_count} componentes con ${response.data.extraction_confidence.toFixed(1)}% confianza`);
-      fetchBlueLineDetail(); // Refresh data
     } catch (err: any) {
       console.error('Error extracting composite:', err);
       const errorMessage = err.response?.data?.detail || err.message || 'Error al extraer composite';
@@ -398,18 +415,41 @@ export default function BlueLineDetail() {
       
       // Use the new endpoint for importing Z2 from Excel
       const compositeId = composite?.id || blueLine.composite_id;
+      let response;
       if (compositeId) {
         // Update existing composite to Z2 from Excel
-        await api.post(`/composites/${compositeId}/import-z2-from-excel`, formData, {
+        response = await api.post(`/composites/${compositeId}/import-z2-from-excel`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        alert('✅ Composite Z2 importado exitosamente desde Excel/CSV');
       } else {
         // If no composite exists, create Z1 first then update to Z2
         const z1Response = await api.post(`/blue-line/${blueLine.id}/create-composite`);
-        await api.post(`/composites/${z1Response.data.composite_id}/import-z2-from-excel`, formData, {
+        response = await api.post(`/composites/${z1Response.data.composite_id}/import-z2-from-excel`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
+      }
+
+      // Debug: Log response data
+      console.log('📊 Respuesta de importación Z2:', response.data);
+      console.log('📊 Comparación disponible:', response.data.comparison);
+      console.log('📊 Análisis IA disponible:', response.data.ai_analysis);
+      
+      // Check if comparison data is available
+      const hasComparison = response.data.comparison && (
+        (Array.isArray(response.data.comparison.components_added) && response.data.comparison.components_added.length > 0) ||
+        (Array.isArray(response.data.comparison.components_removed) && response.data.comparison.components_removed.length > 0) ||
+        (Array.isArray(response.data.comparison.components_changed) && response.data.comparison.components_changed.length > 0)
+      );
+      
+      if (hasComparison) {
+        console.log('✅ Mostrando modal de comparación');
+        setZ1ToZ2Comparison({
+          comparison: response.data.comparison,
+          ai_analysis: response.data.ai_analysis
+        });
+        setShowComparisonModal(true);
+      } else {
+        console.log('⚠️  No hay datos de comparación disponibles');
         alert('✅ Composite Z2 importado exitosamente desde Excel/CSV');
       }
 
@@ -825,34 +865,41 @@ export default function BlueLineDetail() {
         </div>
       </div>
 
-      {/* Composite Info */}
-      {composite && (
-        <div className="card" style={{ 
-          marginBottom: '24px', 
-          backgroundColor: composite.composite_type === 'Z2' ? '#064e3b' : '#1e3a8a', 
-          border: composite.composite_type === 'Z2' ? '1px solid #065f46' : '1px solid #1e40af',
-          color: 'white' 
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <h2 style={{ marginTop: 0, color: 'white' }}>
-              Composite Asociado
-              {composite.composite_type && (
-                <span className={`badge ${composite.composite_type === 'Z2' ? 'badge-success' : 'badge-info'}`} style={{ marginLeft: '12px', fontSize: '14px' }}>
-                  {composite.composite_type}
-                </span>
-              )}
-            </h2>
-            
-            {composite.composite_type === 'Z1' && !showUploadZ2 && (
-              <button 
-                onClick={() => setShowUploadZ2(true)}
-                className="btn-primary"
-                style={{ fontSize: '13px' }}
-              >
-                ⬆️ Actualizar a Z2
-              </button>
+      {/* Composite Info - Always visible */}
+      <div className="card" style={{ 
+        marginBottom: '24px', 
+        backgroundColor: composite?.composite_type === 'Z2' ? '#064e3b' : composite ? '#1e3a8a' : '#1f2937', 
+        border: composite?.composite_type === 'Z2' ? '1px solid #065f46' : composite ? '1px solid #1e40af' : '1px solid #374151',
+        color: 'white' 
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+          <h2 style={{ marginTop: 0, color: 'white' }}>
+            Composite Asociado
+            {composite?.composite_type && (
+              <span className={`badge ${composite.composite_type === 'Z2' ? 'badge-success' : 'badge-info'}`} style={{ marginLeft: '12px', fontSize: '14px' }}>
+                {composite.composite_type}
+              </span>
             )}
-          </div>
+            {!composite && (
+              <span className="badge badge-secondary" style={{ marginLeft: '12px', fontSize: '14px' }}>
+                Sin composite
+              </span>
+            )}
+          </h2>
+          
+          {composite?.composite_type === 'Z1' && !showUploadZ2 && (
+            <button 
+              onClick={() => setShowUploadZ2(true)}
+              className="btn-primary"
+              style={{ fontSize: '13px' }}
+            >
+              ⬆️ Actualizar a Z2
+            </button>
+          )}
+        </div>
+
+        {composite ? (
+          <>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
             <div>
@@ -1132,8 +1179,163 @@ export default function BlueLineDetail() {
               Ver Composite Detallado
             </Link>
           </div>
-        </div>
-      )}
+          </>
+        ) : (
+          // No composite - Show options to create one
+          <div>
+            <div style={{ 
+              padding: '20px', 
+              backgroundColor: '#111827', 
+              borderRadius: '6px', 
+              border: '1px solid #374151',
+              marginBottom: '16px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '48px', marginBottom: '12px' }}>🧪</div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: 'white', marginBottom: '8px' }}>
+                No hay composite asociado a esta Blue Line
+              </div>
+              <div style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '20px' }}>
+                Puedes crear un composite Z1 desde documentos o importar un Z2 desde laboratorio
+              </div>
+              
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={handleCreateZ1}
+                  className="btn-primary"
+                  disabled={creatingZ1 || uploadingDocs}
+                  style={{ fontSize: '13px' }}
+                >
+                  📊 Crear Z1 con IA
+                </button>
+                <button 
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.xlsx,.xls,.csv';
+                    input.onchange = async (e: any) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setSelectedZ2ImportFile(file);
+                        setTimeout(() => {
+                          handleImportZ2(file);
+                        }, 100);
+                      }
+                    };
+                    input.click();
+                  }}
+                  className="btn-secondary"
+                  disabled={importingZ2}
+                  style={{ fontSize: '13px' }}
+                >
+                  {importingZ2 ? 'Importando...' : '📥 Importar Z2'}
+                </button>
+              </div>
+              
+              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '16px', textAlign: 'left' }}>
+                <div style={{ marginBottom: '4px' }}>• <strong>Crear Z1 con IA:</strong> Sube PDFs y la IA extraerá automáticamente los componentes químicos</div>
+                <div>• <strong>Importar Z2:</strong> Importa un composite Z2 definitivo desde un archivo Excel/CSV de laboratorio</div>
+              </div>
+            </div>
+            
+            {/* Show upload docs section if creating Z1 */}
+            {showUploadDocs && (
+              <div style={{
+                padding: '16px',
+                backgroundColor: '#1f2937',
+                border: '1px solid #374151',
+                borderRadius: '6px',
+                marginBottom: '12px'
+              }}>
+                <h3 style={{ marginTop: 0, fontSize: '14px', fontWeight: '600', color: 'white', marginBottom: '12px' }}>
+                  📤 Subir Documentos PDF para Extracción con IA
+                </h3>
+                <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '12px' }}>
+                  Sube uno o más archivos PDF que contengan información sobre la composición química del material.
+                  La IA extraerá automáticamente los componentes y sus porcentajes.
+                </p>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf"
+                    onChange={(e) => setSelectedFiles(e.target.files)}
+                    style={{
+                      flex: 1,
+                      minWidth: '200px',
+                      padding: '8px',
+                      backgroundColor: '#111827',
+                      border: '1px solid #4b5563',
+                      borderRadius: '4px',
+                      color: 'white'
+                    }}
+                  />
+                  <button 
+                    onClick={handleUploadDocuments}
+                    className="btn-primary"
+                    disabled={uploadingDocs || !selectedFiles || selectedFiles.length === 0}
+                    style={{ fontSize: '13px' }}
+                  >
+                    {uploadingDocs ? 'Subiendo...' : '📤 Subir Documentos'}
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setShowUploadDocs(false);
+                      setSelectedFiles(null);
+                    }}
+                    className="btn-secondary"
+                    style={{ fontSize: '13px' }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+                {selectedFiles && selectedFiles.length > 0 && (
+                  <div style={{ marginTop: '12px', fontSize: '12px', color: '#9ca3af' }}>
+                    {selectedFiles.length} archivo(s) seleccionado(s)
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Show extract button if documents are uploaded */}
+            {(() => {
+              const pendingDocs = blueLine?.calculation_metadata?.pending_documents;
+              const hasDocs = pendingDocs && Array.isArray(pendingDocs) && pendingDocs.length > 0;
+              return hasDocs;
+            })() && (
+              <div 
+                data-extraction-area
+                style={{
+                  padding: '12px',
+                  backgroundColor: '#065f46',
+                  border: '1px solid #059669',
+                  borderRadius: '6px',
+                  marginTop: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <div style={{ fontWeight: '600', color: '#6ee7b7', marginBottom: '4px' }}>
+                      ✅ Documentos listos para extracción
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#6ee7b7' }}>
+                      {blueLine.calculation_metadata.pending_documents.length} documento(s) subido(s)
+                    </div>
+                  </div>
+                  <button 
+                    onClick={handleExtractComposite}
+                    className="btn-primary"
+                    disabled={extractingComposite}
+                    style={{ fontSize: '13px', whiteSpace: 'nowrap' }}
+                  >
+                    {extractingComposite ? '⏳ Extrayendo...' : '🤖 Extraer Composite con IA'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Blue Line Data - Organized by Template */}
       {template ? (
@@ -1266,6 +1468,231 @@ export default function BlueLineDetail() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Z1 to Z2 Comparison Modal */}
+      {showComparisonModal && z1ToZ2Comparison && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: '#1f2937',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '900px',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            width: '100%',
+            border: '1px solid #374151'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, color: 'white', fontSize: '24px' }}>
+                📊 Comparación Z1 → Z2
+              </h2>
+              <button
+                onClick={() => {
+                  setShowComparisonModal(false);
+                  setZ1ToZ2Comparison(null);
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#9ca3af',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  padding: '0',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Comparison Summary */}
+            {z1ToZ2Comparison.comparison && (
+              <div style={{ marginBottom: '24px' }}>
+                <h3 style={{ color: 'white', marginBottom: '16px', fontSize: '18px' }}>Resumen de Cambios</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
+                  <div style={{ padding: '12px', backgroundColor: '#111827', borderRadius: '8px', border: '1px solid #374151' }}>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Componentes Agregados</div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>
+                      {z1ToZ2Comparison.comparison.components_added?.length || 0}
+                    </div>
+                  </div>
+                  <div style={{ padding: '12px', backgroundColor: '#111827', borderRadius: '8px', border: '1px solid #374151' }}>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Componentes Eliminados</div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>
+                      {z1ToZ2Comparison.comparison.components_removed?.length || 0}
+                    </div>
+                  </div>
+                  <div style={{ padding: '12px', backgroundColor: '#111827', borderRadius: '8px', border: '1px solid #374151' }}>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Componentes Modificados</div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>
+                      {z1ToZ2Comparison.comparison.components_changed?.length || 0}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: '12px', backgroundColor: '#111827', borderRadius: '8px', border: '1px solid #374151' }}>
+                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>Puntuación de Coincidencia</div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>
+                    {z1ToZ2Comparison.comparison.match_score?.toFixed(1) || 'N/A'}%
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* AI Analysis */}
+            {z1ToZ2Comparison.ai_analysis?.ai_analysis_available && (
+              <div style={{ marginBottom: '24px', padding: '16px', backgroundColor: '#111827', borderRadius: '8px', border: '1px solid #374151' }}>
+                <h3 style={{ color: 'white', marginBottom: '12px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  🤖 Análisis con IA
+                </h3>
+                
+                {z1ToZ2Comparison.ai_analysis.summary && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px' }}>Resumen</div>
+                    <div style={{ color: 'white', fontSize: '14px', lineHeight: '1.6' }}>
+                      {z1ToZ2Comparison.ai_analysis.summary}
+                    </div>
+                  </div>
+                )}
+
+                {z1ToZ2Comparison.ai_analysis.risk_assessment && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px' }}>Evaluación de Riesgo</div>
+                    <div style={{ 
+                      display: 'inline-block',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      backgroundColor: z1ToZ2Comparison.ai_analysis.risk_assessment.level === 'HIGH' ? '#7f1d1d' :
+                                     z1ToZ2Comparison.ai_analysis.risk_assessment.level === 'MEDIUM' ? '#78350f' : '#14532d',
+                      color: z1ToZ2Comparison.ai_analysis.risk_assessment.level === 'HIGH' ? '#fca5a5' :
+                            z1ToZ2Comparison.ai_analysis.risk_assessment.level === 'MEDIUM' ? '#fcd34d' : '#86efac',
+                      fontWeight: 'bold',
+                      marginBottom: '8px'
+                    }}>
+                      {z1ToZ2Comparison.ai_analysis.risk_assessment.level || 'UNKNOWN'}
+                    </div>
+                    {z1ToZ2Comparison.ai_analysis.risk_assessment.explanation && (
+                      <div style={{ color: 'white', fontSize: '14px', marginTop: '8px' }}>
+                        {z1ToZ2Comparison.ai_analysis.risk_assessment.explanation}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {z1ToZ2Comparison.ai_analysis.recommendations && z1ToZ2Comparison.ai_analysis.recommendations.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px' }}>Recomendaciones</div>
+                    <ul style={{ color: 'white', fontSize: '14px', paddingLeft: '20px', margin: 0 }}>
+                      {z1ToZ2Comparison.ai_analysis.recommendations.map((rec: string, idx: number) => (
+                        <li key={idx} style={{ marginBottom: '8px', lineHeight: '1.6' }}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Detailed Changes */}
+            {z1ToZ2Comparison.comparison && (
+              <div>
+                <h3 style={{ color: 'white', marginBottom: '16px', fontSize: '18px' }}>Cambios Detallados</h3>
+                
+                {z1ToZ2Comparison.comparison.components_added && z1ToZ2Comparison.comparison.components_added.length > 0 && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#10b981', marginBottom: '12px', fontSize: '16px' }}>✅ Componentes Agregados</h4>
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {z1ToZ2Comparison.comparison.components_added.map((comp: any, idx: number) => (
+                        <div key={idx} style={{ padding: '12px', backgroundColor: '#111827', borderRadius: '6px', border: '1px solid #374151' }}>
+                          <div style={{ color: 'white', fontWeight: '500' }}>{comp.component_name}</div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                            CAS: {comp.cas_number || 'N/A'} • {comp.new_percentage}%
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {z1ToZ2Comparison.comparison.components_removed && z1ToZ2Comparison.comparison.components_removed.length > 0 && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#ef4444', marginBottom: '12px', fontSize: '16px' }}>❌ Componentes Eliminados</h4>
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {z1ToZ2Comparison.comparison.components_removed.map((comp: any, idx: number) => (
+                        <div key={idx} style={{ padding: '12px', backgroundColor: '#111827', borderRadius: '6px', border: '1px solid #374151' }}>
+                          <div style={{ color: 'white', fontWeight: '500' }}>{comp.component_name}</div>
+                          <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                            CAS: {comp.cas_number || 'N/A'} • Era {comp.old_percentage}%
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {z1ToZ2Comparison.comparison.components_changed && z1ToZ2Comparison.comparison.components_changed.length > 0 && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ color: '#f59e0b', marginBottom: '12px', fontSize: '16px' }}>⚠️ Componentes Modificados</h4>
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {z1ToZ2Comparison.comparison.components_changed.map((comp: any, idx: number) => (
+                        <div key={idx} style={{ padding: '12px', backgroundColor: '#111827', borderRadius: '6px', border: '1px solid #374151' }}>
+                          <div style={{ color: 'white', fontWeight: '500', marginBottom: '4px' }}>{comp.component_name}</div>
+                          <div style={{ fontSize: '14px', color: '#9ca3af' }}>
+                            CAS: {comp.cas_number || 'N/A'}
+                          </div>
+                          <div style={{ fontSize: '14px', color: 'white', marginTop: '4px' }}>
+                            <span style={{ color: '#ef4444' }}>{comp.old_percentage}%</span>
+                            <span style={{ margin: '0 8px' }}>→</span>
+                            <span style={{ color: '#10b981' }}>{comp.new_percentage}%</span>
+                            <span style={{ marginLeft: '12px', color: comp.change_percent && Math.abs(comp.change_percent) > 5 ? '#f59e0b' : '#9ca3af' }}>
+                              ({comp.change_percent > 0 ? '+' : ''}{comp.change_percent?.toFixed(1)}%)
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => {
+                  setShowComparisonModal(false);
+                  setZ1ToZ2Comparison(null);
+                }}
+                style={{
+                  padding: '10px 24px',
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Cerrar
+              </button>
+            </div>
           </div>
         </div>
       )}
