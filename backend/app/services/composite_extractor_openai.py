@@ -331,7 +331,7 @@ Return ONLY the JSON array."""
             if isinstance(result, dict):
                 # If response_format was json_object, look for components key
                 if "components" in result:
-                components = result["components"]
+                    components = result["components"]
                     logger.info(f"Found {len(components)} components in 'components' key")
                 elif "data" in result:
                     components = result["data"]

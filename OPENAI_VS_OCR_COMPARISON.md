@@ -323,3 +323,4 @@ Solo configura `USE_OPENAI_FOR_EXTRACTION=true` en tu `.env` para activar OpenAI
 
 
 
+

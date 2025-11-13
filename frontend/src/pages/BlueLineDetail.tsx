@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import '../components/Layout.css';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -71,6 +72,7 @@ const API_PREFIX = '/api';
 
 export default function BlueLineDetail() {
   const { id, material_id } = useParams<{ id?: string; material_id?: string }>();
+  const queryClient = useQueryClient();
   const [blueLine, setBlueLine] = useState<BlueLine | null>(null);
   const [material, setMaterial] = useState<Material | null>(null);
   const [template, setTemplate] = useState<Template | null>(null);
@@ -262,6 +264,13 @@ export default function BlueLineDetail() {
       alert('✅ Composite Z2 importado exitosamente desde Excel/CSV');
       setShowUploadZ2(false);
       setSelectedZ2File(null);
+      
+      // Invalidate React Query cache for the composite to force refresh
+      if (composite?.id) {
+        queryClient.invalidateQueries({ queryKey: ['composite', composite.id] });
+        queryClient.invalidateQueries({ queryKey: ['all-composites'] });
+      }
+      
       fetchBlueLineDetail(); // Refresh data
     } catch (error: any) {
       console.error('Error importing Z2:', error);
@@ -455,6 +464,14 @@ export default function BlueLineDetail() {
 
       setSelectedZ2ImportFile(null);
       setShowUploadZ2(false);
+      
+      // Invalidate React Query cache for the composite to force refresh
+      const finalCompositeId = compositeId || response.data.id;
+      if (finalCompositeId) {
+        queryClient.invalidateQueries({ queryKey: ['composite', finalCompositeId] });
+        queryClient.invalidateQueries({ queryKey: ['all-composites'] });
+      }
+      
       fetchBlueLineDetail(); // Refresh data
     } catch (error: any) {
       console.error('Error importing Z2:', error);
